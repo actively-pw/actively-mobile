@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 interface LocationProvider {
 
@@ -19,6 +20,12 @@ interface LocationProvider {
         fastestUpdateInterval: Duration,
         locationUpdatesDistanceMeters: Float
     ): Flow<Location>
+
+    companion object {
+        val DEFAULT_UPDATE_INTERVAL = 5.seconds
+        val DEFAULT_FASTEST_UPDATE_INTERVAL = 2.seconds
+        const val DEFAULT_LOCATION_UPDATES_DISTANCE_METERS = 10f
+    }
 }
 
 @SuppressLint("MissingPermission")

@@ -1,6 +1,8 @@
 package com.actively
 
 import android.content.Context
+import com.actively.location.GetUserLocationUpdatesUseCase
+import com.actively.location.GetUserLocationUpdatesUseCaseImpl
 import com.actively.location.LocationProvider
 import com.actively.location.LocationProviderImpl
 import com.mapbox.common.location.compat.LocationEngineProvider
@@ -12,10 +14,14 @@ object KoinSetup {
 
     fun initKoin(context: Context) = startKoin {
         androidContext(context)
-        modules(commonModule)
+        modules(commonModule, useCasesModule)
     }
 
-    val commonModule = module {
+    private val useCasesModule = module {
+        factory<GetUserLocationUpdatesUseCase> { GetUserLocationUpdatesUseCaseImpl(get()) }
+    }
+
+    private val commonModule = module {
         single { LocationEngineProvider.getBestLocationEngine(androidContext()) }
         single<LocationProvider> { LocationProviderImpl(get()) }
     }
