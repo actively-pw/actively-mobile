@@ -88,4 +88,7 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
     implementation(libs.mapbox)
+    implementation(libs.play.services.location)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }
