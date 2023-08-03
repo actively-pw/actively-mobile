@@ -1,12 +1,21 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
 }
 
+val apiKeysProperties = Properties()
+rootProject.file("apikey.properties").also { apiKeysProperties.load(it.inputStream()) }
+
 android {
     namespace = "com.actively"
     compileSdk = 33
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.actively"
@@ -19,6 +28,17 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "String",
+            "MAPBOX_PRIVATE_TOKEN",
+            "\"${apiKeysProperties.getProperty("MAPBOX_PRIVATE_TOKEN")}\""
+        )
+        buildConfigField(
+            "String",
+            "MAPBOX_PUBLIC_TOKEN",
+            "\"${apiKeysProperties.getProperty("MAPBOX_PUBLIC_TOKEN")}\""
+        )
     }
 
     buildTypes {
@@ -67,4 +87,5 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+    implementation(libs.mapbox)
 }
