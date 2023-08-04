@@ -1,0 +1,64 @@
+CREATE TABLE ActivityEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    sport TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    totalTime INTEGER NOT NULL,
+    totalDistance REAL NOT NULL,
+    averageSpeed REAL NOT NULL
+);
+
+CREATE TABLE RouteEntity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    activityId INTEGER NOT NULL UNIQUE ,
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id)
+);
+
+CREATE TABLE LocationEntity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    routeId INTEGER NOT NULL,
+    latitude REAL NOT NULL,
+    longitute REAL NOT NULL,
+    timestamp INTEGER NOT NULL,
+    FOREIGN KEY (routeId) REFERENCES RouteEntity (id)
+);
+
+getAllActivities:
+SELECT * FROM ActivityEntity ORDER BY timestamp DESC;
+
+getActivity:
+SELECT * FROM ActivityEntity WHERE id = ?;
+
+getRoute:
+SELECT * FROM RouteEntity WHERE activityId = ?;
+
+getRouteLocationPoints:
+SELECT * FROM LocationEntity WHERE routeId = ?;
+
+insertActivity:
+INSERT OR REPLACE
+INTO ActivityEntity(
+    id,
+    sport,
+    timestamp,
+    totalTime,
+    totalDistance,
+    averageSpeed
+) VALUES (?, ?, ?, ?, ?, ?);
+
+insertRoute:
+INSERT OR REPLACE
+INTO RouteEntity(
+    id,
+    activityId
+) VALUES (?, ?);
+
+insertLocation:
+INSERT OR REPLACE
+INTO LocationEntity(
+    id,
+    routeId,
+    latitude,
+    longitute,
+    timestamp
+) VALUES (?, ?, ?, ?, ?);
+
