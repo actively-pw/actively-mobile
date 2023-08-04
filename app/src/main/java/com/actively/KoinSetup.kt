@@ -1,6 +1,8 @@
 package com.actively
 
 import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.actively.location.LocationProvider
 import com.actively.location.LocationProviderImpl
 import com.actively.location.usecase.GetUserLocationUpdatesUseCase
@@ -24,5 +26,7 @@ object KoinSetup {
     private val commonModule = module {
         single { LocationEngineProvider.getBestLocationEngine(androidContext()) }
         single<LocationProvider> { LocationProviderImpl(get()) }
+        single<SqlDriver> { AndroidSqliteDriver(ActivityDatabase.Schema, androidContext()) }
+        single<ActivityDatabase> { ActivityDatabase(get()) }
     }
 }
