@@ -68,6 +68,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -91,4 +97,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.mockk)
 }
