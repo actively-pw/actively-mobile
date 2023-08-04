@@ -1,10 +1,10 @@
 package com.actively
 
 import android.content.Context
-import com.actively.location.GetUserLocationUpdatesUseCase
-import com.actively.location.GetUserLocationUpdatesUseCaseImpl
 import com.actively.location.LocationProvider
 import com.actively.location.LocationProviderImpl
+import com.actively.location.usecase.GetUserLocationUpdatesUseCase
+import com.actively.location.usecase.GetUserLocationUpdatesUseCaseImpl
 import com.mapbox.common.location.compat.LocationEngineProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin

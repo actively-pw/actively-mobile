@@ -1,5 +1,6 @@
-package com.actively.location
+package com.actively.location.usecase
 
+import com.actively.location.LocationProvider
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.mockk
 import io.mockk.verify
