@@ -108,6 +108,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
+    implementation(libs.kotlinx.datetime)
     testImplementation(libs.mockk)
     implementation(libs.sqldelight)
     implementation(libs.sqldelight.coroutines)
