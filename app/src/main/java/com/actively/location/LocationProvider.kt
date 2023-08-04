@@ -36,7 +36,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         fastestUpdateInterval: Duration,
         locationUpdatesDistanceMeters: Float,
     ) = callbackFlow {
-        val callback = onNewLocationCallback(
+        val callback = locationEngineCallback(
             onNewLocation = { trySend(it) },
             onException = { close(it) }
         )
@@ -55,7 +55,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         }
     }
 
-    private fun onNewLocationCallback(
+    private fun locationEngineCallback(
         onException: (Exception) -> Unit,
         onNewLocation: (Location) -> Unit
     ) = object : LocationEngineCallback<LocationEngineResult> {
