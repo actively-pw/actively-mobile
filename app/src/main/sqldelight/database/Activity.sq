@@ -1,64 +1,52 @@
-CREATE TABLE ActivityEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE ActivityEntity(
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT,
     sport TEXT NOT NULL,
-    timestamp INTEGER NOT NULL,
-    totalTime INTEGER NOT NULL,
-    totalDistance REAL NOT NULL,
-    averageSpeed REAL NOT NULL
+    start INTEGER NOT NULL
 );
 
-CREATE TABLE RouteEntity(
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    activityId INTEGER NOT NULL UNIQUE ,
+
+CREATE TABLE ActivityStatsEntity(
+    activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
+    totalTime INTEGER NOT NULL,
+    totalDistance REAL NOT NULL,
+    averageSpeed REAL NOT NULL,
     FOREIGN KEY (activityId) REFERENCES ActivityEntity (id)
 );
 
 CREATE TABLE LocationEntity(
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    routeId INTEGER NOT NULL,
+    activityId TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
     latitude REAL NOT NULL,
     longitute REAL NOT NULL,
-    timestamp INTEGER NOT NULL,
-    FOREIGN KEY (routeId) REFERENCES RouteEntity (id)
+    PRIMARY KEY (activityId, timestamp),
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id)
 );
 
-getAllActivities:
-SELECT * FROM ActivityEntity ORDER BY timestamp DESC;
+getActivities:
+SELECT * FROM ActivityEntity ORDER BY sport DESC;
 
 getActivity:
 SELECT * FROM ActivityEntity WHERE id = ?;
 
-getRoute:
-SELECT * FROM RouteEntity WHERE activityId = ?;
+getActivityStats:
+SELECT * FROM ActivityStatsEntity WHERE activityId = ?;
 
-getRouteLocationPoints:
-SELECT * FROM LocationEntity WHERE routeId = ?;
+getRoute:
+SELECT * FROM LocationEntity WHERE activityId = ?;
 
 insertActivity:
 INSERT OR REPLACE
-INTO ActivityEntity(
-    id,
-    sport,
-    timestamp,
-    totalTime,
-    totalDistance,
-    averageSpeed
-) VALUES (?, ?, ?, ?, ?, ?);
+INTO ActivityEntity(id, sport, title, start)
+VALUES (?, ?, ?, ?);
 
-insertRoute:
+insertActivityStats:
 INSERT OR REPLACE
-INTO RouteEntity(
-    id,
-    activityId
-) VALUES (?, ?);
+INTO ActivityStatsEntity(activityId, totalTime, totalDistance, averageSpeed)
+VALUES (?, ?, ?, ?);
 
 insertLocation:
 INSERT OR REPLACE
-INTO LocationEntity(
-    id,
-    routeId,
-    latitude,
-    longitute,
-    timestamp
-) VALUES (?, ?, ?, ?, ?);
+INTO LocationEntity(activityId, latitude, longitute, timestamp)
+VALUES (?, ?, ?, ?);
 

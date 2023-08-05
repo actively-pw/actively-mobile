@@ -5,26 +5,24 @@ import kotlin.time.Duration
 
 data class Activity(
     val id: Id,
+    val title: String?,
     val sport: String,
     val start: Instant,
-    val totalTime: Duration,
-    val totalDistance: Double,
-    val averageSpeed: Double,
-) {
-    data class Id(val value: Long)
-}
-
-data class Route(
-    val id: Id,
-    val activityId: Activity.Id,
-    val locations: List<Location>
+    val stats: Stats,
+    val route: List<Location>
 ) {
 
-    data class Id(val value: Long)
+    data class Id(val value: String)
+
+    data class Stats(
+        val totalTime: Duration,
+        val distance: Double,
+        val averageSpeed: Double
+    )
 }
 
 data class Location(
-    val longitude: Double,
+    val timestamp: Instant,
     val latitude: Double,
-    val timestamp: Instant
+    val longitude: Double
 )
