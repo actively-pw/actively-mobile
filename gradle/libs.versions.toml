@@ -3,6 +3,7 @@ agp = "8.2.0-alpha13"
 kotlinx-datetime = "0.4.0"
 sqldelight = "2.0.0"
 sqldelight-plugin = "2.0.0"
+sqldelight-test-driver = "2.0.0"
 sqldelight-coroutines = "2.0.0"
 koin-android = "3.4.3"
 koin-androidx-compose = "3.4.6"
@@ -23,6 +24,7 @@ play-services-location = "21.0.1"
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 sqldelight = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-test-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight-test-driver" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-coroutines" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-androidx-compose" }

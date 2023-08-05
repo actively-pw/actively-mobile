@@ -112,4 +112,5 @@ dependencies {
     testImplementation(libs.mockk)
     implementation(libs.sqldelight)
     implementation(libs.sqldelight.coroutines)
+    testImplementation(libs.sqldelight.test.driver)
 }
