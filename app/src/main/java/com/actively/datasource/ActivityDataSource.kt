@@ -19,19 +19,19 @@ import kotlin.coroutines.CoroutineContext
 
 interface ActivityDataSource {
 
-    suspend fun getActivities(): Flow<List<Activity>>
+    fun getActivities(): Flow<List<Activity>>
 
-    suspend fun getActivity(id: Activity.Id): Activity?
+    fun getActivity(id: Activity.Id): Activity?
 
-    suspend fun insertActivity(activity: Activity)
+    fun insertActivity(activity: Activity)
 
-    suspend fun getRoute(id: Activity.Id): Route?
+    fun getRoute(id: Activity.Id): Route?
 
-    suspend fun insertRoute(route: Route)
+    fun insertRoute(route: Route)
 
-    suspend fun getRouteLocations(id: Route.Id): List<Location>
+    fun getRouteLocations(id: Route.Id): List<Location>
 
-    suspend fun insertLocation(location: Location, routeId: Route.Id)
+    fun insertLocation(location: Location, routeId: Route.Id)
 }
 
 class ActivityDataSourceImpl(
@@ -41,16 +41,16 @@ class ActivityDataSourceImpl(
 
     private val query = database.activityQueries
 
-    override suspend fun getActivities() = query.getAllActivities()
+    override fun getActivities() = query.getAllActivities()
         .asFlow()
         .mapToList(coroutineContext)
         .map(List<ActivityEntity>::toActivityList)
 
-    override suspend fun getActivity(id: Activity.Id) = query.getActivity(id = id.value)
+    override fun getActivity(id: Activity.Id) = query.getActivity(id = id.value)
         .executeAsOneOrNull()
         ?.toActivity()
 
-    override suspend fun insertActivity(activity: Activity) = query.insertActivity(
+    override fun insertActivity(activity: Activity) = query.insertActivity(
         id = activity.id.value,
         sport = activity.sport,
         timestamp = activity.start.toEpochMilliseconds(),
@@ -59,29 +59,29 @@ class ActivityDataSourceImpl(
         averageSpeed = activity.averageSpeed
     )
 
-    override suspend fun getRoute(id: Activity.Id) = query.transactionWithResult {
+    override fun getRoute(id: Activity.Id) = query.transactionWithResult {
         val routeEntity = query.getRoute(activityId = id.value)
             .executeAsOneOrNull() ?: return@transactionWithResult null
         val routeLocations = getRouteLocationPoints(routeEntity.id)
         routeEntity.toRoute(routeLocations)
     }
 
-    override suspend fun insertRoute(route: Route) = query.insertRoute(
-        id = route.id.value,
-        activityId = route.activityId.value,
-    )
-
-    override suspend fun getRouteLocations(id: Route.Id) = getRouteLocationPoints(id.value)
-
-    override suspend fun insertLocation(location: Location, routeId: Route.Id) {
-        query.insertLocation(
-            id = null,
-            routeId = routeId.value,
-            latitude = location.latitude,
-            longitute = location.longitude,
-            timestamp = location.timestamp.toEpochMilliseconds(),
-        )
+    override fun insertRoute(route: Route) = query.transaction {
+        query.insertRoute(id = route.id.value, activityId = route.activityId.value)
+        route.locations.forEach {
+            insertLocation(location = it, routeId = route.id)
+        }
     }
+
+    override fun getRouteLocations(id: Route.Id) = getRouteLocationPoints(id.value)
+
+    override fun insertLocation(location: Location, routeId: Route.Id) = query.insertLocation(
+        id = null,
+        routeId = routeId.value,
+        latitude = location.latitude,
+        longitute = location.longitude,
+        timestamp = location.timestamp.toEpochMilliseconds(),
+    )
 
     private fun getRouteLocationPoints(routeId: Long) = query.getRouteLocationPoints(routeId)
         .executeAsList()
