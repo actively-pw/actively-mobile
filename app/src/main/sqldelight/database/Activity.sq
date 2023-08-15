@@ -33,7 +33,10 @@ getActivityStats:
 SELECT * FROM ActivityStatsEntity WHERE activityId = ?;
 
 getRoute:
-SELECT * FROM LocationEntity WHERE activityId = ?;
+SELECT * FROM LocationEntity WHERE activityId = ? ORDER BY timestamp ASC;
+
+getLatestRouteLocation:
+SELECT * FROM LocationEntity WHERE activityId = ? ORDER BY timestamp DESC LIMIT 1;
 
 insertActivity:
 INSERT OR REPLACE
