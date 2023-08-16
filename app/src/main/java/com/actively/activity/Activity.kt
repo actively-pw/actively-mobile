@@ -2,6 +2,9 @@ package com.actively.activity
 
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.kilometers
+import com.mapbox.geojson.Point
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfMeasurement
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -34,4 +37,13 @@ data class Location(
     val timestamp: Instant,
     val latitude: Double,
     val longitude: Double
-)
+) {
+
+    fun toPoint(): Point = Point.fromLngLat(longitude, latitude)
+
+    fun distanceTo(other: Location) = TurfMeasurement.distance(
+        this.toPoint(),
+        other.toPoint(),
+        TurfConstants.UNIT_KILOMETERS
+    ).kilometers
+}
