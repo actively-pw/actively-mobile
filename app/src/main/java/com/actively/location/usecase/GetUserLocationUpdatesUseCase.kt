@@ -1,6 +1,6 @@
 package com.actively.location.usecase
 
-import android.location.Location
+import com.actively.activity.Location
 import com.actively.location.LocationProvider
 import kotlinx.coroutines.flow.Flow
 

@@ -1,8 +1,9 @@
 package com.actively.location
 
 import android.annotation.SuppressLint
-import android.location.Location
 import android.os.Looper
+import com.actively.activity.Location
+import com.actively.activity.toLocation
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.meters
@@ -57,7 +58,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         onNewLocation: (Location) -> Unit
     ) = object : LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult) {
-            result.lastLocation?.let(onNewLocation)
+            result.lastLocation?.toLocation()?.let(onNewLocation)
         }
 
         override fun onFailure(exception: Exception) {
