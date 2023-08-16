@@ -3,10 +3,7 @@ package com.actively.repository
 import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.datasource.ActivityDataSource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
 interface ActivityRepository {
 
@@ -14,9 +11,11 @@ interface ActivityRepository {
 
     suspend fun getActivity(id: Activity.Id): Activity?
 
-    suspend fun getStats(id: Activity.Id): Activity.Stats?
+    fun getStats(id: Activity.Id): Flow<Activity.Stats>
 
-    suspend fun getRoute(id: Activity.Id): List<Location>
+    fun getRoute(id: Activity.Id): Flow<List<Location>>
+
+    suspend fun getLatestRouteLocation(id: Activity.Id): Location?
 
     suspend fun insertActivity(activity: Activity)
 
@@ -26,37 +25,32 @@ interface ActivityRepository {
 }
 
 class ActivityRepositoryImpl(
-    private val activityDataSource: ActivityDataSource,
-    private val coroutineContext: CoroutineContext = Dispatchers.IO
+    private val activityDataSource: ActivityDataSource
 ) : ActivityRepository {
 
     override fun getActivities() = activityDataSource.getActivities()
 
-    override suspend fun getActivity(id: Activity.Id) = withContext(coroutineContext) {
-        activityDataSource.getActivity(id)
-    }
+    override suspend fun getActivity(id: Activity.Id) = activityDataSource.getActivity(id)
 
-    override suspend fun getStats(id: Activity.Id) = withContext(coroutineContext) {
-        activityDataSource.getStats(id)
-    }
+    override fun getStats(id: Activity.Id) = activityDataSource.getStats(id)
 
-    override suspend fun getRoute(id: Activity.Id) = withContext(coroutineContext) {
-        activityDataSource.getRoute(id)
-    }
 
-    override suspend fun insertActivity(activity: Activity) = withContext(coroutineContext) {
+    override fun getRoute(id: Activity.Id) = activityDataSource.getRoute(id)
+
+
+    override suspend fun getLatestRouteLocation(id: Activity.Id) =
+        activityDataSource.getLatestLocation(id)
+
+
+    override suspend fun insertActivity(activity: Activity) =
         activityDataSource.insertActivity(activity)
-    }
 
-    override suspend fun insertStats(stats: Activity.Stats, id: Activity.Id) {
-        withContext(coroutineContext) {
-            activityDataSource.insertStats(stats, id)
-        }
-    }
 
-    override suspend fun insertLocation(location: Location, id: Activity.Id) {
-        withContext(coroutineContext) {
-            activityDataSource.insertLocation(location, id)
-        }
-    }
+    override suspend fun insertStats(stats: Activity.Stats, id: Activity.Id) =
+        activityDataSource.insertStats(stats, id)
+
+
+    override suspend fun insertLocation(location: Location, id: Activity.Id) =
+        activityDataSource.insertLocation(location, id)
+
 }
