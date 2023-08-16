@@ -6,6 +6,7 @@ import com.actively.activity.Activity
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubRoute
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.testCoroutineScheduler
@@ -64,21 +65,23 @@ class ActivityDataSourceTest : FunSpec({
         test("Should insert and retrieve activity stats properly") {
             val stats = stubActivityStats()
             activityDataSource.insertStats(stats = stats, id = Activity.Id("1"))
-            activityDataSource.getStats(id = Activity.Id("1")) shouldBe stats
+            activityDataSource.getStats(id = Activity.Id("1")).first() shouldBe stats
         }
 
-        test("Should return null Activity.Stats if none were found") {
-            activityDataSource.getStats(id = Activity.Id("1")).shouldBeNull()
+        test("Should throw exception if none Activity.Stats were found") {
+            shouldThrow<Exception> {
+                activityDataSource.getStats(id = Activity.Id("1")).first()
+            }
         }
 
         test("Should insert and retrieve route properly") {
             val route = stubRoute(locationsNumber = 10)
             activityDataSource.insertRoute(route = route, id = Activity.Id("1"))
-            activityDataSource.getRoute(id = Activity.Id("1")) shouldBe route
+            activityDataSource.getRoute(id = Activity.Id("1")).first() shouldBe route
         }
 
         test("Should return empty route if none were found") {
-            activityDataSource.getRoute(id = Activity.Id("1")).shouldBeEmpty()
+            activityDataSource.getRoute(id = Activity.Id("1")).first().shouldBeEmpty()
         }
     }
 })
