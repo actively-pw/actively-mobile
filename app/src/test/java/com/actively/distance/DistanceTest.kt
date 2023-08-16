@@ -3,7 +3,6 @@ package com.actively.distance
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.inWholeKilometers
-import com.actively.distance.Distance.Companion.inWholeMeters
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
@@ -19,14 +18,14 @@ class DistanceTest : FunSpec({
     context("conversions") {
         test("Should convert given Int number to distance properly") {
             forAll(
-                row(5000.meters, 5000.0, 5.0),
-                row(2500.meters, 2500.0, 2.5),
-                row(250.meters, 250.0, 0.250),
-                row(0.meters, 0.0, 0.0),
-                row(6.kilometers, 6000.0, 6.0),
-                row(1.kilometers, 1000.0, 1.0),
-                row(0.kilometers, 0.0, 0.0),
-            ) { distance, inMeters, inKilometers ->
+                row(5000.meters, 5000, 5.0),
+                row(2500.meters, 2500, 2.5),
+                row(250.meters, 250, 0.250),
+                row(0.meters, 0, 0.0),
+                row(6.kilometers, 6000, 6.0),
+                row(1.kilometers, 1000, 1.0),
+                row(0.kilometers, 0, 0.0),
+            ) { distance, inMeters: Long, inKilometers ->
                 distance.inMeters shouldBe inMeters
                 distance.inKilometers shouldBe inKilometers
             }
@@ -34,13 +33,10 @@ class DistanceTest : FunSpec({
 
         test("Should convert given Double number to distance properly") {
             forAll(
-                row(500.5.meters, 500.5, 0.5005),
-                row(25.25.meters, 25.25, 0.02525),
-                row(0.0.meters, 0.0, 0.0),
-                row(6.52.kilometers, 6520.0, 6.52),
-                row(1.66.kilometers, 1660.0, 1.66),
-                row(0.0.kilometers, 0.0, 0.0),
-            ) { distance, inMeters, inKilometers ->
+                row(6.52.kilometers, 6520, 6.52),
+                row(1.66.kilometers, 1660, 1.66),
+                row(0.0.kilometers, 0, 0),
+            ) { distance, inMeters: Long, inKilometers ->
                 distance.inMeters shouldBe inMeters
                 distance.inKilometers shouldBe inKilometers
             }
@@ -59,28 +55,24 @@ class DistanceTest : FunSpec({
 
         test("in* should return exact value of meters/kilometers") {
             forAll(
-                row(1000.23.meters, 1000.23, 1.00023),
-                row(3500.5.meters, 3500.5, 3.5005),
-                row(1000.meters, 1000.0, 1.0),
-                row(505.meters, 505.0, 0.505),
-                row(500.meters, 500.0, 0.5),
-                row(0.meters, 0.0, 0.0),
+                row(1000.meters, 1000, 1.0),
+                row(505.meters, 505, 0.505),
+                row(500.meters, 500, 0.5),
+                row(0.meters, 0, 0.0),
             ) { distance, expectedMeters, expectedKilometers ->
                 distance.inMeters shouldBe expectedMeters
                 distance.inKilometers shouldBe expectedKilometers
             }
         }
 
-        test("inWhole* should return whole value of meters/kilometers") {
+        test("inWholeKilometers should return whole value of kilometers") {
             forAll(
-                row(1000.23.meters, 1000, 1.0),
-                row(3500.5.meters, 3500.0, 3.0),
-                row(1000.meters, 1000.0, 1.0),
-                row(505.meters, 505.0, 0.0),
-                row(500.meters, 500.0, 0.0),
-                row(0.meters, 0.0, 0.0),
-            ) { distance, expectedMeters, expectedKilometers ->
-                distance.inWholeMeters shouldBe expectedMeters
+                row(1000.meters, 1),
+                row(1.5.kilometers, 1),
+                row(1.9999.kilometers, 1),
+                row(500.meters, 0),
+                row(0.meters, 0),
+            ) { distance, expectedKilometers ->
                 distance.inWholeKilometers shouldBe expectedKilometers
             }
         }
@@ -92,7 +84,6 @@ class DistanceTest : FunSpec({
             forAll(
                 row(10.meters, 10, 100.meters),
                 row(10.kilometers, 10, 100.kilometers),
-                row(10.5.meters, 10, 105.meters),
                 row(10.5.kilometers, 10, 105.kilometers),
                 row(0.meters, 100, 0.meters),
                 row(0.kilometers, 100, 0.kilometers)
@@ -106,9 +97,7 @@ class DistanceTest : FunSpec({
             forAll(
                 row(10.meters, 20.meters, 30.meters),
                 row(10.kilometers, 20.kilometers, 30.kilometers),
-                row(10.5.meters, 20.5.meters, 31.meters),
                 row(10.5.kilometers, 20.5.kilometers, 31.kilometers),
-                row(10.5.meters, 20.5.kilometers, 20.5105.kilometers),
                 row(0.meters, 10.meters, 10.meters),
                 row(0.kilometers, 10.kilometers, 10.kilometers)
             ) { distance1, distance2, result ->

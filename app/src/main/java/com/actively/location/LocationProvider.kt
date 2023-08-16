@@ -22,7 +22,7 @@ interface LocationProvider {
     fun userLocation(
         updateInterval: Duration = 3.seconds,
         fastestUpdateInterval: Duration = 1.seconds,
-        locationUpdatesDistance: Distance = 1.5.meters
+        locationUpdatesDistance: Distance = 2.meters
     ): Flow<Location>
 }
 
