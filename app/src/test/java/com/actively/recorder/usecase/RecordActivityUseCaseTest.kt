@@ -39,17 +39,17 @@ class RecordActivityUseCaseTest : FunSpec({
         coEvery { activityRepository.getLatestRouteLocation(activityId) } returns null
         coEvery { activityRepository.getStats(activityId) } returns flowOf(Activity.Stats.empty())
 
-        test("Should call GetLatestRouteLocationUseCase to get previous user location") {
+        test("Should call ActivityRepository to get previous user location") {
             recordActivityUseCase(activityId, start).first()
             coVerify(exactly = 1) { activityRepository.getLatestRouteLocation(activityId) }
         }
 
-        test("Should call GetStatsUseCase to get previous stats") {
+        test("Should call ActivityRepository to get previous activity stats") {
             recordActivityUseCase(activityId, start).first()
             coVerify(exactly = 1) { activityRepository.getStats(activityId) }
         }
 
-        test("Should call InsertStatsUseCase with correctly updated stats") {
+        test("Should call ActivityRepository to insert correctly updated stats") {
             recordActivityUseCase(activityId, start).first()
             val expectedStats = stubActivityStats(
                 totalTime = 2.seconds,
@@ -69,7 +69,7 @@ class RecordActivityUseCaseTest : FunSpec({
             coVerify(exactly = 1) { activityRepository.insertStats(expectedStats, activityId) }
         }
 
-        test("Should call InsertLocationUseCase to insert latest location") {
+        test("Should call ActivityRepository to insert latest location") {
             recordActivityUseCase(activityId, start).first()
             coVerify(exactly = 1) { activityRepository.insertLocation(latestLocation, activityId) }
         }
@@ -83,18 +83,18 @@ class RecordActivityUseCaseTest : FunSpec({
             recordActivityUseCase(activityId, start).first() shouldBe expectedStats
         }
 
-        test("Should return null if GetStatsUseCase returned empty flow") {
+        test("Should return null if ActivityRepository returned empty flow of Activity Stats") {
             coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull().shouldBeNull()
         }
 
-        test("Should not insert updated stats if GetStatsUseCase returned empty flow") {
+        test("Should not insert updated stats if ActivityRepository returned empty flow of Activity Stats") {
             coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull()
             coVerify(exactly = 0) { activityRepository.insertStats(any(), any()) }
         }
 
-        test("Should not insert latest location if GetStatsUseCase returned empty flow") {
+        test("Should not insert latest location if ActivityRepository returned empty flow of Activity Stats") {
             coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull()
             coVerify(exactly = 0) { activityRepository.insertLocation(any(), any()) }
@@ -126,7 +126,7 @@ class RecordActivityUseCaseTest : FunSpec({
             coVerify(exactly = 1) { activityRepository.insertStats(expectedStats, activityId) }
         }
 
-        test("Should call InsertLocationUseCase to insert latest location") {
+        test("Should call ActivityRepository to insert latest location") {
             recordActivityUseCase(activityId, start).first()
             coVerify(exactly = 1) { activityRepository.insertLocation(latestLocation, activityId) }
         }
