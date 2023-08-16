@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 interface RecordActivityUseCase {
@@ -47,13 +48,13 @@ class RecordActivityUseCaseImpl(
         currentLocation: Location,
         start: Instant
     ): Activity.Stats {
-        val elapsedTime = currentLocation.timestamp - start
+        val elapsedTime = (currentLocation.timestamp - start).coerceAtLeast(0.seconds)
         val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.kilometers
         val totalDistance = distance + traveledDistance
-        return copy(
-            totalTime = elapsedTime,
-            distance = totalDistance,
-            averageSpeed = totalDistance.inKilometers / elapsedTime.toDouble(DurationUnit.HOURS)
-        )
+        val averageSpeed = when (elapsedTime) {
+            0.seconds -> 0.0
+            else -> totalDistance.inKilometers / elapsedTime.toDouble(DurationUnit.HOURS)
+        }
+        return copy(totalTime = elapsedTime, distance = totalDistance, averageSpeed = averageSpeed)
     }
 }

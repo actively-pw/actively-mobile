@@ -69,6 +69,16 @@ class RecordActivityUseCaseTest : FunSpec({
             coVerify(exactly = 1) { insertStatsUseCase(expectedStats, activityId) }
         }
 
+        test("Should properly calculate stats when elapsed time is negative") {
+            recordActivityUseCase(activityId, Instant.fromEpochMilliseconds(3000)).first()
+            val expectedStats = stubActivityStats(
+                totalTime = 0.seconds,
+                distance = 0.kilometers,
+                averageSpeed = 0.0
+            )
+            coVerify(exactly = 1) { insertStatsUseCase(expectedStats, activityId) }
+        }
+
         test("Should call InsertLocationUseCase to insert latest location") {
             recordActivityUseCase(activityId, start).first()
             coVerify(exactly = 1) { insertLocationUseCase(latestLocation, activityId) }
