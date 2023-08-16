@@ -2,6 +2,7 @@ package com.actively.stubs
 
 import com.actively.activity.Activity
 import com.actively.activity.Location
+import com.actively.distance.Distance.Companion.kilometers
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -28,7 +29,7 @@ fun stubActivityStats(
     averageSpeed: Double = 20.0,
 ) = Activity.Stats(
     totalTime = totalTime,
-    distance = distance,
+    distance = distance.kilometers,
     averageSpeed = averageSpeed
 )
 
