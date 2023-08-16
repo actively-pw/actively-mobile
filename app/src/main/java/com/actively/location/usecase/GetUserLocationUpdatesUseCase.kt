@@ -13,9 +13,5 @@ class GetUserLocationUpdatesUseCaseImpl(
     private val locationModule: LocationProvider
 ) : GetUserLocationUpdatesUseCase {
 
-    override operator fun invoke() = locationModule.userLocation(
-        updateInterval = LocationProvider.DEFAULT_UPDATE_INTERVAL,
-        fastestUpdateInterval = LocationProvider.DEFAULT_FASTEST_UPDATE_INTERVAL,
-        locationUpdatesDistanceMeters = LocationProvider.DEFAULT_LOCATION_UPDATES_DISTANCE_METERS,
-    )
+    override operator fun invoke() = locationModule.userLocation()
 }
