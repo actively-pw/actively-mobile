@@ -1,16 +1,10 @@
 [versions]
 agp = "8.2.0-alpha13"
-kotlinx-datetime = "0.4.0"
-sqldelight = "2.0.0"
-sqldelight-plugin = "2.0.0"
-sqldelight-test-driver = "2.0.0"
-sqldelight-coroutines = "2.0.0"
 koin-android = "3.4.3"
 koin-androidx-compose = "3.4.6"
 kotest-assertions-core = "5.6.2"
 kotest-runner-junit5 = "5.6.2"
 mapbox = "10.15.0"
-mapbox-turf = "6.13.0"
 kotlin = "1.8.10"
 core-ktx = "1.9.0"
 junit = "4.13.2"
@@ -23,16 +17,11 @@ mockk = "1.13.5"
 play-services-location = "21.0.1"
 
 [libraries]
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-sqldelight = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqldelight-test-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight-test-driver" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-coroutines" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-androidx-compose" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions-core" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-runner-junit5" }
 mapbox = { module = "com.mapbox.maps:android", version.ref = "mapbox" }
-mapbox-turf = { module = "com.mapbox.mapboxsdk:mapbox-sdk-turf", version.ref = "mapbox-turf" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
@@ -53,5 +42,4 @@ material3 = { group = "androidx.compose.material3", name = "material3" }
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight-plugin" }
 

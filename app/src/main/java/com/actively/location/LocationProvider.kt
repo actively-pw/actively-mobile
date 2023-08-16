@@ -1,12 +1,8 @@
 package com.actively.location
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Looper
-import com.actively.activity.Location
-import com.actively.activity.toLocation
-import com.actively.distance.Distance
-import com.actively.distance.Distance.Companion.inMeters
-import com.actively.distance.Distance.Companion.meters
 import com.mapbox.common.location.compat.LocationEngine
 import com.mapbox.common.location.compat.LocationEngineCallback
 import com.mapbox.common.location.compat.LocationEngineRequest
@@ -20,10 +16,16 @@ import kotlin.time.Duration.Companion.seconds
 interface LocationProvider {
 
     fun userLocation(
-        updateInterval: Duration = 3.seconds,
-        fastestUpdateInterval: Duration = 1.seconds,
-        locationUpdatesDistance: Distance = 2.meters
+        updateInterval: Duration,
+        fastestUpdateInterval: Duration,
+        locationUpdatesDistanceMeters: Float
     ): Flow<Location>
+
+    companion object {
+        val DEFAULT_UPDATE_INTERVAL = 5.seconds
+        val DEFAULT_FASTEST_UPDATE_INTERVAL = 2.seconds
+        const val DEFAULT_LOCATION_UPDATES_DISTANCE_METERS = 10f
+    }
 }
 
 @SuppressLint("MissingPermission")
@@ -32,7 +34,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
     override fun userLocation(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,
-        locationUpdatesDistance: Distance,
+        locationUpdatesDistanceMeters: Float,
     ) = callbackFlow {
         val callback = locationEngineCallback(
             onNewLocation = { trySend(it) },
@@ -41,7 +43,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         val locationRequest = locationEngineRequest(
             updateInterval = updateInterval,
             fastestUpdateInterval = fastestUpdateInterval,
-            locationUpdatesDistance = locationUpdatesDistance
+            locationUpdatesDistanceMeters = locationUpdatesDistanceMeters
         )
         locationEngine.requestLocationUpdates(
             request = locationRequest,
@@ -58,7 +60,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         onNewLocation: (Location) -> Unit
     ) = object : LocationEngineCallback<LocationEngineResult> {
         override fun onSuccess(result: LocationEngineResult) {
-            result.lastLocation?.toLocation()?.let(onNewLocation)
+            result.lastLocation?.let(onNewLocation)
         }
 
         override fun onFailure(exception: Exception) {
@@ -70,9 +72,9 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
     private fun locationEngineRequest(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,
-        locationUpdatesDistance: Distance,
+        locationUpdatesDistanceMeters: Float,
     ) = LocationEngineRequest.Builder(updateInterval.inWholeMilliseconds)
         .setFastestInterval(fastestUpdateInterval.inWholeMilliseconds)
-        .setDisplacement(locationUpdatesDistance.inMeters.toFloat())
+        .setDisplacement(locationUpdatesDistanceMeters)
         .build()
 }

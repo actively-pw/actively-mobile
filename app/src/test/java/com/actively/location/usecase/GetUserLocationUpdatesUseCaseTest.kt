@@ -12,6 +12,12 @@ class GetUserLocationUpdatesUseCaseTest : FunSpec({
 
     test("Should call userLocation with default parameters supplied by LocationProvider") {
         useCase.invoke()
-        verify { locationProvider.userLocation() }
+        verify {
+            locationProvider.userLocation(
+                LocationProvider.DEFAULT_UPDATE_INTERVAL,
+                LocationProvider.DEFAULT_FASTEST_UPDATE_INTERVAL,
+                LocationProvider.DEFAULT_LOCATION_UPDATES_DISTANCE_METERS
+            )
+        }
     }
 })
