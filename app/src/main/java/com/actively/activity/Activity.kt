@@ -48,3 +48,9 @@ data class Location(
         TurfConstants.UNIT_METERS
     ).toLong().meters
 }
+
+fun AndroidLocation.toLocation() = Location(
+    latitude = latitude,
+    longitude = longitude,
+    timestamp = Instant.fromEpochMilliseconds(time)
+)
