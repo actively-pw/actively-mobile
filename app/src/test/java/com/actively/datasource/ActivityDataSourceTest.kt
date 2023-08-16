@@ -84,5 +84,21 @@ class ActivityDataSourceTest : FunSpec({
         test("Should return empty route if none were found") {
             activityDataSource.getRoute(id = Activity.Id("1")).first().shouldBeEmpty()
         }
+
+        test("Should return latest route Location") {
+            val expectedLocation = stubLocation(timestamp = Instant.fromEpochMilliseconds(400))
+            val route = listOf(
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(20)),
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(10)),
+                expectedLocation,
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(30)),
+            )
+            activityDataSource.insertRoute(route = route, id = Activity.Id("1"))
+            activityDataSource.getLatestLocation(id = Activity.Id("1")) shouldBe expectedLocation
+        }
+
+        test("Should return null Location if route was empty or not found") {
+            activityDataSource.getLatestLocation(id = Activity.Id("1")).shouldBeNull()
+        }
     }
 })
