@@ -6,7 +6,6 @@ import com.actively.activity.Location
 import com.actively.activity.toLocation
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.inMeters
-import com.actively.distance.Distance.Companion.meters
 import com.mapbox.common.location.compat.LocationEngine
 import com.mapbox.common.location.compat.LocationEngineCallback
 import com.mapbox.common.location.compat.LocationEngineRequest
@@ -15,14 +14,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 interface LocationProvider {
 
     fun userLocation(
-        updateInterval: Duration = 3.seconds,
-        fastestUpdateInterval: Duration = 1.seconds,
-        locationUpdatesDistance: Distance = 2.meters
+        updateInterval: Duration,
+        fastestUpdateInterval: Duration,
+        locationUpdatesDistance: Distance
     ): Flow<Location>
 }
 
