@@ -31,14 +31,8 @@ class RecordActivityUseCaseImpl(
 ) : RecordActivityUseCase {
 
     override operator fun invoke(id: Activity.Id, start: Instant) = getUserLocationUpdates()
-        .map {
-            val lastLocation = getLatestRouteLocation(id)
-            val currentLocation = Location(
-                timestamp = Instant.fromEpochMilliseconds(it.time),
-                latitude = it.latitude,
-                longitude = it.longitude
-            ).also(::println)
-            lastLocation to currentLocation
+        .map { currentLocation ->
+            getLatestRouteLocation(id) to currentLocation
         }
         .mapNotNull { (lastLocation, currentLocation) ->
             val prevStats = getStats(id).firstOrNull() ?: return@mapNotNull null
