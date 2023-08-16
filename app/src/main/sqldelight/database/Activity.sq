@@ -24,7 +24,7 @@ CREATE TABLE LocationEntity(
 );
 
 getActivities:
-SELECT * FROM ActivityEntity ORDER BY sport DESC;
+SELECT * FROM ActivityEntity ORDER BY start DESC;
 
 getActivity:
 SELECT * FROM ActivityEntity WHERE id = ?;

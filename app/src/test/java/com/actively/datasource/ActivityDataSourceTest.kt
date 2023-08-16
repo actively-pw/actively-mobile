@@ -5,16 +5,18 @@ import com.actively.ActivityDatabase
 import com.actively.activity.Activity
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
-import com.actively.stubs.stubRoute
+import com.actively.stubs.stubLocation
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.testCoroutineScheduler
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
 class ActivityDataSourceTest : FunSpec({
@@ -30,22 +32,16 @@ class ActivityDataSourceTest : FunSpec({
     context("ActivityDataSourceTest") {
         val activityDataSource = ActivityDataSourceImpl(database, testCoroutineScheduler)
 
-        test("Should retrieve list of activities") {
-            val activities = listOf(
-                stubActivity(id = "1"),
-                stubActivity(id = "2"),
-                stubActivity(id = "3"),
-                stubActivity(id = "4"),
-                stubActivity(id = "5"),
-                stubActivity(id = "6"),
-                stubActivity(id = "7"),
-                stubActivity(id = "8"),
-                stubActivity(id = "9"),
+        test("Should retrieve list of activities ordered from most recent") {
+            val expectedActivities = listOf(
+                stubActivity(id = "3", start = Instant.fromEpochMilliseconds(20)),
+                stubActivity(id = "2", start = Instant.fromEpochMilliseconds(10)),
+                stubActivity(id = "1", start = Instant.fromEpochMilliseconds(0))
             )
-            activities.forEach {
+            expectedActivities.reversed().forEach {
                 activityDataSource.insertActivity(it)
             }
-            activityDataSource.getActivities().first() shouldBe activities
+            activityDataSource.getActivities().first() shouldContainInOrder expectedActivities
         }
 
         test("Should retrieve empty list of activities if none were found") {
@@ -74,10 +70,15 @@ class ActivityDataSourceTest : FunSpec({
             }
         }
 
-        test("Should insert and retrieve route properly") {
-            val route = stubRoute(locationsNumber = 10)
-            activityDataSource.insertRoute(route = route, id = Activity.Id("1"))
-            activityDataSource.getRoute(id = Activity.Id("1")).first() shouldBe route
+        test("Should insert and retrieve route properly with locations ordered from the oldest") {
+            val expectedRoute = listOf(
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(10)),
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(20)),
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(30)),
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(40)),
+            )
+            activityDataSource.insertRoute(route = expectedRoute.reversed(), id = Activity.Id("1"))
+            activityDataSource.getRoute(id = Activity.Id("1")).first() shouldBe expectedRoute
         }
 
         test("Should return empty route if none were found") {
