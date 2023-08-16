@@ -5,6 +5,7 @@ import com.actively.datasource.ActivityDataSource
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
+import com.actively.stubs.stubRoute
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
@@ -119,6 +120,33 @@ class ActivityRepositoryTest : FunSpec({
             val id = Activity.Id("1")
             repository.insertLocation(location, id)
             coVerify(exactly = 1) { activityDataSource.insertLocation(location, id) }
+        }
+    }
+
+    context("get route methods") {
+        val repository = ActivityRepositoryImpl(activityDataSource)
+        val id = Activity.Id("1")
+        every { activityDataSource.getRoute(id) } returns flowOf(stubRoute())
+        coEvery { activityDataSource.getLatestLocation(id) } returns stubLocation()
+
+        test("Should call ActivityDataSource getRoute with given activity id") {
+            repository.getRoute(id).collect()
+            coVerify(exactly = 1) { activityDataSource.getRoute(id) }
+        }
+
+        test("Should return route from ActivityDataSource") {
+            val expectedRoute = stubRoute()
+            expectedRoute.forEach { repository.insertLocation(it, id) }
+            repository.getRoute(id).first() shouldBe expectedRoute
+        }
+
+        test("Should call ActivityDataSource to get latest route location") {
+            repository.getLatestRouteLocation(id)
+            coVerify(exactly = 1) { activityDataSource.getLatestLocation(id) }
+        }
+
+        test("Should return latest location from route") {
+            repository.getLatestRouteLocation(id) shouldBe stubLocation()
         }
     }
 })
