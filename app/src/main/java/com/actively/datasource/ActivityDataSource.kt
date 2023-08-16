@@ -100,7 +100,7 @@ class ActivityDataSourceImpl(
             query.insertActivityStats(
                 activityId = id.value,
                 totalTime = stats.totalTime.inWholeMilliseconds,
-                totalDistance = stats.distance.inMeters,
+                totalDistanceMeters = stats.distance.inMeters,
                 averageSpeed = stats.averageSpeed
             )
         }
@@ -148,7 +148,7 @@ class ActivityDataSourceImpl(
         query.insertActivityStats(
             activityId = id.value,
             totalTime = stats.totalTime.inWholeMilliseconds,
-            totalDistance = stats.distance.inMeters,
+            totalDistanceMeters = stats.distance.inMeters,
             averageSpeed = stats.averageSpeed
         )
 
@@ -166,7 +166,7 @@ class ActivityDataSourceImpl(
     private fun toActivityStats(
         activityId: String,
         totalTime: Long,
-        distance: Double,
+        distance: Long,
         averageSpeed: Double
     ) = Activity.Stats(
         totalTime = totalTime.milliseconds,

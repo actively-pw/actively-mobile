@@ -2,6 +2,7 @@ package com.actively.activity
 
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.kilometers
+import com.actively.distance.Distance.Companion.meters
 import com.mapbox.geojson.Point
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
@@ -44,6 +45,6 @@ data class Location(
     fun distanceTo(other: Location) = TurfMeasurement.distance(
         this.toPoint(),
         other.toPoint(),
-        TurfConstants.UNIT_KILOMETERS
-    ).kilometers
+        TurfConstants.UNIT_METERS
+    ).toLong().meters
 }

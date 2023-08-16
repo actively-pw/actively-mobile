@@ -9,7 +9,7 @@ CREATE TABLE ActivityEntity(
 CREATE TABLE ActivityStatsEntity(
     activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
     totalTime INTEGER NOT NULL,
-    totalDistance REAL NOT NULL,
+    totalDistanceMeters INTEGER NOT NULL,
     averageSpeed REAL NOT NULL,
     FOREIGN KEY (activityId) REFERENCES ActivityEntity (id)
 );
@@ -45,7 +45,7 @@ VALUES (?, ?, ?, ?);
 
 insertActivityStats:
 INSERT OR REPLACE
-INTO ActivityStatsEntity(activityId, totalTime, totalDistance, averageSpeed)
+INTO ActivityStatsEntity(activityId, totalTime, totalDistanceMeters, averageSpeed)
 VALUES (?, ?, ?, ?);
 
 insertLocation:
