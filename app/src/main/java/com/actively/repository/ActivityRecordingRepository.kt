@@ -2,24 +2,26 @@ package com.actively.repository
 
 import com.actively.activity.Activity
 import com.actively.activity.Location
+import com.actively.activity.RouteSlice
 import com.actively.datasource.ActivityRecordingDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 
 interface ActivityRecordingRepository {
-
-    fun getActivities(): Flow<List<Activity>>
 
     suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(id: Activity.Id): Flow<Activity.Stats>
 
-    fun getRoute(id: Activity.Id): Flow<List<Location>>
+    fun getRoute(id: Activity.Id): Flow<List<RouteSlice>>
 
     suspend fun getLatestRouteLocation(id: Activity.Id): Location?
 
-    suspend fun insertActivity(activity: Activity)
+    suspend fun insertRoutelessActivity(activity: Activity)
 
     suspend fun insertStats(stats: Activity.Stats, id: Activity.Id)
+
+    suspend fun insertEmptyRouteSlice(id: Activity.Id, start: Instant)
 
     suspend fun insertLocation(location: Location, id: Activity.Id)
 }
@@ -28,29 +30,26 @@ class ActivityRecordingRepositoryImpl(
     private val activityRecordingDataSource: ActivityRecordingDataSource
 ) : ActivityRecordingRepository {
 
-    override fun getActivities() = activityRecordingDataSource.getActivities()
 
     override suspend fun getActivity(id: Activity.Id) = activityRecordingDataSource.getActivity(id)
 
     override fun getStats(id: Activity.Id) = activityRecordingDataSource.getStats(id)
 
-
     override fun getRoute(id: Activity.Id) = activityRecordingDataSource.getRoute(id)
 
+    override suspend fun getLatestRouteLocation(id: Activity.Id) = activityRecordingDataSource
+        .getLatestLocationFromLastRouteSlice(id)
 
-    override suspend fun getLatestRouteLocation(id: Activity.Id) =
-        activityRecordingDataSource.getLatestLocation(id)
-
-
-    override suspend fun insertActivity(activity: Activity) =
-        activityRecordingDataSource.insertActivity(activity)
-
+    override suspend fun insertRoutelessActivity(activity: Activity) = activityRecordingDataSource
+        .insertActivity(activity.id, activity.title, activity.sport, activity.stats)
 
     override suspend fun insertStats(stats: Activity.Stats, id: Activity.Id) =
         activityRecordingDataSource.insertStats(stats, id)
 
+    override suspend fun insertEmptyRouteSlice(id: Activity.Id, start: Instant) =
+        activityRecordingDataSource.insertEmptyRouteSlice(id, start)
 
     override suspend fun insertLocation(location: Location, id: Activity.Id) =
-        activityRecordingDataSource.insertLocation(location, id)
+        activityRecordingDataSource.insertLocationToLatestRouteSlice(id, location)
 
 }
