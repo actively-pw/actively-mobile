@@ -5,7 +5,7 @@ import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
-import com.actively.stubs.stubRoute
+import com.actively.stubs.stubRouteSlice
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.Instant
 
 class ActivityRecordingRepositoryTest : FunSpec({
 
@@ -28,22 +29,6 @@ class ActivityRecordingRepositoryTest : FunSpec({
     isolationMode = IsolationMode.InstancePerLeaf
 
     val activityRecordingDataSource = mockk<ActivityRecordingDataSource>(relaxUnitFun = true)
-
-
-    context("getActivities()") {
-        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
-        val activities = listOf(stubActivity(id = "1"), stubActivity(id = "2"))
-        every { activityRecordingDataSource.getActivities() } returns flowOf(activities)
-
-        test("Should return flow with list of activities") {
-            repository.getActivities().first() shouldBe activities
-        }
-
-        test("Should call ActivityRecordingDataSource getActivities()") {
-            repository.getActivities()
-            verify(exactly = 1) { activityRecordingDataSource.getActivities() }
-        }
-    }
 
     context("getActivity(id: Activity.Id)") {
         val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
@@ -101,54 +86,98 @@ class ActivityRecordingRepositoryTest : FunSpec({
         }
     }
 
-    context("insert*()") {
-        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
-
-        test("Should call ActivityRecordingDataSource insertActivity with given activity") {
-            val activity = stubActivity()
-            repository.insertActivity(activity)
-            coVerify(exactly = 1) { activityRecordingDataSource.insertActivity(activity) }
-        }
-
-        test("Should call ActivityRecordingDataSource insertStats with given stats and id") {
-            val stats = stubActivityStats()
-            val id = Activity.Id("1")
-            repository.insertStats(stats, id)
-            coVerify(exactly = 1) { activityRecordingDataSource.insertStats(stats, id) }
-        }
-
-        test("Should call ActivityRecordingDataSource insertLocation with given location and id") {
-            val location = stubLocation()
-            val id = Activity.Id("1")
-            repository.insertLocation(location, id)
-            coVerify(exactly = 1) { activityRecordingDataSource.insertLocation(location, id) }
-        }
-    }
-
-    context("get route methods") {
+    context("getRoute()") {
         val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
         val id = Activity.Id("1")
-        every { activityRecordingDataSource.getRoute(id) } returns flowOf(stubRoute())
-        coEvery { activityRecordingDataSource.getLatestLocation(id) } returns stubLocation()
+        val expectedRoute = listOf(
+            stubRouteSlice(start = Instant.fromEpochMilliseconds(0)),
+            stubRouteSlice(start = Instant.fromEpochMilliseconds(100)),
+            stubRouteSlice(start = Instant.fromEpochMilliseconds(200)),
+        )
+        every { activityRecordingDataSource.getRoute(id) } returns flowOf(expectedRoute)
 
-        test("Should call ActivityRecordingDataSource getRoute with given activity id") {
-            repository.getRoute(id).collect()
-            coVerify(exactly = 1) { activityRecordingDataSource.getRoute(id) }
+        test("Should call ActivityRecordingDataSource with given activity id") {
+            repository.getRoute(id)
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.getRoute(id)
+            }
         }
 
         test("Should return route from ActivityRecordingDataSource") {
-            val expectedRoute = stubRoute()
-            expectedRoute.forEach { repository.insertLocation(it, id) }
             repository.getRoute(id).first() shouldBe expectedRoute
         }
+    }
 
-        test("Should call ActivityRecordingDataSource to get latest route location") {
+    context("getLatestRouteLocation()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+        val id = Activity.Id("1")
+        coEvery { activityRecordingDataSource.getLatestLocationFromLastRouteSlice(any()) } returns null
+        coEvery { activityRecordingDataSource.getLatestLocationFromLastRouteSlice(id) } returns stubLocation()
+
+        test("Should call ActivityRecordingDataSource with given activity id") {
             repository.getLatestRouteLocation(id)
-            coVerify(exactly = 1) { activityRecordingDataSource.getLatestLocation(id) }
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.getLatestLocationFromLastRouteSlice(id)
+            }
         }
 
-        test("Should return latest location from route") {
+        test("Should return route from ActivityRecordingDataSource") {
             repository.getLatestRouteLocation(id) shouldBe stubLocation()
+        }
+    }
+
+    context("insertRoutelessActivity()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+
+        test("Should call ActivityRecordingRepositoryImpl") {
+            val activity = stubActivity()
+            repository.insertRoutelessActivity(activity)
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.insertActivity(
+                    activity.id,
+                    activity.title,
+                    activity.sport,
+                    activity.stats
+                )
+            }
+        }
+    }
+
+    context("insertStats()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+
+        test("Should call ActivityRecordingRepositoryImpl") {
+            val stats = stubActivityStats()
+            repository.insertStats(stats, Activity.Id("1"))
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.insertStats(stats, Activity.Id("1"))
+            }
+        }
+    }
+
+    context("insertEmptyRouteSlice()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+
+        test("Should call ActivityRecordingRepositoryImpl") {
+            val id = Activity.Id("1")
+            val timestamp = Instant.fromEpochMilliseconds(0)
+            repository.insertEmptyRouteSlice(id, timestamp)
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.insertEmptyRouteSlice(id, timestamp)
+            }
+        }
+    }
+
+    context("insertLocation()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+
+        test("Should call ActivityRecordingRepositoryImpl") {
+            val id = Activity.Id("1")
+            val location = stubLocation()
+            repository.insertLocation(location, id)
+            coVerify(exactly = 1) {
+                activityRecordingDataSource.insertLocationToLatestRouteSlice(id, location)
+            }
         }
     }
 })
