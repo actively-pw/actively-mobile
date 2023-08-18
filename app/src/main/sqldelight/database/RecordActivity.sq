@@ -1,0 +1,73 @@
+CREATE TABLE ActivityEntity(
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT,
+    sport TEXT NOT NULL
+);
+
+CREATE TABLE ActivityStatsEntity(
+    activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
+    totalTime INTEGER NOT NULL,
+    totalDistanceMeters INTEGER NOT NULL,
+    averageSpeed REAL NOT NULL,
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id) ON DELETE CASCADE
+);
+
+CREATE TABLE RouteSliceEntity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    activityId TEXT NOT NULL,
+    start INTEGER NOT NULL,
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id) ON DELETE CASCADE
+);
+
+CREATE TABLE LocationEntity(
+    routeSliceId TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    latitude REAL NOT NULL,
+    longitute REAL NOT NULL,
+    PRIMARY KEY (routeSliceId, timestamp),
+    FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id)
+);
+
+getActivity:
+SELECT * FROM ActivityEntity WHERE id = ?;
+
+getActivityStats:
+SELECT * FROM ActivityStatsEntity WHERE activityId = ?;
+
+getRoute:
+SELECT * FROM RouteSliceEntity WHERE activityId = ? ORDER BY start ASC;
+
+getLocations:
+SELECT * FROM LocationEntity WHERE routeSliceId = ? ORDER BY timestamp ASC;
+
+getLatestRouteSlice:
+SELECT * FROM RouteSliceEntity WHERE activityId = ? ORDER BY start DESC LIMIT 1;
+
+getLatestLocationFromLastRouteSlice:
+SELECT * FROM LocationEntity
+WHERE routeSliceId IN (
+    SELECT id FROM RouteSliceEntity
+    WHERE activityId = ? ORDER BY start DESC LIMIT 1
+) ORDER BY timestamp DESC LIMIT 1;
+
+insertActivity:
+INSERT OR REPLACE
+INTO ActivityEntity(id, sport, title)
+VALUES (?, ?, ?);
+
+insertActivityStats:
+INSERT OR REPLACE
+INTO ActivityStatsEntity(activityId, totalTime, totalDistanceMeters, averageSpeed)
+VALUES (?, ?, ?, ?);
+
+insertRouteSlice:
+INSERT OR REPLACE
+INTO RouteSliceEntity(id, activityId, start)
+VALUES (?, ?, ?);
+
+insertLocationToLatestRouteSlice:
+INSERT OR REPLACE
+INTO LocationEntity(routeSliceId, latitude, longitute, timestamp)
+SELECT id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = ? ORDER BY start DESC LIMIT 1;
+
+
