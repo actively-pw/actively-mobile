@@ -3,6 +3,8 @@ package com.actively.datasource
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
+import com.actively.activity.RouteSlice
+import com.actively.distance.Distance.Companion.kilometers
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
@@ -10,13 +12,12 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.testCoroutineScheduler
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
 class ActivityRecordingDataSourceTest : FunSpec({
@@ -32,25 +33,14 @@ class ActivityRecordingDataSourceTest : FunSpec({
     context("ActivityDataSourceTest") {
         val activityDataSource = ActivityRecordingDataSourceImpl(database, testCoroutineScheduler)
 
-        test("Should retrieve list of activities ordered from most recent") {
-            val expectedActivities = listOf(
-                stubActivity(id = "3", start = Instant.fromEpochMilliseconds(20)),
-                stubActivity(id = "2", start = Instant.fromEpochMilliseconds(10)),
-                stubActivity(id = "1", start = Instant.fromEpochMilliseconds(0))
+        test("Should insert and retrieve activity") {
+            val activity = stubActivity(id = "1", route = emptyList())
+            activityDataSource.insertActivity(
+                activity.id,
+                activity.title,
+                activity.sport,
+                activity.stats
             )
-            expectedActivities.reversed().forEach {
-                activityDataSource.insertActivity(it)
-            }
-            activityDataSource.getActivities().first() shouldContainInOrder expectedActivities
-        }
-
-        test("Should retrieve empty list of activities if none were found") {
-            activityDataSource.getActivities().first().shouldBeEmpty()
-        }
-
-        test("Should insert and retrieve activity properly") {
-            val activity = stubActivity(id = "1")
-            activityDataSource.insertActivity(activity)
             activityDataSource.getActivity(id = activity.id) shouldBe activity
         }
 
@@ -58,10 +48,23 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getActivity(id = Activity.Id("1")).shouldBeNull()
         }
 
-        test("Should insert and retrieve activity stats properly") {
+        test("Should insert and retrieve activity stats") {
             val stats = stubActivityStats()
             activityDataSource.insertStats(stats = stats, id = Activity.Id("1"))
             activityDataSource.getStats(id = Activity.Id("1")).first() shouldBe stats
+        }
+
+        test("Should replace already saved stats") {
+            val stats = stubActivityStats()
+            val activityId = Activity.Id("1")
+            activityDataSource.insertStats(stats, activityId)
+            val newStats = stubActivityStats(
+                totalTime = 2.hours,
+                distance = 25.kilometers,
+                averageSpeed = 15.0
+            )
+            activityDataSource.insertStats(newStats, activityId)
+            activityDataSource.getStats(activityId).first() shouldBe newStats
         }
 
         test("Should throw exception if none Activity.Stats were found") {
@@ -70,35 +73,90 @@ class ActivityRecordingDataSourceTest : FunSpec({
             }
         }
 
-        test("Should insert and retrieve route properly with locations ordered from the oldest") {
+        test("Should insert empty RouteSlice") {
+            val id = Activity.Id("1")
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(0))
+            activityDataSource.getRoute(id).first() shouldBe listOf(
+                RouteSlice(start = Instant.fromEpochMilliseconds(0), locations = emptyList())
+            )
+        }
+
+        test("Should insert and retrieve route properly with slices and locations ordered from the oldest") {
+            val id = Activity.Id("1")
+            val firstSliceLocations = listOf(
+                stubLocation(Instant.fromEpochMilliseconds(0)),
+                stubLocation(Instant.fromEpochMilliseconds(10)),
+                stubLocation(Instant.fromEpochMilliseconds(20)),
+            )
+            val secondsSliceLocations = listOf(
+                stubLocation(Instant.fromEpochMilliseconds(100)),
+                stubLocation(Instant.fromEpochMilliseconds(120)),
+                stubLocation(Instant.fromEpochMilliseconds(240)),
+            )
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(0))
+            firstSliceLocations.reversed().forEach {
+                activityDataSource.insertLocationToLatestRouteSlice(id, it)
+            }
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(100))
+            secondsSliceLocations.reversed().forEach {
+                activityDataSource.insertLocationToLatestRouteSlice(id, it)
+            }
             val expectedRoute = listOf(
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(10)),
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(20)),
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(30)),
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(40)),
+                RouteSlice(
+                    start = Instant.fromEpochMilliseconds(0),
+                    locations = firstSliceLocations
+                ),
+                RouteSlice(
+                    start = Instant.fromEpochMilliseconds(100),
+                    locations = secondsSliceLocations
+                )
             )
-            activityDataSource.insertRoute(route = expectedRoute.reversed(), id = Activity.Id("1"))
-            activityDataSource.getRoute(id = Activity.Id("1")).first() shouldBe expectedRoute
+            activityDataSource.getRoute(id).first() shouldBe expectedRoute
         }
 
-        test("Should return empty route if none were found") {
-            activityDataSource.getRoute(id = Activity.Id("1")).first().shouldBeEmpty()
-        }
-
-        test("Should return latest route Location") {
-            val expectedLocation = stubLocation(timestamp = Instant.fromEpochMilliseconds(400))
-            val route = listOf(
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(20)),
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(10)),
+        test("getLatestLocationFromLastRouteSlice should get latest location from latest route slice") {
+            val id = Activity.Id("1")
+            activityDataSource.insertEmptyRouteSlice(id, start = Instant.fromEpochMilliseconds(0))
+            val expectedLocation = stubLocation(Instant.fromEpochMilliseconds(240))
+            val firstSliceLocations = listOf(
+                stubLocation(Instant.fromEpochMilliseconds(0)),
+                stubLocation(Instant.fromEpochMilliseconds(10)),
+                stubLocation(Instant.fromEpochMilliseconds(2000)),
+            )
+            val secondsSliceLocations = listOf(
+                stubLocation(Instant.fromEpochMilliseconds(100)),
+                stubLocation(Instant.fromEpochMilliseconds(120)),
                 expectedLocation,
-                stubLocation(timestamp = Instant.fromEpochMilliseconds(30)),
             )
-            activityDataSource.insertRoute(route = route, id = Activity.Id("1"))
-            activityDataSource.getLatestLocation(id = Activity.Id("1")) shouldBe expectedLocation
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(0))
+            firstSliceLocations.forEach {
+                activityDataSource.insertLocationToLatestRouteSlice(id, it)
+            }
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(100))
+            secondsSliceLocations.forEach {
+                activityDataSource.insertLocationToLatestRouteSlice(id, it)
+            }
+            activityDataSource.getLatestLocationFromLastRouteSlice(id) shouldBe expectedLocation
         }
 
-        test("Should return null Location if route was empty or not found") {
-            activityDataSource.getLatestLocation(id = Activity.Id("1")).shouldBeNull()
+        test("getLatestLocationFromLastRouteSlice should return null if no location was found in latest route slice") {
+            val id = Activity.Id("1")
+            activityDataSource.insertEmptyRouteSlice(id, start = Instant.fromEpochMilliseconds(0))
+            val firstSliceLocations = listOf(
+                stubLocation(Instant.fromEpochMilliseconds(0)),
+                stubLocation(Instant.fromEpochMilliseconds(10)),
+                stubLocation(Instant.fromEpochMilliseconds(2000)),
+            )
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(0))
+            firstSliceLocations.forEach {
+                activityDataSource.insertLocationToLatestRouteSlice(id, it)
+            }
+            activityDataSource.insertEmptyRouteSlice(id, Instant.fromEpochMilliseconds(100))
+            activityDataSource.getLatestLocationFromLastRouteSlice(id).shouldBeNull()
+        }
+
+        test("getLatestLocationFromLastRouteSlice should return null if no RouteSlices were found") {
+            activityDataSource.getLatestLocationFromLastRouteSlice(Activity.Id("1")).shouldBeNull()
         }
     }
 })
