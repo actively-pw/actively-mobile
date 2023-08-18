@@ -6,12 +6,12 @@ import app.cash.sqldelight.coroutines.mapToOne
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
 import com.actively.activity.Location
+import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.meters
-import database.ActivityEntity
+import database.GetRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
@@ -20,23 +20,26 @@ import kotlin.time.Duration.Companion.milliseconds
 
 interface ActivityRecordingDataSource {
 
-    fun getActivities(): Flow<List<Activity>>
-
     suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(id: Activity.Id): Flow<Activity.Stats>
 
-    fun getRoute(id: Activity.Id): Flow<List<Location>>
+    fun getRoute(id: Activity.Id): Flow<List<RouteSlice>>
 
-    suspend fun getLatestLocation(id: Activity.Id): Location?
+    suspend fun getLatestLocationFromLastRouteSlice(id: Activity.Id): Location?
 
-    suspend fun insertActivity(activity: Activity)
+    suspend fun insertActivity(
+        id: Activity.Id,
+        title: String?,
+        sport: String,
+        stats: Activity.Stats
+    )
 
     suspend fun insertStats(stats: Activity.Stats, id: Activity.Id)
 
-    suspend fun insertRoute(route: List<Location>, id: Activity.Id)
+    suspend fun insertEmptyRouteSlice(id: Activity.Id, start: Instant)
 
-    suspend fun insertLocation(location: Location, id: Activity.Id)
+    suspend fun insertLocationToLatestRouteSlice(id: Activity.Id, location: Location)
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -44,54 +47,68 @@ class ActivityRecordingDataSourceImpl(
     private val coroutineContext: CoroutineContext = Dispatchers.IO
 ) : ActivityRecordingDataSource {
 
-    private val query = database.activityQueries
-
-    override fun getActivities() = query.getActivities()
-        .asFlow()
-        .mapToList(coroutineContext)
-        .map { it.toActivities() }
-        .flowOn(coroutineContext)
+    private val query = database.recordActivityQueries
 
     override suspend fun getActivity(id: Activity.Id): Activity? = withContext(coroutineContext) {
         query.transactionWithResult {
-            val activity = query.getActivity(id = id.value)
+            val activityWithStatsQuery = query.getActivity(id = id.value)
                 .executeAsOneOrNull() ?: return@transactionWithResult null
+            val routeQuery = query.getRoute(activityWithStatsQuery.id).executeAsList()
             Activity(
                 id = id,
-                title = activity.title,
-                sport = activity.sport,
-                start = Instant.fromEpochMilliseconds(activity.start),
-                stats = getStatsBlocking(id) ?: return@transactionWithResult null,
-                route = getRouteBlocking(id)
+                title = activityWithStatsQuery.title,
+                sport = activityWithStatsQuery.sport,
+                stats = Activity.Stats(
+                    totalTime = activityWithStatsQuery.totalTime.milliseconds,
+                    distance = activityWithStatsQuery.totalDistanceMeters.meters,
+                    averageSpeed = activityWithStatsQuery.averageSpeed
+                ),
+                route = routeQuery.toRouteSlices()
             )
         }
     }
 
     override fun getStats(id: Activity.Id) = query
-        .getActivityStats(activityId = id.value, mapper = ::toActivityStats)
+        .getActivityStats(activityId = id.value) { _, totalTime, distanceMeters, averageSpeed ->
+            Activity.Stats(
+                totalTime = totalTime.milliseconds,
+                distance = distanceMeters.meters,
+                averageSpeed = averageSpeed
+            )
+        }
         .asFlow()
         .mapToOne(coroutineContext)
 
-    override fun getRoute(id: Activity.Id) = query.getRoute(activityId = id.value, ::toLocation)
+    override fun getRoute(id: Activity.Id) = query.getRoute(activityId = id.value)
         .asFlow()
         .mapToList(coroutineContext)
+        .map { it.toRouteSlices() }
 
-    override suspend fun getLatestLocation(id: Activity.Id) = withContext(coroutineContext) {
-        query.getLatestRouteLocation(activityId = id.value, ::toLocation).executeAsOneOrNull()
-    }
-
-    override suspend fun insertActivity(activity: Activity) = withContext(coroutineContext) {
-        query.transaction {
-            with(activity) {
-                query.insertActivity(
-                    id = id.value,
-                    title = title,
-                    sport = sport,
-                    start = start.toEpochMilliseconds()
+    override suspend fun getLatestLocationFromLastRouteSlice(id: Activity.Id) =
+        withContext(coroutineContext) {
+            query.getLatestLocationFromLastRouteSlice(id.value) { _, timestamp, latitude, longitude ->
+                Location(
+                    timestamp = Instant.fromEpochMilliseconds(timestamp),
+                    latitude = latitude,
+                    longitude = longitude
                 )
-                insertStatsBlocking(stats = stats, id = id)
-                insertRouteBlocking(route = route, id = id)
-            }
+            }.executeAsOneOrNull()
+        }
+
+    override suspend fun insertActivity(
+        id: Activity.Id,
+        title: String?,
+        sport: String,
+        stats: Activity.Stats
+    ) = withContext(coroutineContext) {
+        query.transaction {
+            query.insertActivity(activityId = id.value, title = title, sport = sport)
+            query.insertActivityStats(
+                activityId = id.value,
+                totalTime = stats.totalTime.inWholeMilliseconds,
+                totalDistanceMeters = stats.distance.inMeters,
+                averageSpeed = stats.averageSpeed
+            )
         }
     }
 
@@ -105,84 +122,41 @@ class ActivityRecordingDataSourceImpl(
             )
         }
 
-    override suspend fun insertRoute(route: List<Location>, id: Activity.Id) =
+    override suspend fun insertEmptyRouteSlice(id: Activity.Id, start: Instant) =
         withContext(coroutineContext) {
-            query.transaction {
-                route.forEach { insertLocationBlocking(it, id = id) }
-            }
+            query.insertRouteSlice(
+                id = null,
+                activityId = id.value,
+                start = start.toEpochMilliseconds()
+            )
         }
 
-    override suspend fun insertLocation(location: Location, id: Activity.Id) =
+
+    override suspend fun insertLocationToLatestRouteSlice(id: Activity.Id, location: Location) {
         withContext(coroutineContext) {
-            query.insertLocation(
+            query.insertLocationToLatestRouteSlice(
                 activityId = id.value,
                 latitude = location.latitude,
-                longitute = location.longitude,
-                timestamp = location.timestamp.toEpochMilliseconds(),
-            )
-        }
-
-    private fun List<ActivityEntity>.toActivities() = query.transactionWithResult {
-        mapNotNull { activity ->
-            val id = Activity.Id(activity.id)
-            Activity(
-                id = id,
-                title = activity.title,
-                sport = activity.sport,
-                start = Instant.fromEpochMilliseconds(activity.start),
-                stats = getStatsBlocking(id) ?: return@mapNotNull null,
-                route = getRouteBlocking(id)
+                longitude = location.longitude,
+                timestamp = location.timestamp.toEpochMilliseconds()
             )
         }
     }
 
-    private fun getStatsBlocking(id: Activity.Id) =
-        query.getActivityStats(id.value, ::toActivityStats)
-            .executeAsOneOrNull()
-
-
-    private fun getRouteBlocking(id: Activity.Id) = query.getRoute(id.value, ::toLocation)
-        .executeAsList()
-
-    private fun insertStatsBlocking(stats: Activity.Stats, id: Activity.Id) =
-        query.insertActivityStats(
-            activityId = id.value,
-            totalTime = stats.totalTime.inWholeMilliseconds,
-            totalDistanceMeters = stats.distance.inMeters,
-            averageSpeed = stats.averageSpeed
-        )
-
-    private fun insertRouteBlocking(route: List<Location>, id: Activity.Id) = query.transaction {
-        route.forEach { insertLocationBlocking(it, id = id) }
-    }
-
-    private fun insertLocationBlocking(location: Location, id: Activity.Id) = query.insertLocation(
-        activityId = id.value,
-        latitude = location.latitude,
-        longitute = location.longitude,
-        timestamp = location.timestamp.toEpochMilliseconds(),
-    )
-
-    private fun toActivityStats(
-        activityId: String,
-        totalTime: Long,
-        distance: Long,
-        averageSpeed: Double
-    ) = Activity.Stats(
-        totalTime = totalTime.milliseconds,
-        distance = distance.meters,
-        averageSpeed = averageSpeed
-    )
-
-    private fun toLocation(
-        activityId: String,
-        timestamp: Long,
-        latitude: Double,
-        longitude: Double
-    ) = Location(
-        longitude = longitude,
-        latitude = latitude,
-        timestamp = Instant.fromEpochMilliseconds(timestamp)
-    )
+    private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
+        .map { (start, getRouteQuery) ->
+            RouteSlice(
+                start = Instant.fromEpochMilliseconds(start),
+                locations = getRouteQuery.mapNotNull {
+                    if (it.timestamp == null || it.latitude == null || it.longitude == null)
+                        return@mapNotNull null
+                    Location(
+                        timestamp = Instant.fromEpochMilliseconds(it.timestamp),
+                        latitude = it.latitude,
+                        longitude = it.longitude
+                    )
+                }
+            )
+        }
 }
 
