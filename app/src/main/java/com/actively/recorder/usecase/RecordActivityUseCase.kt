@@ -7,7 +7,7 @@ import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
 import com.actively.location.LocationProvider
-import com.actively.repository.ActivityRepository
+import com.actively.repository.ActivityRecordingRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -23,7 +23,7 @@ interface RecordActivityUseCase {
 
 class RecordActivityUseCaseImpl(
     private val locationProvider: LocationProvider,
-    private val activityRepository: ActivityRepository,
+    private val activityRecordingRepository: ActivityRecordingRepository,
 ) : RecordActivityUseCase {
 
     override operator fun invoke(id: Activity.Id, start: Instant) = locationProvider
@@ -33,13 +33,15 @@ class RecordActivityUseCaseImpl(
             locationUpdatesDistance = 2.meters
         )
         .map { currentLocation ->
-            activityRepository.getLatestRouteLocation(id) to currentLocation
+            activityRecordingRepository.getLatestRouteLocation(id) to currentLocation
         }
         .mapNotNull { (lastLocation, currentLocation) ->
-            val prevStats = activityRepository.getStats(id).firstOrNull() ?: return@mapNotNull null
+            val prevStats = activityRecordingRepository
+                .getStats(id)
+                .firstOrNull() ?: return@mapNotNull null
             val currentStats = prevStats.update(lastLocation, currentLocation, start)
-            activityRepository.insertStats(stats = currentStats, id = id)
-            activityRepository.insertLocation(currentLocation, id)
+            activityRecordingRepository.insertStats(stats = currentStats, id = id)
+            activityRecordingRepository.insertLocation(currentLocation, id)
             currentStats
         }
 

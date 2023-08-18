@@ -5,7 +5,7 @@ import com.actively.activity.Location
 import com.actively.datasource.ActivityDataSource
 import kotlinx.coroutines.flow.Flow
 
-interface ActivityRepository {
+interface ActivityRecordingRepository {
 
     fun getActivities(): Flow<List<Activity>>
 
@@ -24,9 +24,9 @@ interface ActivityRepository {
     suspend fun insertLocation(location: Location, id: Activity.Id)
 }
 
-class ActivityRepositoryImpl(
+class ActivityRecordingRepositoryImpl(
     private val activityDataSource: ActivityDataSource
-) : ActivityRepository {
+) : ActivityRecordingRepository {
 
     override fun getActivities() = activityDataSource.getActivities()
 

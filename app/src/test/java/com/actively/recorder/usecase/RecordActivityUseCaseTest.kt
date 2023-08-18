@@ -4,7 +4,7 @@ import com.actively.activity.Activity
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.location.LocationProvider
-import com.actively.repository.ActivityRepository
+import com.actively.repository.ActivityRecordingRepository
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
 import io.kotest.core.spec.IsolationMode
@@ -26,8 +26,11 @@ class RecordActivityUseCaseTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
     val locationProvider = mockk<LocationProvider>()
-    val activityRepository = mockk<ActivityRepository>(relaxUnitFun = true)
-    val recordActivityUseCase = RecordActivityUseCaseImpl(locationProvider, activityRepository)
+    val activityRecordingRepository = mockk<ActivityRecordingRepository>(relaxUnitFun = true)
+    val recordActivityUseCase = RecordActivityUseCaseImpl(
+        locationProvider,
+        activityRecordingRepository
+    )
 
     context("First location update") {
         val activityId = Activity.Id("1")
@@ -36,17 +39,17 @@ class RecordActivityUseCaseTest : FunSpec({
         every {
             locationProvider.userLocation(3.seconds, 1.seconds, 2.meters)
         } returns flowOf(latestLocation)
-        coEvery { activityRepository.getLatestRouteLocation(activityId) } returns null
-        coEvery { activityRepository.getStats(activityId) } returns flowOf(Activity.Stats.empty())
+        coEvery { activityRecordingRepository.getLatestRouteLocation(activityId) } returns null
+        coEvery { activityRecordingRepository.getStats(activityId) } returns flowOf(Activity.Stats.empty())
 
         test("Should call ActivityRepository to get previous user location") {
             recordActivityUseCase(activityId, start).first()
-            coVerify(exactly = 1) { activityRepository.getLatestRouteLocation(activityId) }
+            coVerify(exactly = 1) { activityRecordingRepository.getLatestRouteLocation(activityId) }
         }
 
         test("Should call ActivityRepository to get previous activity stats") {
             recordActivityUseCase(activityId, start).first()
-            coVerify(exactly = 1) { activityRepository.getStats(activityId) }
+            coVerify(exactly = 1) { activityRecordingRepository.getStats(activityId) }
         }
 
         test("Should call ActivityRepository to insert correctly updated stats") {
@@ -56,7 +59,9 @@ class RecordActivityUseCaseTest : FunSpec({
                 distance = 0.kilometers,
                 averageSpeed = 0.0
             )
-            coVerify(exactly = 1) { activityRepository.insertStats(expectedStats, activityId) }
+            coVerify(exactly = 1) {
+                activityRecordingRepository.insertStats(expectedStats, activityId)
+            }
         }
 
         test("Should properly calculate stats when elapsed time is negative") {
@@ -66,12 +71,16 @@ class RecordActivityUseCaseTest : FunSpec({
                 distance = 0.kilometers,
                 averageSpeed = 0.0
             )
-            coVerify(exactly = 1) { activityRepository.insertStats(expectedStats, activityId) }
+            coVerify(exactly = 1) {
+                activityRecordingRepository.insertStats(expectedStats, activityId)
+            }
         }
 
         test("Should call ActivityRepository to insert latest location") {
             recordActivityUseCase(activityId, start).first()
-            coVerify(exactly = 1) { activityRepository.insertLocation(latestLocation, activityId) }
+            coVerify(exactly = 1) {
+                activityRecordingRepository.insertLocation(latestLocation, activityId)
+            }
         }
 
         test("Should return current stats") {
@@ -84,20 +93,20 @@ class RecordActivityUseCaseTest : FunSpec({
         }
 
         test("Should return null if ActivityRepository returned empty flow of Activity Stats") {
-            coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
+            coEvery { activityRecordingRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull().shouldBeNull()
         }
 
         test("Should not insert updated stats if ActivityRepository returned empty flow of Activity Stats") {
-            coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
+            coEvery { activityRecordingRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull()
-            coVerify(exactly = 0) { activityRepository.insertStats(any(), any()) }
+            coVerify(exactly = 0) { activityRecordingRepository.insertStats(any(), any()) }
         }
 
         test("Should not insert latest location if ActivityRepository returned empty flow of Activity Stats") {
-            coEvery { activityRepository.getStats(activityId) } returns emptyFlow()
+            coEvery { activityRecordingRepository.getStats(activityId) } returns emptyFlow()
             recordActivityUseCase(activityId, start).firstOrNull()
-            coVerify(exactly = 0) { activityRepository.insertLocation(any(), any()) }
+            coVerify(exactly = 0) { activityRecordingRepository.insertLocation(any(), any()) }
         }
     }
 
@@ -113,8 +122,8 @@ class RecordActivityUseCaseTest : FunSpec({
         every {
             locationProvider.userLocation(3.seconds, 1.seconds, 2.meters)
         } returns flowOf(latestLocation)
-        coEvery { activityRepository.getLatestRouteLocation(any()) } returns previousLocation
-        coEvery { activityRepository.getStats(id = activityId) } returns flowOf(Activity.Stats.empty())
+        coEvery { activityRecordingRepository.getLatestRouteLocation(any()) } returns previousLocation
+        coEvery { activityRecordingRepository.getStats(id = activityId) } returns flowOf(Activity.Stats.empty())
 
         test("Should correctly update stats") {
             recordActivityUseCase(activityId, start).first()
@@ -123,12 +132,16 @@ class RecordActivityUseCaseTest : FunSpec({
                 distance = 157.meters,
                 averageSpeed = 282.6
             )
-            coVerify(exactly = 1) { activityRepository.insertStats(expectedStats, activityId) }
+            coVerify(exactly = 1) {
+                activityRecordingRepository.insertStats(expectedStats, activityId)
+            }
         }
 
         test("Should call ActivityRepository to insert latest location") {
             recordActivityUseCase(activityId, start).first()
-            coVerify(exactly = 1) { activityRepository.insertLocation(latestLocation, activityId) }
+            coVerify(exactly = 1) {
+                activityRecordingRepository.insertLocation(latestLocation, activityId)
+            }
         }
 
         test("Should return updated stats") {

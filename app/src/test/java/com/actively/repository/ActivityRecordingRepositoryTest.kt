@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
-class ActivityRepositoryTest : FunSpec({
+class ActivityRecordingRepositoryTest : FunSpec({
 
     coroutineTestScope = true
     isolationMode = IsolationMode.InstancePerLeaf
@@ -31,7 +31,7 @@ class ActivityRepositoryTest : FunSpec({
 
 
     context("getActivities()") {
-        val repository = ActivityRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
         val activities = listOf(stubActivity(id = "1"), stubActivity(id = "2"))
         every { activityDataSource.getActivities() } returns flowOf(activities)
 
@@ -46,7 +46,7 @@ class ActivityRepositoryTest : FunSpec({
     }
 
     context("getActivity(id: Activity.Id)") {
-        val repository = ActivityRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
         coEvery { activityDataSource.getActivity(any()) } returns null
         coEvery { activityDataSource.getActivity(id = Activity.Id("1")) } returns stubActivity(id = "1")
 
@@ -71,7 +71,7 @@ class ActivityRepositoryTest : FunSpec({
     }
 
     context("getStats(id: Activity.Id)") {
-        val repository = ActivityRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
         every { activityDataSource.getStats(any()) } returns flow { throw IllegalArgumentException() }
         every { activityDataSource.getStats(id = Activity.Id("1")) } returns flowOf(
             stubActivityStats()
@@ -100,7 +100,7 @@ class ActivityRepositoryTest : FunSpec({
     }
 
     context("insert*()") {
-        val repository = ActivityRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
 
         test("Should call ActivityDataSource insertActivity with given activity") {
             val activity = stubActivity()
@@ -124,7 +124,7 @@ class ActivityRepositoryTest : FunSpec({
     }
 
     context("get route methods") {
-        val repository = ActivityRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
         val id = Activity.Id("1")
         every { activityDataSource.getRoute(id) } returns flowOf(stubRoute())
         coEvery { activityDataSource.getLatestLocation(id) } returns stubLocation()
