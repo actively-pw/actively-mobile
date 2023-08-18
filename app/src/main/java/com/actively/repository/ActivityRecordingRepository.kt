@@ -2,7 +2,7 @@ package com.actively.repository
 
 import com.actively.activity.Activity
 import com.actively.activity.Location
-import com.actively.datasource.ActivityDataSource
+import com.actively.datasource.ActivityRecordingDataSource
 import kotlinx.coroutines.flow.Flow
 
 interface ActivityRecordingRepository {
@@ -25,32 +25,32 @@ interface ActivityRecordingRepository {
 }
 
 class ActivityRecordingRepositoryImpl(
-    private val activityDataSource: ActivityDataSource
+    private val activityRecordingDataSource: ActivityRecordingDataSource
 ) : ActivityRecordingRepository {
 
-    override fun getActivities() = activityDataSource.getActivities()
+    override fun getActivities() = activityRecordingDataSource.getActivities()
 
-    override suspend fun getActivity(id: Activity.Id) = activityDataSource.getActivity(id)
+    override suspend fun getActivity(id: Activity.Id) = activityRecordingDataSource.getActivity(id)
 
-    override fun getStats(id: Activity.Id) = activityDataSource.getStats(id)
+    override fun getStats(id: Activity.Id) = activityRecordingDataSource.getStats(id)
 
 
-    override fun getRoute(id: Activity.Id) = activityDataSource.getRoute(id)
+    override fun getRoute(id: Activity.Id) = activityRecordingDataSource.getRoute(id)
 
 
     override suspend fun getLatestRouteLocation(id: Activity.Id) =
-        activityDataSource.getLatestLocation(id)
+        activityRecordingDataSource.getLatestLocation(id)
 
 
     override suspend fun insertActivity(activity: Activity) =
-        activityDataSource.insertActivity(activity)
+        activityRecordingDataSource.insertActivity(activity)
 
 
     override suspend fun insertStats(stats: Activity.Stats, id: Activity.Id) =
-        activityDataSource.insertStats(stats, id)
+        activityRecordingDataSource.insertStats(stats, id)
 
 
     override suspend fun insertLocation(location: Location, id: Activity.Id) =
-        activityDataSource.insertLocation(location, id)
+        activityRecordingDataSource.insertLocation(location, id)
 
 }

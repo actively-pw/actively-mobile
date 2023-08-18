@@ -1,7 +1,7 @@
 package com.actively.repository
 
 import com.actively.activity.Activity
-import com.actively.datasource.ActivityDataSource
+import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
@@ -27,28 +27,30 @@ class ActivityRecordingRepositoryTest : FunSpec({
     coroutineTestScope = true
     isolationMode = IsolationMode.InstancePerLeaf
 
-    val activityDataSource = mockk<ActivityDataSource>(relaxUnitFun = true)
+    val activityRecordingDataSource = mockk<ActivityRecordingDataSource>(relaxUnitFun = true)
 
 
     context("getActivities()") {
-        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
         val activities = listOf(stubActivity(id = "1"), stubActivity(id = "2"))
-        every { activityDataSource.getActivities() } returns flowOf(activities)
+        every { activityRecordingDataSource.getActivities() } returns flowOf(activities)
 
         test("Should return flow with list of activities") {
             repository.getActivities().first() shouldBe activities
         }
 
-        test("Should call ActivityDataSource getActivities()") {
+        test("Should call ActivityRecordingDataSource getActivities()") {
             repository.getActivities()
-            verify(exactly = 1) { activityDataSource.getActivities() }
+            verify(exactly = 1) { activityRecordingDataSource.getActivities() }
         }
     }
 
     context("getActivity(id: Activity.Id)") {
-        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
-        coEvery { activityDataSource.getActivity(any()) } returns null
-        coEvery { activityDataSource.getActivity(id = Activity.Id("1")) } returns stubActivity(id = "1")
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+        coEvery { activityRecordingDataSource.getActivity(any()) } returns null
+        coEvery {
+            activityRecordingDataSource.getActivity(id = Activity.Id("1"))
+        } returns stubActivity(id = "1")
 
         test("Should return activity with given id") {
             forAll(
@@ -59,21 +61,21 @@ class ActivityRecordingRepositoryTest : FunSpec({
             }
         }
 
-        test("Should call ActivityDataSource getActivity with proper id") {
+        test("Should call ActivityRecordingDataSource getActivity with proper id") {
             forAll(
                 row(Activity.Id("1")),
                 row(Activity.Id("non-existing-id")),
             ) { id ->
                 repository.getActivity(id)
-                coVerify(exactly = 1) { activityDataSource.getActivity(id) }
+                coVerify(exactly = 1) { activityRecordingDataSource.getActivity(id) }
             }
         }
     }
 
     context("getStats(id: Activity.Id)") {
-        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
-        every { activityDataSource.getStats(any()) } returns flow { throw IllegalArgumentException() }
-        every { activityDataSource.getStats(id = Activity.Id("1")) } returns flowOf(
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+        every { activityRecordingDataSource.getStats(any()) } returns flow { throw IllegalArgumentException() }
+        every { activityRecordingDataSource.getStats(id = Activity.Id("1")) } returns flowOf(
             stubActivityStats()
         )
 
@@ -88,61 +90,61 @@ class ActivityRecordingRepositoryTest : FunSpec({
             }
         }
 
-        test("Should call ActivityDataSource getStats with proper id") {
+        test("Should call ActivityRecordingDataSource getStats with proper id") {
             forAll(
                 row(Activity.Id("1")),
                 row(Activity.Id("non-existing-id"))
             ) { id ->
                 repository.getStats(id)
-                verify(exactly = 1) { activityDataSource.getStats(id) }
+                verify(exactly = 1) { activityRecordingDataSource.getStats(id) }
             }
         }
     }
 
     context("insert*()") {
-        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
 
-        test("Should call ActivityDataSource insertActivity with given activity") {
+        test("Should call ActivityRecordingDataSource insertActivity with given activity") {
             val activity = stubActivity()
             repository.insertActivity(activity)
-            coVerify(exactly = 1) { activityDataSource.insertActivity(activity) }
+            coVerify(exactly = 1) { activityRecordingDataSource.insertActivity(activity) }
         }
 
-        test("Should call ActivityDataSource insertStats with given stats and id") {
+        test("Should call ActivityRecordingDataSource insertStats with given stats and id") {
             val stats = stubActivityStats()
             val id = Activity.Id("1")
             repository.insertStats(stats, id)
-            coVerify(exactly = 1) { activityDataSource.insertStats(stats, id) }
+            coVerify(exactly = 1) { activityRecordingDataSource.insertStats(stats, id) }
         }
 
-        test("Should call ActivityDataSource insertLocation with given location and id") {
+        test("Should call ActivityRecordingDataSource insertLocation with given location and id") {
             val location = stubLocation()
             val id = Activity.Id("1")
             repository.insertLocation(location, id)
-            coVerify(exactly = 1) { activityDataSource.insertLocation(location, id) }
+            coVerify(exactly = 1) { activityRecordingDataSource.insertLocation(location, id) }
         }
     }
 
     context("get route methods") {
-        val repository = ActivityRecordingRepositoryImpl(activityDataSource)
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
         val id = Activity.Id("1")
-        every { activityDataSource.getRoute(id) } returns flowOf(stubRoute())
-        coEvery { activityDataSource.getLatestLocation(id) } returns stubLocation()
+        every { activityRecordingDataSource.getRoute(id) } returns flowOf(stubRoute())
+        coEvery { activityRecordingDataSource.getLatestLocation(id) } returns stubLocation()
 
-        test("Should call ActivityDataSource getRoute with given activity id") {
+        test("Should call ActivityRecordingDataSource getRoute with given activity id") {
             repository.getRoute(id).collect()
-            coVerify(exactly = 1) { activityDataSource.getRoute(id) }
+            coVerify(exactly = 1) { activityRecordingDataSource.getRoute(id) }
         }
 
-        test("Should return route from ActivityDataSource") {
+        test("Should return route from ActivityRecordingDataSource") {
             val expectedRoute = stubRoute()
             expectedRoute.forEach { repository.insertLocation(it, id) }
             repository.getRoute(id).first() shouldBe expectedRoute
         }
 
-        test("Should call ActivityDataSource to get latest route location") {
+        test("Should call ActivityRecordingDataSource to get latest route location") {
             repository.getLatestRouteLocation(id)
-            coVerify(exactly = 1) { activityDataSource.getLatestLocation(id) }
+            coVerify(exactly = 1) { activityRecordingDataSource.getLatestLocation(id) }
         }
 
         test("Should return latest location from route") {

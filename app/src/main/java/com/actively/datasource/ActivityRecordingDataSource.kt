@@ -18,7 +18,7 @@ import kotlinx.datetime.Instant
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
-interface ActivityDataSource {
+interface ActivityRecordingDataSource {
 
     fun getActivities(): Flow<List<Activity>>
 
@@ -39,10 +39,10 @@ interface ActivityDataSource {
     suspend fun insertLocation(location: Location, id: Activity.Id)
 }
 
-class ActivityDataSourceImpl(
+class ActivityRecordingDataSourceImpl(
     database: ActivityDatabase,
     private val coroutineContext: CoroutineContext = Dispatchers.IO
-) : ActivityDataSource {
+) : ActivityRecordingDataSource {
 
     private val query = database.activityQueries
 

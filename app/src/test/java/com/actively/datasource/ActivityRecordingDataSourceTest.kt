@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Instant
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
-class ActivityDataSourceTest : FunSpec({
+class ActivityRecordingDataSourceTest : FunSpec({
 
     coroutineTestScope = true
     isolationMode = IsolationMode.InstancePerTest
@@ -30,7 +30,7 @@ class ActivityDataSourceTest : FunSpec({
     }
 
     context("ActivityDataSourceTest") {
-        val activityDataSource = ActivityDataSourceImpl(database, testCoroutineScheduler)
+        val activityDataSource = ActivityRecordingDataSourceImpl(database, testCoroutineScheduler)
 
         test("Should retrieve list of activities ordered from most recent") {
             val expectedActivities = listOf(
