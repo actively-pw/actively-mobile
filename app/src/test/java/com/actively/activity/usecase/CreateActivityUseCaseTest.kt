@@ -28,21 +28,18 @@ class CreateActivityUseCaseTest : FunSpec({
         forAll(
             row(
                 "Cycling",
-                startTimestamp,
                 "Morning activity",
                 Activity.Id("1"),
                 stubActivity(stats = Activity.Stats.empty(), route = emptyList())
             ),
             row(
                 "Cycling",
-                startTimestamp,
                 "Morning activity",
                 null,
                 stubActivity(id = "uuid-123", stats = Activity.Stats.empty(), route = emptyList())
             ),
             row(
                 "Cycling",
-                startTimestamp,
                 null,
                 null,
                 stubActivity(
@@ -52,22 +49,18 @@ class CreateActivityUseCaseTest : FunSpec({
                     route = emptyList()
                 )
             ),
-        ) { sport, start, title, id, expected ->
-            createActivityUseCase(sport, start, id, title) shouldBe expected
+        ) { sport, title, id, expected ->
+            createActivityUseCase(sport, id, title) shouldBe expected
         }
     }
 
     test("Should not call UUIDProvider if activity id was passed in parameter") {
-        createActivityUseCase(
-            id = Activity.Id("1"),
-            sport = "Cycling",
-            start = Instant.fromEpochMilliseconds(0)
-        )
+        createActivityUseCase(id = Activity.Id("1"), sport = "Cycling")
         verify(exactly = 0) { uuidProvider.invoke() }
     }
 
     test("Should call UUIDProvider if no activity id was passed in parameter") {
-        createActivityUseCase(sport = "Cycling", start = Instant.fromEpochMilliseconds(0))
+        createActivityUseCase(sport = "Cycling")
         verify(exactly = 1) { uuidProvider.invoke() }
     }
 })
