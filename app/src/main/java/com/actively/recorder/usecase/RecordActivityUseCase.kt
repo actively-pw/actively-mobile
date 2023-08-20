@@ -3,7 +3,6 @@ package com.actively.recorder.usecase
 import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.distance.Distance.Companion.inKilometers
-import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
 import com.actively.location.LocationProvider
@@ -18,7 +17,7 @@ import kotlin.time.DurationUnit
 
 interface RecordActivityUseCase {
 
-    operator fun invoke(id: Activity.Id, start: Instant): Flow<Activity.Stats>
+    operator fun invoke(start: Instant): Flow<Activity.Stats>
 }
 
 class RecordActivityUseCaseImpl(
@@ -26,22 +25,22 @@ class RecordActivityUseCaseImpl(
     private val activityRecordingRepository: ActivityRecordingRepository,
 ) : RecordActivityUseCase {
 
-    override operator fun invoke(id: Activity.Id, start: Instant) = locationProvider
+    override operator fun invoke(start: Instant) = locationProvider
         .userLocation(
             updateInterval = 3.seconds,
             fastestUpdateInterval = 1.seconds,
             locationUpdatesDistance = 2.meters
         )
         .map { currentLocation ->
-            activityRecordingRepository.getLatestRouteLocation(id) to currentLocation
+            activityRecordingRepository.getLatestRouteLocation() to currentLocation
         }
         .mapNotNull { (lastLocation, currentLocation) ->
             val prevStats = activityRecordingRepository
-                .getStats(id)
+                .getStats()
                 .firstOrNull() ?: return@mapNotNull null
             val currentStats = prevStats.update(lastLocation, currentLocation, start)
-            activityRecordingRepository.insertStats(stats = currentStats, id = id)
-            activityRecordingRepository.insertLocation(currentLocation, id)
+            activityRecordingRepository.insertStats(stats = currentStats)
+            activityRecordingRepository.insertLocation(currentLocation)
             currentStats
         }
 
@@ -50,13 +49,17 @@ class RecordActivityUseCaseImpl(
         currentLocation: Location,
         start: Instant
     ): Activity.Stats {
-        val elapsedTime = (currentLocation.timestamp - start).coerceAtLeast(0.seconds)
-        val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.kilometers
+        val elapsedTime = when (lastLocation) {
+            null -> currentLocation.timestamp - start
+            else -> currentLocation.timestamp - lastLocation.timestamp
+        }.coerceAtLeast(0.seconds)
+        val totalTime = totalTime + elapsedTime
+        val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.meters
         val totalDistance = distance + traveledDistance
         val averageSpeed = when (elapsedTime) {
             0.seconds -> 0.0
-            else -> totalDistance.inKilometers / elapsedTime.toDouble(DurationUnit.HOURS)
+            else -> totalDistance.inKilometers / totalTime.toDouble(DurationUnit.HOURS)
         }
-        return copy(totalTime = elapsedTime, distance = totalDistance, averageSpeed = averageSpeed)
+        return copy(totalTime = totalTime, distance = totalDistance, averageSpeed = averageSpeed)
     }
 }
