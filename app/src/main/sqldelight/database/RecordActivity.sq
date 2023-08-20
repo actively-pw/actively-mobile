@@ -1,11 +1,12 @@
 CREATE TABLE ActivityEntity(
-    id TEXT NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    uuid TEXT NOT NULL,
     title TEXT,
     sport TEXT NOT NULL
 );
 
 CREATE TABLE ActivityStatsEntity(
-    activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
+    activityId INTEGER UNIQUE NOT NULL PRIMARY KEY CHECK (activityId = 1),
     totalTime INTEGER NOT NULL,
     totalDistanceMeters INTEGER NOT NULL,
     averageSpeed REAL NOT NULL,
@@ -14,7 +15,7 @@ CREATE TABLE ActivityStatsEntity(
 
 CREATE TABLE RouteSliceEntity(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    activityId TEXT NOT NULL,
+    activityId INTEGER NOT NULL CHECK (activityId = 1),
     start INTEGER NOT NULL,
     FOREIGN KEY (activityId) REFERENCES ActivityEntity (id) ON DELETE CASCADE
 );
@@ -25,47 +26,47 @@ CREATE TABLE LocationEntity(
     latitude REAL NOT NULL,
     longitude REAL NOT NULL,
     PRIMARY KEY (routeSliceId, timestamp),
-    FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id)
+    FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id) ON DELETE CASCADE
 );
 
 getActivity:
 SELECT * FROM ActivityEntity
 INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.id
-WHERE id = ?;
+WHERE id = 1;
 
 getActivityStats:
-SELECT * FROM ActivityStatsEntity WHERE activityId = ?;
+SELECT * FROM ActivityStatsEntity WHERE activityId = 1;
 
 getRoute:
 SELECT id, start, timestamp, latitude, longitude  FROM RouteSliceEntity
 LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
-WHERE activityId = ? ORDER BY start ASC;
+WHERE activityId = 1 ORDER BY start ASC;
 
 getLatestLocationFromLastRouteSlice:
 SELECT * FROM LocationEntity
 WHERE routeSliceId IN (
     SELECT id FROM RouteSliceEntity
-    WHERE activityId = ? ORDER BY start DESC LIMIT 1
+    WHERE activityId = 1 ORDER BY start DESC LIMIT 1
 ) ORDER BY timestamp DESC LIMIT 1;
 
 insertActivity:
-    INSERT OR REPLACE
-    INTO ActivityEntity(id, sport, title)
-    VALUES (:activityId, :sport, :title);
+INSERT OR REPLACE
+INTO ActivityEntity(id, uuid, sport, title)
+VALUES (1, ?,?, ?);
 
 insertActivityStats:
 INSERT OR REPLACE
 INTO ActivityStatsEntity(activityId, totalTime, totalDistanceMeters, averageSpeed)
-VALUES (?, ?, ?, ?);
+VALUES (1, ?, ?, ?);
 
 insertRouteSlice:
 INSERT OR REPLACE
 INTO RouteSliceEntity(id, activityId, start)
-VALUES (?, ?, ?);
+VALUES (?, 1, ?);
 
 insertLocationToLatestRouteSlice:
 INSERT OR REPLACE
 INTO LocationEntity(routeSliceId, latitude, longitude, timestamp)
-SELECT id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = ? ORDER BY start DESC LIMIT 1;
+SELECT id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = 1 ORDER BY start DESC LIMIT 1;
 
 
