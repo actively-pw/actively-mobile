@@ -43,6 +43,30 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getActivity() shouldBe activity
         }
 
+        test("Should return 0 if no activities found in database") {
+            activityDataSource.getActivityCount() shouldBe 0
+        }
+
+        test("Maximum of 1 activity can be present in database") {
+            activityDataSource.getActivityCount() shouldBe 0
+            val activity = stubActivity(id = "1", route = emptyList())
+            activityDataSource.insertActivity(
+                activity.id,
+                activity.title,
+                activity.sport,
+                activity.stats
+            )
+            activityDataSource.getActivityCount() shouldBe 1
+            val otherActivity = stubActivity(id = "2", route = emptyList())
+            activityDataSource.insertActivity(
+                otherActivity.id,
+                otherActivity.title,
+                otherActivity.sport,
+                otherActivity.stats
+            )
+            activityDataSource.getActivityCount() shouldBe 1
+        }
+
         test("Should always replace activity present in database") {
             val activity = stubActivity(id = "1", route = emptyList())
             activityDataSource.insertActivity(

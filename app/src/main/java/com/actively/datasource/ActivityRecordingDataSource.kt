@@ -20,6 +20,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 interface ActivityRecordingDataSource {
 
+    suspend fun getActivityCount(): Int
+
     suspend fun getActivity(): Activity?
 
     fun getStats(): Flow<Activity.Stats>
@@ -48,6 +50,10 @@ class ActivityRecordingDataSourceImpl(
 ) : ActivityRecordingDataSource {
 
     private val query = database.recordActivityQueries
+
+    override suspend fun getActivityCount() = withContext(coroutineContext) {
+        query.getActivityCount().executeAsOne().toInt()
+    }
 
     override suspend fun getActivity(): Activity? = withContext(coroutineContext) {
         query.transactionWithResult {
