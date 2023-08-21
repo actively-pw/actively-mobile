@@ -8,9 +8,9 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.actively.R
-import com.actively.activity.Activity
 import com.actively.recorder.usecase.RecordActivityUseCase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
@@ -22,6 +22,7 @@ class RecordActivityService : Service() {
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val recordActivity by inject<RecordActivityUseCase>()
     private val scope = CoroutineScope(SupervisorJob())
+    private var recordingJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -30,6 +31,8 @@ class RecordActivityService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             START_ACTON -> startRecording(intent)
+            PAUSE_ACTION -> pauseRecording()
+            RESUME_ACTION -> resumeRecording(intent)
             STOP_ACTION -> stopRecording()
         }
         return super.onStartCommand(intent, flags, startId)
@@ -41,18 +44,14 @@ class RecordActivityService : Service() {
     }
 
     private fun startRecording(intent: Intent) {
-        val (start, id) = parseInputData(intent) ?: return
+        val startedAt = intent.getStartedTimestamp() ?: return
         val notification = buildNotification()
         startForeground(NOTIFICATION_ID, notification)
-        recordActivity(id, start).launchIn(scope)
+        recordingJob = recordActivity(startedAt).launchIn(scope)
     }
 
-    private fun parseInputData(intent: Intent): Pair<Instant, Activity.Id>? {
-        val start = intent.extras?.getString(START_TIMESTAMP_KEY)
-            ?.let(Instant::parse) ?: return null
-        val id = intent.extras?.getString(ACTIVITY_ID_KEY)?.let(Activity::Id) ?: return null
-        return start to id
-    }
+    private fun Intent.getStartedTimestamp() = extras?.getString(START_TIMESTAMP_KEY)
+        ?.let(Instant::parse)
 
     private fun buildNotification(): Notification {
         notificationManager.createNotificationChannel(
@@ -64,7 +63,19 @@ class RecordActivityService : Service() {
             .build()
     }
 
+    private fun pauseRecording() {
+        recordingJob?.cancel()
+        recordingJob = null
+    }
+
+    private fun resumeRecording(intent: Intent) {
+        val startedAt = intent.getStartedTimestamp() ?: return
+        recordingJob = recordActivity(startedAt).launchIn(scope)
+    }
+
     private fun stopRecording() {
+        recordingJob?.cancel()
+        recordingJob = null
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -72,9 +83,10 @@ class RecordActivityService : Service() {
     companion object {
 
         const val START_ACTON = "start_action"
+        const val PAUSE_ACTION = "pause_action"
+        const val RESUME_ACTION = "resume_action"
         const val STOP_ACTION = "stop_action"
         const val START_TIMESTAMP_KEY = "start-key"
-        const val ACTIVITY_ID_KEY = "activity-id-key"
         private const val CHANNEL_ID = "activity-notification"
         private const val CHANNEL_NAME = "Location tracking"
         private const val NOTIFICATION_ID = 1
