@@ -3,7 +3,6 @@ package com.actively.datasource
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
-import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
 import com.actively.activity.Location
@@ -91,8 +90,7 @@ class ActivityRecordingDataSourceImpl(
             )
         }
         .asFlow()
-        .mapToOneOrNull(coroutineContext)
-        .map { it ?: Activity.Stats.empty() }
+        .mapToOneOrDefault(Activity.Stats.empty(), coroutineContext)
 
     override fun getRoute() = query.getRoute()
         .asFlow()
