@@ -2,6 +2,7 @@ package com.actively.stubs
 
 import com.actively.activity.Activity
 import com.actively.activity.Location
+import com.actively.activity.RouteSlice
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.kilometers
 import kotlinx.datetime.Instant
@@ -12,14 +13,12 @@ fun stubActivity(
     id: String = "1",
     title: String? = "Morning activity",
     sport: String = "Cycling",
-    start: Instant = Instant.fromEpochMilliseconds(0),
     stats: Activity.Stats = stubActivityStats(),
-    route: List<Location> = stubRoute()
+    route: List<RouteSlice> = stubRoute()
 ) = Activity(
     id = Activity.Id(id),
     title = title,
     sport = sport,
-    start = start,
     stats = stats,
     route = route,
 )
@@ -34,14 +33,17 @@ fun stubActivityStats(
     averageSpeed = averageSpeed
 )
 
-fun stubRoute(locationsNumber: Int = 2) = List(locationsNumber) {
-    stubLocation(
-        latitude = it.toDouble(),
-        longitude = it.toDouble(),
-        timestamp = Instant.fromEpochMilliseconds(it.toLong())
-    )
-
+fun stubRoute(numberOfSlices: Int = 4) = List(numberOfSlices) {
+    stubRouteSlice(start = Instant.fromEpochMilliseconds(0) + (1.hours * it))
 }
+
+fun stubRouteSlice(
+    start: Instant = Instant.fromEpochMilliseconds(0)
+) = RouteSlice(
+    start = start,
+    locations = List(5) { stubLocation() }
+)
+
 
 fun stubLocation(
     timestamp: Instant = Instant.fromEpochMilliseconds(0),

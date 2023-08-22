@@ -14,9 +14,8 @@ data class Activity(
     val id: Id,
     val title: String?,
     val sport: String,
-    val start: Instant,
     val stats: Stats,
-    val route: List<Location>
+    val route: List<RouteSlice>
 ) {
 
     data class Id(val value: String)
@@ -33,6 +32,11 @@ data class Activity(
         }
     }
 }
+
+data class RouteSlice(
+    val start: Instant,
+    val locations: List<Location>
+)
 
 data class Location(
     val timestamp: Instant,
