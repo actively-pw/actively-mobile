@@ -4,6 +4,7 @@ import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.datasource.ActivityRecordingDataSource
+import com.actively.recorder.RecorderState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 
@@ -26,6 +27,10 @@ interface ActivityRecordingRepository {
     suspend fun insertEmptyRouteSlice(start: Instant)
 
     suspend fun insertLocation(location: Location)
+
+    suspend fun setState(state: RecorderState)
+
+    fun getState(): Flow<RecorderState>
 }
 
 class ActivityRecordingRepositoryImpl(
@@ -54,4 +59,9 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun insertLocation(location: Location) = activityRecordingDataSource
         .insertLocationToLatestRouteSlice(location)
+
+    override suspend fun setState(state: RecorderState) = activityRecordingDataSource
+        .setState(state)
+
+    override fun getState() = activityRecordingDataSource.getState()
 }
