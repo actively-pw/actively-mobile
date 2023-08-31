@@ -2,12 +2,13 @@ package com.actively.datasource
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.actively.ActivityDatabase
+import com.actively.activity.Activity
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.kilometers
+import com.actively.recorder.RecorderState
 import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.testCoroutineScheduler
@@ -107,10 +108,8 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getStats().first() shouldBe newStats
         }
 
-        test("Should throw exception if none Activity.Stats were found") {
-            shouldThrow<Exception> {
-                activityDataSource.getStats().first()
-            }
+        test("Should return empty Activity.Stats if none were found") {
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
         }
 
         test("Should insert empty RouteSlice") {
@@ -193,6 +192,23 @@ class ActivityRecordingDataSourceTest : FunSpec({
 
         test("getLatestLocationFromLastRouteSlice should return null if no RouteSlices were found") {
             activityDataSource.getLatestLocationFromLastRouteSlice().shouldBeNull()
+        }
+
+        test("setState sets state of recorder correctly") {
+            val states = listOf(
+                RecorderState.Idle,
+                RecorderState.Started,
+                RecorderState.Paused,
+                RecorderState.Stopped
+            )
+            states.forEach { state ->
+                activityDataSource.setState(state)
+                activityDataSource.getState().first() shouldBe state
+            }
+        }
+
+        test("getState returns RecorderState.Idle if no state was found in database") {
+            activityDataSource.getState().first() shouldBe RecorderState.Idle
         }
     }
 })

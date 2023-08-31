@@ -2,13 +2,16 @@ package com.actively.datasource
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.meters
+import com.actively.recorder.RecorderState
+import com.actively.recorder.asString
+import com.actively.recorder.toRecorderState
 import database.GetRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +45,10 @@ interface ActivityRecordingDataSource {
     suspend fun insertEmptyRouteSlice(start: Instant)
 
     suspend fun insertLocationToLatestRouteSlice(location: Location)
+
+    suspend fun setState(state: RecorderState)
+
+    fun getState(): Flow<RecorderState>
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -83,7 +90,7 @@ class ActivityRecordingDataSourceImpl(
             )
         }
         .asFlow()
-        .mapToOne(coroutineContext)
+        .mapToOneOrDefault(Activity.Stats.empty(), coroutineContext)
 
     override fun getRoute() = query.getRoute()
         .asFlow()
@@ -140,6 +147,17 @@ class ActivityRecordingDataSourceImpl(
             )
         }
     }
+
+    override suspend fun setState(state: RecorderState) {
+        withContext(coroutineContext) {
+            query.setRecorderState(state.asString())
+        }
+    }
+
+    override fun getState() =
+        query.getRecorderState { _, stateString -> stateString.toRecorderState() }
+            .asFlow()
+            .mapToOneOrDefault(RecorderState.Idle, coroutineContext)
 
     private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
         .map { (start, getRouteQuery) ->

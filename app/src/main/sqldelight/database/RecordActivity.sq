@@ -29,6 +29,11 @@ CREATE TABLE LocationEntity(
     FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id) ON DELETE CASCADE
 );
 
+CREATE TABLE RecorderStateEntity(
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    state TEXT NOT NULL
+);
+
 getActivity:
 SELECT * FROM ActivityEntity
 INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.id
@@ -72,4 +77,10 @@ INSERT OR REPLACE
 INTO LocationEntity(routeSliceId, latitude, longitude, timestamp)
 SELECT id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = 1 ORDER BY start DESC LIMIT 1;
 
+getRecorderState:
+SELECT * FROM RecorderStateEntity WHERE id = 1;
 
+setRecorderState:
+INSERT OR REPLACE
+INTO RecorderStateEntity(id, state)
+VALUES (1, :state);
