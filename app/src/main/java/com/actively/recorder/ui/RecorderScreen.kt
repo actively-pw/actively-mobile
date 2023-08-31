@@ -82,7 +82,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
 private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(4.dp))
-        Stat(
+        LabeledValue(
             label = "Time (s)",
             value = String.format(
                 "%02d:%02d:%02d",
@@ -98,7 +98,7 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
                 .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Stat(
+            LabeledValue(
                 modifier = Modifier.weight(1f),
                 label = "Distance (km)",
                 value = String.format("%.2f", stats?.distance?.inKilometers ?: 0.0)
@@ -108,7 +108,7 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
                     .width(1.dp)
                     .fillMaxHeight()
             )
-            Stat(
+            LabeledValue(
                 modifier = Modifier.weight(1f),
                 label = "Avg speed (km/h)",
                 value = String.format("%.2f", stats?.averageSpeed ?: 0.0)
@@ -119,10 +119,13 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
 }
 
 @Composable
-private fun Stat(label: String, value: String, modifier: Modifier = Modifier) {
+private fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label.uppercase(), style = MaterialTheme.typography.bodySmall)
-        Text(value.uppercase(), style = MaterialTheme.typography.titleLarge)
+        Text(label.uppercase(), style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = value.uppercase(),
+            style = MaterialTheme.typography.headlineLarge
+        )
     }
 }
 
@@ -189,7 +192,7 @@ fun StatsSectionPreview() {
 @Composable
 fun StatPreview() {
     ActivelyTheme {
-        Stat(label = "Time", value = "01:58:34")
+        LabeledValue(label = "Time", value = "01:58:34")
     }
 }
 
