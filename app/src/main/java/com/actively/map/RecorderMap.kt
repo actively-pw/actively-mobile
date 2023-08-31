@@ -1,6 +1,7 @@
 package com.actively.map
 
 import android.content.Context
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,13 +20,17 @@ import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.locationcomponent.location
 
 @Composable
-fun RecorderMap(routeGeoJson: String?, modifier: Modifier = Modifier) {
+fun RecorderMap(
+    routeGeoJson: String?,
+    modifier: Modifier = Modifier,
+    isDarkTheme: Boolean = isSystemInDarkTheme()
+) {
     AndroidView(
         modifier = modifier,
         factory = { context ->
             MapView(context, mapInitOptions = mapInitOptions(context)).apply {
                 getMapboxMap().loadStyle(
-                    style(Style.OUTDOORS) {
+                    style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
                         +geoJsonSource("source-id")
                         +lineLayer("line-layer", "source-id") {
                             lineWidth(4.0)
@@ -39,11 +44,11 @@ fun RecorderMap(routeGeoJson: String?, modifier: Modifier = Modifier) {
             }
         },
         update = { mapView ->
+            val style = mapView.getMapboxMap().getStyle()
             routeGeoJson?.let { geoJson ->
-                mapView.getMapboxMap().getStyle()
-                    ?.getSourceAs<GeoJsonSource>("source-id")
-                    ?.data(geoJson)
+                style?.getSourceAs<GeoJsonSource>("source-id")?.data(geoJson)
             }
+            style?.styleURI = if (isDarkTheme) Style.DARK else Style.OUTDOORS
         }
     )
 }
