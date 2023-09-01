@@ -44,11 +44,11 @@ fun RecorderMap(
             }
         },
         update = { mapView ->
-            val style = mapView.getMapboxMap().getStyle()
             routeGeoJson?.let { geoJson ->
-                style?.getSourceAs<GeoJsonSource>("source-id")?.data(geoJson)
+                mapView.getMapboxMap().getStyle()
+                    ?.getSourceAs<GeoJsonSource>("source-id")
+                    ?.data(geoJson)
             }
-            style?.styleURI = if (isDarkTheme) Style.DARK else Style.OUTDOORS
         }
     )
 }
