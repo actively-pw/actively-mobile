@@ -2,9 +2,9 @@ package com.actively.map
 
 import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.actively.BuildConfig
@@ -19,22 +19,26 @@ import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.locationcomponent.location
 
+private const val SOURCE_ID = "source-id"
+private const val LINE_LAYER_ID = "line-layer-id"
+
 @Composable
 fun RecorderMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
+    val lineColor = MaterialTheme.colorScheme.primary
     AndroidView(
         modifier = modifier,
         factory = { context ->
             MapView(context, mapInitOptions = mapInitOptions(context)).apply {
                 getMapboxMap().loadStyle(
                     style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
-                        +geoJsonSource("source-id")
-                        +lineLayer("line-layer", "source-id") {
+                        +geoJsonSource(SOURCE_ID)
+                        +lineLayer(LINE_LAYER_ID, SOURCE_ID) {
                             lineWidth(4.0)
-                            lineColor(Color.Blue.toArgb())
+                            lineColor(lineColor.toArgb())
                         }
                     }
                 )
@@ -46,7 +50,7 @@ fun RecorderMap(
         update = { mapView ->
             routeGeoJson?.let { geoJson ->
                 mapView.getMapboxMap().getStyle()
-                    ?.getSourceAs<GeoJsonSource>("source-id")
+                    ?.getSourceAs<GeoJsonSource>(SOURCE_ID)
                     ?.data(geoJson)
             }
         }
