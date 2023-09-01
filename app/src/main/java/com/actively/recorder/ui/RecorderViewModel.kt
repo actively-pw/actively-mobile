@@ -5,32 +5,35 @@ import androidx.lifecycle.viewModelScope
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.recorder.RecorderState
-import com.actively.recorder.usecase.GetRecorderStateUseCase
+import com.actively.recorder.usecase.GetStatsUseCase
 import com.actively.recorder.usecase.RecordingControlUseCases
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.util.TimeProvider
 import com.mapbox.geojson.LineString
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class RecorderViewModel(
     private val recordingControlUseCases: RecordingControlUseCases,
+    private val getStatsUseCase: GetStatsUseCase,
     private val timeProvider: TimeProvider,
-    getRecorderStateUseCase: GetRecorderStateUseCase,
     activityRecordingRepository: ActivityRecordingRepository,
 ) : ViewModel() {
 
-    val stats = activityRecordingRepository.getStats()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+    private val _stats = MutableStateFlow(StatisticsState())
+    val stats = _stats.asStateFlow()
 
     val route = activityRecordingRepository.getRoute()
         .toGeoJsonFlow()
@@ -41,30 +44,54 @@ class RecorderViewModel(
     )
     val controlsState: StateFlow<ControlsState> = _controlsState.asStateFlow()
 
+    private var statsUpdates: Job? = null
+
     init {
-        getRecorderStateUseCase().onEach { newState ->
+        viewModelScope.launch {
+            val recordingState = activityRecordingRepository.getState().first()
+            if (recordingState is RecorderState.Started) {
+                statsUpdates = launchStatsUpdates()
+            }
+
+            _stats.update {
+                activityRecordingRepository.getStats().first().toState()
+            }
+        }
+
+        activityRecordingRepository.getState().onEach { newState ->
             _controlsState.update { currentState ->
                 ControlsState(current = newState, previous = currentState.current)
             }
-            println(_controlsState.value)
         }.launchIn(viewModelScope)
     }
 
     fun startRecording() = viewModelScope.launch {
         recordingControlUseCases.startRecording("Cycling", timeProvider())
+        statsUpdates = launchStatsUpdates()
     }
 
     fun pauseRecording() {
         recordingControlUseCases.pauseRecording()
+        statsUpdates?.cancel()
+        statsUpdates = null
     }
 
     fun resumeRecording() = viewModelScope.launch {
         recordingControlUseCases.resumeRecording(timeProvider())
+        statsUpdates = launchStatsUpdates()
     }
 
     fun stopRecording() = viewModelScope.launch {
         recordingControlUseCases.stopRecording()
+        statsUpdates?.cancel()
+        statsUpdates = null
     }
+
+    private fun launchStatsUpdates() = getStatsUseCase(interval = 1.seconds)
+        .onEach { stats ->
+            _stats.update { stats.toState() }
+        }
+        .launchIn(viewModelScope)
 
     private fun Flow<List<RouteSlice>>.toGeoJsonFlow() = mapNotNull { slices ->
         slices.flatMap(RouteSlice::locations)
@@ -74,8 +101,3 @@ class RecorderViewModel(
 
     private fun List<Location>.toGeoJson() = LineString.fromLngLats(map(Location::toPoint)).toJson()
 }
-
-
-
-
-

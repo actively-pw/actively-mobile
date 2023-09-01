@@ -23,8 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.actively.activity.Activity
-import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
@@ -72,17 +70,12 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
 }
 
 @Composable
-private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) {
+private fun StatsSection(stats: StatisticsState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(4.dp))
         LabeledValue(
             label = "Time (s)",
-            value = String.format(
-                "%02d:%02d:%02d",
-                stats?.totalTime?.inWholeHours ?: 0,
-                stats?.totalTime?.inWholeMinutes?.mod(60) ?: 0,
-                stats?.totalTime?.inWholeSeconds?.mod(60) ?: 0,
-            )
+            value = stats.totalTime
         )
         Divider(modifier = Modifier.padding(vertical = 4.dp))
         Row(
@@ -94,7 +87,7 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
             LabeledValue(
                 modifier = Modifier.weight(1f),
                 label = "Distance (km)",
-                value = String.format("%.2f", stats?.distance?.inKilometers ?: 0.0)
+                value = stats.distance
             )
             Divider(
                 modifier = Modifier
@@ -104,7 +97,7 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
             LabeledValue(
                 modifier = Modifier.weight(1f),
                 label = "Avg speed (km/h)",
-                value = String.format("%.2f", stats?.averageSpeed ?: 0.0)
+                value = stats.averageSpeed
             )
         }
         Divider(modifier = Modifier.padding(top = 2.dp))
@@ -129,7 +122,7 @@ fun BottomSectionPreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End),
-                stats = Activity.Stats.empty()
+                stats = StatisticsState()
             )
             Spacer(Modifier.height(16.dp))
             AnimatedRecorderControlsSection(
