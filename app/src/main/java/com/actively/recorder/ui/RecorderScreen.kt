@@ -63,6 +63,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                         .align(Alignment.End),
                     stats = stats
                 )
+                Spacer(modifier = Modifier.height(16.dp))
                 RecorderControlsSection(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -73,6 +74,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                     onResumeClick = viewModel::resumeRecording,
                     onStopClick = viewModel::stopRecording,
                 )
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -176,12 +178,28 @@ private fun RecorderControlsSection(
 
 @Preview(showBackground = true)
 @Composable
-fun StatsSectionPreview() {
+fun BottomSectionPreview() {
     ActivelyTheme {
-        StatsSection(
-            stats = Activity.Stats(1.5.hours, 24.5.kilometers, 23.123123),
-            modifier = Modifier
-        )
+        Column {
+            StatsSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End),
+                stats = Activity.Stats.empty()
+            )
+            Spacer(Modifier.height(16.dp))
+            RecorderControlsSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End),
+                recordingState = RecorderState.Paused,
+                onStartClick = { },
+                onPauseClick = { },
+                onResumeClick = { },
+                onStopClick = { },
+            )
+            Spacer(Modifier.height(12.dp))
+        }
     }
 }
 
@@ -195,8 +213,24 @@ fun StatPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun RecorderControlsSectionPreview() {
+fun StartRecordingPreview() {
     ActivelyTheme {
         RecorderControlsSection(recordingState = RecorderState.Idle, {}, {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PauseRecordingPreview() {
+    ActivelyTheme {
+        RecorderControlsSection(recordingState = RecorderState.Started, {}, {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ResumeFinishRecordingPreview() {
+    ActivelyTheme {
+        RecorderControlsSection(recordingState = RecorderState.Paused, {}, {}, {}, {})
     }
 }
