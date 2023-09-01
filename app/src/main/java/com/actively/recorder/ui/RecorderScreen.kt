@@ -64,7 +64,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                     stats = stats
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                RecorderControlsSection(
+                AnimatedRecorderControlsSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.End),
@@ -128,53 +128,6 @@ private fun LabeledValue(label: String, value: String, modifier: Modifier = Modi
     }
 }
 
-@Composable
-private fun RecorderControlsSection(
-    recordingState: RecorderState,
-    onStartClick: () -> Unit,
-    onPauseClick: () -> Unit,
-    onResumeClick: () -> Unit,
-    onStopClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(modifier = modifier, horizontalArrangement = Arrangement.Center) {
-        when (recordingState) {
-            is RecorderState.Idle -> Button(
-                onClick = onStartClick,
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = null)
-            }
-
-            is RecorderState.Started -> Button(
-                onClick = onPauseClick,
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                Icon(Icons.Filled.Pause, contentDescription = null)
-            }
-
-            is RecorderState.Paused -> {
-                OutlinedButton(
-                    modifier = Modifier.width(80.dp),
-                    onClick = onResumeClick,
-                    contentPadding = PaddingValues(4.dp),
-                ) {
-                    Text("Resume", style = MaterialTheme.typography.labelMedium)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Button(
-                    modifier = Modifier.width(80.dp),
-                    onClick = onStopClick,
-                    contentPadding = PaddingValues(4.dp),
-                ) {
-                    Text("Finish", style = MaterialTheme.typography.labelMedium)
-                }
-            }
-
-            is RecorderState.Stopped -> {}
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -188,7 +141,7 @@ fun BottomSectionPreview() {
                 stats = Activity.Stats.empty()
             )
             Spacer(Modifier.height(16.dp))
-            RecorderControlsSection(
+            AnimatedRecorderControlsSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End),
@@ -208,29 +161,5 @@ fun BottomSectionPreview() {
 fun StatPreview() {
     ActivelyTheme {
         LabeledValue(label = "Time", value = "01:58:34")
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StartRecordingPreview() {
-    ActivelyTheme {
-        RecorderControlsSection(recordingState = RecorderState.Idle, {}, {}, {}, {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PauseRecordingPreview() {
-    ActivelyTheme {
-        RecorderControlsSection(recordingState = RecorderState.Started, {}, {}, {}, {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ResumeFinishRecordingPreview() {
-    ActivelyTheme {
-        RecorderControlsSection(recordingState = RecorderState.Paused, {}, {}, {}, {})
     }
 }
