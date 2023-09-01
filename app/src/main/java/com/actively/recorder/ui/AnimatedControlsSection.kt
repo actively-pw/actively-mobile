@@ -59,7 +59,7 @@ fun AnimatedRecorderControlsSection(
                 }
             }
 
-            previousState is RecorderState.Started && currentState is RecorderState.Paused -> {
+            currentState is RecorderState.Paused -> {
                 SlidingFromCenterResumeFinishButtons(
                     onResumeClick = onResumeClick,
                     onFinishClick = onStopClick,
