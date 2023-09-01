@@ -3,7 +3,6 @@ package com.actively.recorder.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,15 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,12 +25,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.actively.activity.Activity
 import com.actively.distance.Distance.Companion.inKilometers
-import com.actively.distance.Distance.Companion.kilometers
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
 import org.koin.androidx.compose.getViewModel
-import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +37,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
         Scaffold {
             val stats by viewModel.stats.collectAsState()
             val route by viewModel.route.collectAsState()
-            val recordingState by viewModel.recordingState.collectAsState()
+            val controlsState by viewModel.controlsState.collectAsState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -68,7 +59,7 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.End),
-                    recordingState = recordingState,
+                    controlsState = controlsState,
                     onStartClick = viewModel::startRecording,
                     onPauseClick = viewModel::pauseRecording,
                     onResumeClick = viewModel::resumeRecording,
@@ -145,7 +136,7 @@ fun BottomSectionPreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End),
-                recordingState = RecorderState.Paused,
+                controlsState = ControlsState(RecorderState.Idle, RecorderState.Idle),
                 onStartClick = { },
                 onPauseClick = { },
                 onResumeClick = { },

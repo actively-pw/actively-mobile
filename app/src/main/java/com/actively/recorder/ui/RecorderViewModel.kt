@@ -11,9 +11,15 @@ import com.actively.repository.ActivityRecordingRepository
 import com.actively.util.TimeProvider
 import com.mapbox.geojson.LineString
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RecorderViewModel(
@@ -30,8 +36,19 @@ class RecorderViewModel(
         .toGeoJsonFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
 
-    val recordingState = getRecorderStateUseCase()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), RecorderState.Idle)
+    private val _controlsState = MutableStateFlow(
+        ControlsState(current = RecorderState.Idle, previous = RecorderState.Idle)
+    )
+    val controlsState: StateFlow<ControlsState> = _controlsState.asStateFlow()
+
+    init {
+        getRecorderStateUseCase().onEach { newState ->
+            _controlsState.update { currentState ->
+                ControlsState(current = newState, previous = currentState.current)
+            }
+            println(_controlsState.value)
+        }.launchIn(viewModelScope)
+    }
 
     fun startRecording() = viewModelScope.launch {
         recordingControlUseCases.startRecording("Cycling", timeProvider())
