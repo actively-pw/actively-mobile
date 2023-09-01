@@ -121,11 +121,8 @@ private fun StatsSection(stats: Activity.Stats?, modifier: Modifier = Modifier) 
 @Composable
 private fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label.uppercase(), style = MaterialTheme.typography.titleMedium)
-        Text(
-            text = value.uppercase(),
-            style = MaterialTheme.typography.headlineLarge
-        )
+        Text(label.uppercase(), style = MaterialTheme.typography.titleSmall)
+        Text(text = value.uppercase(), style = MaterialTheme.typography.headlineLarge)
     }
 }
 
