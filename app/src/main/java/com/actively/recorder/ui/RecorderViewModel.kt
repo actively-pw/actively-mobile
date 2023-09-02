@@ -48,13 +48,12 @@ class RecorderViewModel(
 
     init {
         viewModelScope.launch {
+            _stats.update {
+                activityRecordingRepository.getStats().first().toState()
+            }
             val recordingState = activityRecordingRepository.getState().first()
             if (recordingState is RecorderState.Started) {
                 resumeRecording()
-            }
-
-            _stats.update {
-                activityRecordingRepository.getStats().first().toState()
             }
         }
 
