@@ -50,7 +50,7 @@ class RecorderViewModel(
         viewModelScope.launch {
             val recordingState = activityRecordingRepository.getState().first()
             if (recordingState is RecorderState.Started) {
-                statsUpdates = launchStatsUpdates()
+                resumeRecording()
             }
 
             _stats.update {

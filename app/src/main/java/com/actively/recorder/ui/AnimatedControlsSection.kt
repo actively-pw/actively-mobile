@@ -74,6 +74,16 @@ fun AnimatedRecorderControlsSection(
                 )
             }
 
+            currentState is RecorderState.Started -> {
+                RoundButton(onClick = onPauseClick) {
+                    Icon(
+                        modifier = Modifier.size(48.dp),
+                        imageVector = Icons.Filled.Pause,
+                        contentDescription = null
+                    )
+                }
+            }
+
             else -> {}
         }
     }

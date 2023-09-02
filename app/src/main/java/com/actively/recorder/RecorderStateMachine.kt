@@ -9,6 +9,7 @@ class RecorderStateMachineImpl : RecorderStateMachine {
 
     private val legalTransitions = arrayOf(
         RecorderState.Idle to RecorderState.Started,
+        RecorderState.Idle to RecorderState.Paused,
         RecorderState.Started to RecorderState.Paused,
         RecorderState.Started to RecorderState.Stopped,
         RecorderState.Paused to RecorderState.Started,
