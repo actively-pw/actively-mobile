@@ -19,7 +19,9 @@ class GetStatsUseCase(
             emit(totalTime)
         }
     }.combine(activityRecordingRepository.getStats()) { totalTime, stats ->
-        stats.copy(totalTime = totalTime)
+        stats.copy(totalTime = totalTime).also {
+            activityRecordingRepository.insertStats(it)
+        }
     }
 }
 
