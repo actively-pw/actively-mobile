@@ -63,11 +63,7 @@ class RecordActivityUseCaseImpl(
     }
 
     private fun distanceGainFlow() = locationProvider
-        .userLocation(
-            updateInterval = 4.seconds,
-            fastestUpdateInterval = 2.seconds,
-            locationUpdatesDistance = 1.meters
-        )
+        .userLocation(updateInterval = 4.seconds, fastestUpdateInterval = 2.seconds)
         .map { currentLocation ->
             val lastLocation = activityRecordingRepository.getLatestRouteLocation()
             activityRecordingRepository.insertLocation(currentLocation)
