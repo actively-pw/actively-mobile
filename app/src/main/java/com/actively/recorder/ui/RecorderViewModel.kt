@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.recorder.RecorderState
-import com.actively.recorder.usecase.GetStatsUseCase
 import com.actively.recorder.usecase.RecordingControlUseCases
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.util.TimeProvider
@@ -23,13 +22,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class RecorderViewModel(
     private val recordingControlUseCases: RecordingControlUseCases,
-    private val getStatsUseCase: GetStatsUseCase,
     private val timeProvider: TimeProvider,
-    activityRecordingRepository: ActivityRecordingRepository,
+    private val activityRecordingRepository: ActivityRecordingRepository,
 ) : ViewModel() {
 
     private val _stats = MutableStateFlow(StatisticsState())
@@ -86,7 +83,7 @@ class RecorderViewModel(
         statsUpdates = null
     }
 
-    private fun launchStatsUpdates() = getStatsUseCase(interval = 1.seconds)
+    private fun launchStatsUpdates() = activityRecordingRepository.getStats()
         .onEach { stats ->
             _stats.update { stats.toState() }
         }
