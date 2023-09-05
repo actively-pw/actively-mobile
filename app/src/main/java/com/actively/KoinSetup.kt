@@ -52,7 +52,7 @@ object KoinSetup {
     }
 
     private val useCasesModule = module {
-        factory<RecordActivityUseCase> { RecordActivityUseCaseImpl(get(), get()) }
+        factory<RecordActivityUseCase> { RecordActivityUseCaseImpl(get(), get(), get()) }
         factory { RecordingControlUseCases(get(), get(), get(), get()) }
         factory<StartRecordingUseCase> {
             StartRecordingUseCaseImpl(get(), get(), androidContext())
@@ -71,7 +71,13 @@ object KoinSetup {
     private val commonModule = module {
         single { LocationEngineProvider.getBestLocationEngine(androidContext()) }
         single<LocationProvider> { LocationProviderImpl(get()) }
-        single<SqlDriver> { AndroidSqliteDriver(ActivityDatabase.Schema, androidContext()) }
+        single<SqlDriver> {
+            AndroidSqliteDriver(
+                ActivityDatabase.Schema,
+                androidContext(),
+                "recording_database.db"
+            )
+        }
         single<ActivityDatabase> { ActivityDatabase(get()) }
         single<ActivityRecordingDataSource> { ActivityRecordingDataSourceImpl(get()) }
         single<ActivityRecordingRepository> { ActivityRecordingRepositoryImpl(get()) }

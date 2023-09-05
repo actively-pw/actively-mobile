@@ -6,6 +6,7 @@ import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
 import com.actively.location.LocationProvider
 import com.actively.repository.ActivityRecordingRepository
+import com.actively.util.TimeProvider
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -27,32 +28,36 @@ interface RecordActivityUseCase {
 class RecordActivityUseCaseImpl(
     private val locationProvider: LocationProvider,
     private val activityRecordingRepository: ActivityRecordingRepository,
+    private val timeProvider: TimeProvider,
 ) : RecordActivityUseCase {
 
-    override operator fun invoke(start: Instant) = totalActivityTimeFlow(interval = 1.seconds)
-        .buffer(capacity = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
-        .combine(distanceGainFlow()) { totalTime, distanceGain ->
-            val prevStats = activityRecordingRepository
-                .getStats()
-                .first()
-            val totalDistance = prevStats.distance + distanceGain
-            val updatedStats = prevStats.copy(
-                totalTime = totalTime,
-                distance = totalDistance,
-                averageSpeed = totalDistance.inKilometers / totalTime.toDouble(DurationUnit.HOURS)
-            )
-            activityRecordingRepository.insertStats(updatedStats)
-            updatedStats
-        }
+    override operator fun invoke(start: Instant) =
+        totalActivityTimeFlow(start = start, interval = 1.seconds)
+            .buffer(capacity = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
+            .combine(distanceGainFlow()) { totalTime, distanceGain ->
+                val prevStats = activityRecordingRepository
+                    .getStats()
+                    .first()
+                val totalDistance = prevStats.distance + distanceGain
+                val updatedStats = prevStats.copy(
+                    totalTime = totalTime,
+                    distance = totalDistance,
+                    averageSpeed = totalDistance.inKilometers / totalTime.toDouble(DurationUnit.HOURS)
+                )
+                activityRecordingRepository.insertStats(updatedStats)
+                updatedStats
+            }
 
 
-    private fun totalActivityTimeFlow(interval: Duration) = flow {
+    private fun totalActivityTimeFlow(start: Instant, interval: Duration) = flow {
         var totalTime = activityRecordingRepository.getStats().first().totalTime
+        var previous = start
         while (true) {
-            totalTime += interval
             delay(interval)
-            // todo: this for some reason stops emmiting when app is in background for some time
-            // todo: emit current time every 1.seconds. Then calculate time that passed to this moment and return from flow
+            timeProvider().let { now ->
+                totalTime += now - previous
+                previous = now
+            }
             emit(totalTime)
         }
     }
