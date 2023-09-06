@@ -16,6 +16,8 @@ interface ActivityRecordingRepository {
 
     fun getStats(): Flow<Activity.Stats>
 
+    suspend fun updateStats(transform: (Activity.Stats) -> Activity.Stats): Activity.Stats
+
     fun getRoute(): Flow<List<RouteSlice>>
 
     suspend fun getLatestRouteLocation(): Location?
@@ -42,6 +44,10 @@ class ActivityRecordingRepositoryImpl(
     override suspend fun getActivity() = activityRecordingDataSource.getActivity()
 
     override fun getStats() = activityRecordingDataSource.getStats()
+
+    override suspend fun updateStats(transform: (Activity.Stats) -> Activity.Stats): Activity.Stats {
+        return activityRecordingDataSource.updateStats(transform)
+    }
 
     override fun getRoute() = activityRecordingDataSource.getRoute()
 
