@@ -33,10 +33,11 @@ class RecordActivityUseCaseImpl(
 
     override operator fun invoke(start: Instant) =
         totalActivityTimeFlow(start = start, interval = 1.seconds)
-            .combine(distanceGainFlow()) { _, distanceGain ->
+            .combine(userLocationFlow()) { _, (lastLocation, currentLocation) ->
+                val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.meters
                 activityRecordingRepository.updateStats { stats ->
                     val time = stats.totalTime
-                    val distance = stats.distance + distanceGain
+                    val distance = stats.distance + traveledDistance
                     stats.copy(
                         distance = distance,
                         averageSpeed = distance.inKilometers / time.toDouble(DurationUnit.HOURS)
@@ -59,11 +60,11 @@ class RecordActivityUseCaseImpl(
         }
     }.buffer(capacity = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
 
-    private fun distanceGainFlow() = locationProvider
+    private fun userLocationFlow() = locationProvider
         .userLocation(updateInterval = 4.seconds, fastestUpdateInterval = 2.seconds)
         .map { currentLocation ->
             val lastLocation = activityRecordingRepository.getLatestRouteLocation()
             activityRecordingRepository.insertLocation(currentLocation)
-            lastLocation?.distanceTo(currentLocation) ?: 0.meters
+            lastLocation to currentLocation
         }
 }
