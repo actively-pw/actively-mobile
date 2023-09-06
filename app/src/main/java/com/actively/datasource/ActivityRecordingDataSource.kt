@@ -104,7 +104,7 @@ class ActivityRecordingDataSourceImpl(
                             distance = distanceMeters.meters,
                             averageSpeed = averageSpeed
                         )
-                    }.executeAsOne()
+                    }.executeAsOneOrNull() ?: Activity.Stats.empty()
                 transform(currentStats).also {
                     query.insertActivityStats(
                         it.totalTime.inWholeMilliseconds,

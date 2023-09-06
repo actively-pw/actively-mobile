@@ -210,5 +210,30 @@ class ActivityRecordingDataSourceTest : FunSpec({
         test("getState returns RecorderState.Idle if no state was found in database") {
             activityDataSource.getState().first() shouldBe RecorderState.Idle
         }
+
+        test("updateStats should pass currently saved stats to transform function") {
+            val stats = stubActivityStats()
+            activityDataSource.insertStats(stats)
+            activityDataSource.updateStats { actual ->
+                actual shouldBe stats
+            }
+        }
+
+        test("updateStats should pass empty stats to transform function if no stats were found in db") {
+            activityDataSource.updateStats { actual ->
+                actual shouldBe Activity.Stats.empty()
+            }
+        }
+
+        test("updateStats should save updated stats to database") {
+            activityDataSource.insertStats(stubActivityStats())
+            val expected = stubActivityStats(
+                totalTime = 10.hours,
+                distance = 100.kilometers,
+                averageSpeed = 1.0
+            )
+            activityDataSource.updateStats { expected }
+            activityDataSource.getStats().first() shouldBe expected
+        }
     }
 })
