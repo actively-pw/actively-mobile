@@ -38,10 +38,11 @@ class RecordActivityUseCaseImpl(
                 activityRecordingRepository.updateStats { stats ->
                     val time = stats.totalTime
                     val distance = stats.distance + traveledDistance
-                    stats.copy(
-                        distance = distance,
-                        averageSpeed = distance.inKilometers / time.toDouble(DurationUnit.HOURS)
-                    )
+                    val averageSpeed = when {
+                        time > 0.seconds -> distance.inKilometers / time.toDouble(DurationUnit.HOURS)
+                        else -> 0.0
+                    }
+                    stats.copy(distance = distance, averageSpeed = averageSpeed)
                 }
             }
 
