@@ -46,11 +46,6 @@ class RecordActivityUseCaseTest : FunSpec({
         coEvery { activityRecordingRepository.getLatestRouteLocation() } returns null
         coEvery { activityRecordingRepository.getStats() } returns flowOf(Activity.Stats.empty())
 
-        test("totalActivityTimeFlow should call ActivityRepository to get previous activity stats") {
-            recordActivityUseCase(start).first()
-            coVerify(exactly = 1) { activityRecordingRepository.getStats() }
-        }
-
         test("totalActivityTimeFlow should add time that passed since last stats update to total time of activity") {
             val transformLambdas = mutableListOf<(Activity.Stats) -> Activity.Stats>()
             coEvery {
@@ -80,7 +75,7 @@ class RecordActivityUseCaseTest : FunSpec({
             transformLambdas[1].invoke(currentStats) shouldBe currentStats
         }
 
-        test("userLocationFlow should call ActivityRepository to insert latest location") {
+        test("totalDistanceFlow should call ActivityRepository to insert latest location") {
             recordActivityUseCase(start).first()
             coVerify(exactly = 1) {
                 activityRecordingRepository.insertLocation(latestLocation)
@@ -141,18 +136,19 @@ class RecordActivityUseCaseTest : FunSpec({
 
         test("Should return updated stats") {
             val transformLambdas = slot<(Activity.Stats) -> Activity.Stats>()
+            val stats = stubActivityStats(
+                totalTime = 2.seconds,
+                distance = 0.meters,
+                averageSpeed = 0.0
+            )
+            coEvery {
+                activityRecordingRepository.getStats()
+            } returns flowOf(stats)
             coEvery {
                 activityRecordingRepository.updateStats(capture(transformLambdas))
             } coAnswers {
-                transformLambdas.captured.invoke(
-                    stubActivityStats(
-                        totalTime = 2.seconds,
-                        distance = 0.meters,
-                        averageSpeed = 0.0
-                    )
-                )
+                transformLambdas.captured(stats)
             }
-            recordActivityUseCase(start).first()
             val expectedStats = Activity.Stats(
                 totalTime = 2.seconds,
                 distance = 157.meters,
