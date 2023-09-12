@@ -16,8 +16,8 @@ class RecorderStateMachineTest : FunSpec({
         verify(exactly = 1) { onSuccess() }
     }
 
-    test("Should not transit to any state other that Started from idle") {
-        val targetStates = listOf(RecorderState.Paused, RecorderState.Stopped)
+    test("Should not transit to any state other that Started or Paused from idle") {
+        val targetStates = listOf(RecorderState.Idle, RecorderState.Stopped)
         targetStates.forEach { state ->
             recorderStateMachine.transitionTo(state, onSuccess::invoke)
         }
