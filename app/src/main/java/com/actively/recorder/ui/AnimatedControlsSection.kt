@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.actively.R
 import com.actively.recorder.RecorderState
@@ -108,7 +109,10 @@ fun SlidingFromCenterResumeFinishButtons(
     }
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         RoundButton(modifier = Modifier.offset(offset), onClick = onFinishClick) {
-            Text("Finish".uppercase(), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.finish_button).uppercase(),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
         OutlinedRoundButton(
             modifier = Modifier
@@ -116,7 +120,10 @@ fun SlidingFromCenterResumeFinishButtons(
                 .background(MaterialTheme.colorScheme.background, CircleShape),
             onClick = onResumeClick
         ) {
-            Text("Resume".uppercase(), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.resume_button).uppercase(),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -138,7 +145,10 @@ fun SlidingTowardsCenterResumeFinishButtons(
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         // this button slides under Pause button so it is there to keep animation concise
         RoundButton(modifier = Modifier.offset(offset), onClick = { }) {
-            Text("Finish".uppercase(), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(id = R.string.finish_button).uppercase(),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
         RoundButton(modifier = Modifier.offset(-offset), onClick = onPauseClick) {
             Icon(
