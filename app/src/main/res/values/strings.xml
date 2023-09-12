@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Actively</string>
+    <string name="finish_button">Finish</string>
+    <string name="resume_button">Resume</string>
 </resources>

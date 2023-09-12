@@ -78,6 +78,8 @@ class RecordActivityService : Service() {
     private fun resumeRecording(intent: Intent) {
         val resumedAt = intent.getTimestamp()
             ?: error("No timestamp was provided with intent")
+        val notification = buildNotification()
+        startForeground(NOTIFICATION_ID, notification)
         recordingJob = recordActivityUseCase(resumedAt).launchIn(scope)
     }
 

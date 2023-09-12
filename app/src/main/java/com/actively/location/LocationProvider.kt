@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Looper
 import com.actively.activity.Location
 import com.actively.activity.toLocation
-import com.actively.distance.Distance
-import com.actively.distance.Distance.Companion.inMeters
 import com.mapbox.common.location.compat.LocationEngine
 import com.mapbox.common.location.compat.LocationEngineCallback
 import com.mapbox.common.location.compat.LocationEngineRequest
@@ -20,7 +18,6 @@ interface LocationProvider {
     fun userLocation(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,
-        locationUpdatesDistance: Distance
     ): Flow<Location>
 }
 
@@ -30,7 +27,6 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
     override fun userLocation(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,
-        locationUpdatesDistance: Distance,
     ) = callbackFlow {
         val callback = locationEngineCallback(
             onNewLocation = { trySend(it) },
@@ -39,7 +35,6 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
         val locationRequest = locationEngineRequest(
             updateInterval = updateInterval,
             fastestUpdateInterval = fastestUpdateInterval,
-            locationUpdatesDistance = locationUpdatesDistance
         )
         locationEngine.requestLocationUpdates(
             request = locationRequest,
@@ -68,9 +63,7 @@ class LocationProviderImpl(private val locationEngine: LocationEngine) : Locatio
     private fun locationEngineRequest(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,
-        locationUpdatesDistance: Distance,
     ) = LocationEngineRequest.Builder(updateInterval.inWholeMilliseconds)
         .setFastestInterval(fastestUpdateInterval.inWholeMilliseconds)
-        .setDisplacement(locationUpdatesDistance.inMeters.toFloat())
         .build()
 }

@@ -29,6 +29,8 @@ interface ActivityRecordingDataSource {
 
     fun getStats(): Flow<Activity.Stats>
 
+    suspend fun updateStats(transform: (Activity.Stats) -> Activity.Stats): Activity.Stats
+
     fun getRoute(): Flow<List<RouteSlice>>
 
     suspend fun getLatestLocationFromLastRouteSlice(): Location?
@@ -91,6 +93,28 @@ class ActivityRecordingDataSourceImpl(
         }
         .asFlow()
         .mapToOneOrDefault(Activity.Stats.empty(), coroutineContext)
+
+    override suspend fun updateStats(transform: (Activity.Stats) -> Activity.Stats): Activity.Stats {
+        return withContext(coroutineContext) {
+            query.transactionWithResult {
+                val currentStats = query
+                    .getActivityStats { _, totalTime, distanceMeters, averageSpeed ->
+                        Activity.Stats(
+                            totalTime = totalTime.milliseconds,
+                            distance = distanceMeters.meters,
+                            averageSpeed = averageSpeed
+                        )
+                    }.executeAsOneOrNull() ?: Activity.Stats.empty()
+                transform(currentStats).also {
+                    query.insertActivityStats(
+                        it.totalTime.inWholeMilliseconds,
+                        it.distance.inMeters,
+                        it.averageSpeed
+                    )
+                }
+            }
+        }
+    }
 
     override fun getRoute() = query.getRoute()
         .asFlow()

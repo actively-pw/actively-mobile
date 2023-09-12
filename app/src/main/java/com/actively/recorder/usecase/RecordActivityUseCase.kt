@@ -1,17 +1,22 @@
 package com.actively.recorder.usecase
 
 import com.actively.activity.Activity
-import com.actively.activity.Location
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
 import com.actively.location.LocationProvider
 import com.actively.repository.ActivityRecordingRepository
+import com.actively.util.TimeProvider
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
@@ -23,43 +28,45 @@ interface RecordActivityUseCase {
 class RecordActivityUseCaseImpl(
     private val locationProvider: LocationProvider,
     private val activityRecordingRepository: ActivityRecordingRepository,
+    private val timeProvider: TimeProvider,
 ) : RecordActivityUseCase {
 
-    override operator fun invoke(start: Instant) = locationProvider
-        .userLocation(
-            updateInterval = 3.seconds,
-            fastestUpdateInterval = 1.seconds,
-            locationUpdatesDistance = 2.meters
-        )
-        .map { currentLocation ->
-            activityRecordingRepository.getLatestRouteLocation() to currentLocation
-        }
-        .mapNotNull { (lastLocation, currentLocation) ->
-            val prevStats = activityRecordingRepository
-                .getStats()
-                .firstOrNull() ?: return@mapNotNull null
-            val currentStats = prevStats.update(lastLocation, currentLocation, start)
-            activityRecordingRepository.insertStats(stats = currentStats)
-            activityRecordingRepository.insertLocation(currentLocation)
-            currentStats
-        }
+    override operator fun invoke(start: Instant) =
+        totalActivityTimeFlow(start = start, interval = 1.seconds)
+            .combine(totalDistanceFlow()) { _, distance ->
+                activityRecordingRepository.updateStats { stats ->
+                    val averageSpeed = if (stats.totalTime > 0.seconds) {
+                        distance.inKilometers / stats.totalTime.toDouble(DurationUnit.HOURS)
+                    } else {
+                        0.0
+                    }
+                    stats.copy(distance = distance, averageSpeed = averageSpeed)
+                }
+            }
 
-    private fun Activity.Stats.update(
-        lastLocation: Location?,
-        currentLocation: Location,
-        start: Instant
-    ): Activity.Stats {
-        val elapsedTime = when (lastLocation) {
-            null -> currentLocation.timestamp - start
-            else -> currentLocation.timestamp - lastLocation.timestamp
-        }.coerceAtLeast(0.seconds)
-        val totalTime = totalTime + elapsedTime
-        val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.meters
-        val totalDistance = distance + traveledDistance
-        val averageSpeed = when (elapsedTime) {
-            0.seconds -> 0.0
-            else -> totalDistance.inKilometers / totalTime.toDouble(DurationUnit.HOURS)
+
+    private fun totalActivityTimeFlow(start: Instant, interval: Duration) = flow {
+        var totalTime = activityRecordingRepository.getStats().first().totalTime
+        var previous = start
+        while (true) {
+            delay(interval)
+            timeProvider().let { now ->
+                totalTime += now - previous
+                previous = now
+            }
+            // stats needs to be updated here, because it guarantees that time statistics will be up-to-date
+            activityRecordingRepository.updateStats { it.copy(totalTime = totalTime) }
+            emit(Unit)
         }
-        return copy(totalTime = totalTime, distance = totalDistance, averageSpeed = averageSpeed)
-    }
+    }.buffer(capacity = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
+
+    private fun totalDistanceFlow() = locationProvider
+        .userLocation(updateInterval = 4.seconds, fastestUpdateInterval = 2.seconds)
+        .map { currentLocation ->
+            val lastLocation = activityRecordingRepository.getLatestRouteLocation()
+            activityRecordingRepository.insertLocation(currentLocation)
+            val stats = activityRecordingRepository.getStats().first()
+            val traveledDistance = lastLocation?.distanceTo(currentLocation) ?: 0.meters
+            stats.distance + traveledDistance
+        }
 }

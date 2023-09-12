@@ -1,5 +1,6 @@
 package com.actively.repository
 
+import com.actively.activity.Activity
 import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.recorder.RecorderState
 import com.actively.stubs.stubActivity
@@ -191,6 +192,21 @@ class ActivityRecordingRepositoryTest : FunSpec({
         test("Should call ActivityRecordingDataSource") {
             repository.setState(RecorderState.Idle)
             coVerify(exactly = 1) { activityRecordingDataSource.setState(RecorderState.Idle) }
+        }
+    }
+
+    context("updateStats()") {
+        val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
+        coEvery { activityRecordingDataSource.updateStats(any()) } returns stubActivityStats()
+
+        test("Should call ActivityRecordingDataSource with provided lambda function") {
+            val transform: (Activity.Stats) -> Activity.Stats = { it }
+            repository.updateStats(transform)
+            coVerify(exactly = 1) { activityRecordingDataSource.updateStats(transform) }
+        }
+
+        test("Should return updated stats returned from data source") {
+            repository.updateStats { it } shouldBe stubActivityStats()
         }
     }
 })
