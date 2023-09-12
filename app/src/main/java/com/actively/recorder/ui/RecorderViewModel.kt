@@ -12,14 +12,12 @@ import com.mapbox.geojson.LineString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -32,9 +30,8 @@ class RecorderViewModel(
     private val _stats = MutableStateFlow(StatisticsState())
     val stats = _stats.asStateFlow()
 
-    val route = activityRecordingRepository.getRoute()
-        .toGeoJsonFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+    private val _route = MutableStateFlow<String?>(null)
+    val route = _route.asStateFlow()
 
     private val _controlsState = MutableStateFlow(
         ControlsState(current = RecorderState.Idle, previous = RecorderState.Idle)
@@ -53,6 +50,11 @@ class RecorderViewModel(
                 resumeRecording()
             }
         }
+
+        activityRecordingRepository.getRoute()
+            .toGeoJsonFlow()
+            .onEach { geoJson -> _route.update { geoJson } }
+            .launchIn(viewModelScope)
 
         activityRecordingRepository.getState().onEach { newState ->
             _controlsState.update { currentState ->
