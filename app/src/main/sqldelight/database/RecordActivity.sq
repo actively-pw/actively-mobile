@@ -37,7 +37,11 @@ CREATE TABLE RecorderStateEntity(
 getActivity:
 SELECT * FROM ActivityEntity
 INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
-WHERE isBeingRecorded = TRUE;
+WHERE uuid = :id;
+
+getRecordedActivitiesId:
+SELECT uuid FROM ActivityEntity
+WHERE isBeingRecorded = FALSE;
 
 getActivityCount:
 SELECT COUNT(uuid) FROM ActivityEntity;
@@ -104,5 +108,5 @@ UPDATE ActivityEntity
 SET isBeingRecorded = FALSE
 WHERE isBeingRecorded = TRUE;
 
-removeActivity:
-DELETE FROM ActivityEntity WHERE uuid = :id;
+removeActivities:
+DELETE FROM ActivityEntity WHERE uuid IN :ids;

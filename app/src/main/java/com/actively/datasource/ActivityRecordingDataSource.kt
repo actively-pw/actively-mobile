@@ -25,7 +25,7 @@ interface ActivityRecordingDataSource {
 
     suspend fun getActivityCount(): Int
 
-    suspend fun getActivity(): Activity?
+    suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(): Flow<Activity.Stats>
 
@@ -53,6 +53,10 @@ interface ActivityRecordingDataSource {
     fun getState(): Flow<RecorderState>
 
     suspend fun markActivityAsRecorded()
+
+    suspend fun removeActivities(ids: List<Activity.Id>)
+
+    suspend fun getRecordedActivitiesId(): List<Activity.Id>
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -66,9 +70,9 @@ class ActivityRecordingDataSourceImpl(
         query.getActivityCount().executeAsOne().toInt()
     }
 
-    override suspend fun getActivity(): Activity? =
+    override suspend fun getActivity(id: Activity.Id): Activity? =
         query.suspendingTransactionWithResult(coroutineContext) {
-            val activityWithStatsQuery = query.getActivity()
+            val activityWithStatsQuery = query.getActivity(id.value)
                 .executeAsOneOrNull() ?: return@suspendingTransactionWithResult null
             val routeQuery = query.getRoute().executeAsList()
             Activity(
@@ -178,6 +182,14 @@ class ActivityRecordingDataSourceImpl(
 
     override suspend fun markActivityAsRecorded() = withContext(coroutineContext) {
         query.markActivityAsRecorded()
+    }
+
+    override suspend fun removeActivities(ids: List<Activity.Id>) = withContext(coroutineContext) {
+        query.removeActivities(ids.map(Activity.Id::value))
+    }
+
+    override suspend fun getRecordedActivitiesId() = withContext(coroutineContext) {
+        query.getRecordedActivitiesId().executeAsList().map(Activity::Id)
     }
 
     private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
