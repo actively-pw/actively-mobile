@@ -84,7 +84,7 @@ class ActivityRecordingDataSourceImpl(
     }
 
     override fun getStats() = query
-        .getActivityStats { _, totalTime, distanceMeters, averageSpeed ->
+        .getActivityStats { totalTime, distanceMeters, averageSpeed ->
             Activity.Stats(
                 totalTime = totalTime.milliseconds,
                 distance = distanceMeters.meters,
@@ -98,7 +98,7 @@ class ActivityRecordingDataSourceImpl(
         return withContext(coroutineContext) {
             query.transactionWithResult {
                 val currentStats = query
-                    .getActivityStats { _, totalTime, distanceMeters, averageSpeed ->
+                    .getActivityStats { totalTime, distanceMeters, averageSpeed ->
                         Activity.Stats(
                             totalTime = totalTime.milliseconds,
                             distance = distanceMeters.meters,

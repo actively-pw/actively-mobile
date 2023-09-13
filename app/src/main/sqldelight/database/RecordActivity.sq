@@ -1,23 +1,23 @@
 CREATE TABLE ActivityEntity(
-    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
-    uuid TEXT NOT NULL,
+    uuid TEXT NOT NULL PRIMARY KEY,
     title TEXT,
-    sport TEXT NOT NULL
+    sport TEXT NOT NULL,
+    isBeingRecorded INTEGER NOT NULL
 );
 
 CREATE TABLE ActivityStatsEntity(
-    activityId INTEGER UNIQUE NOT NULL PRIMARY KEY CHECK (activityId = 1),
+    activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
     totalTime INTEGER NOT NULL,
     totalDistanceMeters INTEGER NOT NULL,
     averageSpeed REAL NOT NULL,
-    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id) ON DELETE CASCADE
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE RouteSliceEntity(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    activityId INTEGER NOT NULL CHECK (activityId = 1),
+    activityId TEXT NOT NULL,
     start INTEGER NOT NULL,
-    FOREIGN KEY (activityId) REFERENCES ActivityEntity (id) ON DELETE CASCADE
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE LocationEntity(
@@ -36,46 +36,60 @@ CREATE TABLE RecorderStateEntity(
 
 getActivity:
 SELECT * FROM ActivityEntity
-INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.id
-WHERE id = 1;
+INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
+WHERE isBeingRecorded = TRUE;
 
 getActivityCount:
 SELECT COUNT(uuid) FROM ActivityEntity;
 
 getActivityStats:
-SELECT * FROM ActivityStatsEntity WHERE activityId = 1;
+SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
+INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
+WHERE ActivityEntity.isBeingRecorded = TRUE;
 
 getRoute:
-SELECT id, start, timestamp, latitude, longitude  FROM RouteSliceEntity
+SELECT
+    RouteSliceEntity.id,
+    RouteSliceEntity.start,
+    LocationEntity.timestamp,
+    LocationEntity.latitude,
+    LocationEntity.longitude
+FROM RouteSliceEntity
 LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
-WHERE activityId = 1 ORDER BY start ASC;
+WHERE activityId = (
+    SELECT ActivityEntity.uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE LIMIT 1
+) ORDER BY start ASC;
 
 getLatestLocationFromLastRouteSlice:
 SELECT * FROM LocationEntity
 WHERE routeSliceId IN (
     SELECT id FROM RouteSliceEntity
-    WHERE activityId = 1 ORDER BY start DESC LIMIT 1
+    INNER JOIN ActivityEntity ON RouteSliceEntity.activityId = ActivityEntity.uuid
+    WHERE isBeingRecorded = TRUE
+    ORDER BY start DESC LIMIT 1
 ) ORDER BY timestamp DESC LIMIT 1;
 
 insertActivity:
 INSERT OR REPLACE
-INTO ActivityEntity(id, uuid, sport, title)
-VALUES (1, ?,?, ?);
+INTO ActivityEntity(uuid, sport, title, isBeingRecorded)
+VALUES (?,?, ?, TRUE);
 
 insertActivityStats:
 INSERT OR REPLACE
 INTO ActivityStatsEntity(activityId, totalTime, totalDistanceMeters, averageSpeed)
-VALUES (1, ?, ?, ?);
+SELECT uuid, ?, ?, ? FROM ActivityEntity WHERE isBeingRecorded = TRUE;
 
 insertRouteSlice:
 INSERT OR REPLACE
 INTO RouteSliceEntity(id, activityId, start)
-VALUES (?, 1, ?);
+SELECT ?, uuid, ? FROM ActivityEntity WHERE isBeingRecorded = TRUE;
 
 insertLocationToLatestRouteSlice:
 INSERT OR REPLACE
 INTO LocationEntity(routeSliceId, latitude, longitude, timestamp)
-SELECT id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = 1 ORDER BY start DESC LIMIT 1;
+SELECT RouteSliceEntity.id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = (
+    SELECT ActivityEntity.uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE
+) ORDER BY start DESC LIMIT 1;
 
 getRecorderState:
 SELECT * FROM RecorderStateEntity WHERE id = 1;
