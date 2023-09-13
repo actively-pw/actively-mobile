@@ -98,3 +98,11 @@ setRecorderState:
 INSERT OR REPLACE
 INTO RecorderStateEntity(id, state)
 VALUES (1, :state);
+
+markActivityAsRecorded:
+UPDATE ActivityEntity
+SET isBeingRecorded = FALSE
+WHERE isBeingRecorded = TRUE;
+
+removeActivity:
+DELETE FROM ActivityEntity WHERE uuid = :id;
