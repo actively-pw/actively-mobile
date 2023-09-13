@@ -244,5 +244,19 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.updateStats { expected }
             activityDataSource.getStats().first() shouldBe expected
         }
+
+        test("markActivityAsRecorded should properly mark activity that is being recorded") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.getStats().first() shouldBe stubActivityStats()
+            activityDataSource.markActivityAsRecorded()
+            // default value if stats were not found in db
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+        }
     }
 })

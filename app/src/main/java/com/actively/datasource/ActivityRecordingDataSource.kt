@@ -51,6 +51,8 @@ interface ActivityRecordingDataSource {
     suspend fun setState(state: RecorderState)
 
     fun getState(): Flow<RecorderState>
+
+    suspend fun markActivityAsRecorded()
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -173,6 +175,10 @@ class ActivityRecordingDataSourceImpl(
         query.getRecorderState { _, stateString -> stateString.toRecorderState() }
             .asFlow()
             .mapToOneOrDefault(RecorderState.Idle, coroutineContext)
+
+    override suspend fun markActivityAsRecorded() = withContext(coroutineContext) {
+        query.markActivityAsRecorded()
+    }
 
     private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
         .map { (start, getRouteQuery) ->
