@@ -48,57 +48,30 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getActivityCount() shouldBe 0
         }
 
-        test("Maximum of 1 activity can be present in database") {
-            activityDataSource.getActivityCount() shouldBe 0
-            val activity = stubActivity(id = "1", route = emptyList())
-            activityDataSource.insertActivity(
-                activity.id,
-                activity.title,
-                activity.sport,
-                activity.stats
-            )
-            activityDataSource.getActivityCount() shouldBe 1
-            val otherActivity = stubActivity(id = "2", route = emptyList())
-            activityDataSource.insertActivity(
-                otherActivity.id,
-                otherActivity.title,
-                otherActivity.sport,
-                otherActivity.stats
-            )
-            activityDataSource.getActivityCount() shouldBe 1
-        }
-
-        test("Should always replace activity present in database") {
-            val activity = stubActivity(id = "1", route = emptyList())
-            activityDataSource.insertActivity(
-                activity.id,
-                activity.title,
-                activity.sport,
-                activity.stats
-            )
-            val expected = stubActivity(id = "2", route = emptyList())
-            activityDataSource.insertActivity(
-                expected.id,
-                expected.title,
-                expected.sport,
-                expected.stats
-            )
-            activityDataSource.getActivity() shouldBe expected
-        }
-
         test("Should return null Activity if none were found") {
             activityDataSource.getActivity().shouldBeNull()
         }
 
         test("Should insert and retrieve activity stats") {
             val stats = stubActivityStats()
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             activityDataSource.insertStats(stats = stats)
             activityDataSource.getStats().first() shouldBe stats
         }
 
         test("Should replace already saved stats") {
-            val stats = stubActivityStats()
-            activityDataSource.insertStats(stats)
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertStats(stubActivityStats())
             val newStats = stubActivityStats(
                 totalTime = 2.hours,
                 distance = 25.kilometers,
@@ -113,6 +86,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("Should insert empty RouteSlice") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
             activityDataSource.getRoute().first() shouldBe listOf(
                 RouteSlice(start = Instant.fromEpochMilliseconds(0), locations = emptyList())
@@ -120,6 +99,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("Should insert and retrieve route properly with slices and locations ordered from the oldest") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             val firstSliceLocations = listOf(
                 stubLocation(Instant.fromEpochMilliseconds(0)),
                 stubLocation(Instant.fromEpochMilliseconds(10)),
@@ -152,6 +137,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("getLatestLocationFromLastRouteSlice should get latest location from latest route slice") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             activityDataSource.insertEmptyRouteSlice(start = Instant.fromEpochMilliseconds(0))
             val expectedLocation = stubLocation(Instant.fromEpochMilliseconds(240))
             val firstSliceLocations = listOf(
@@ -176,6 +167,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("getLatestLocationFromLastRouteSlice should return null if no location was found in latest route slice") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             activityDataSource.insertEmptyRouteSlice(start = Instant.fromEpochMilliseconds(0))
             val firstSliceLocations = listOf(
                 stubLocation(Instant.fromEpochMilliseconds(0)),
@@ -212,6 +209,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("updateStats should pass currently saved stats to transform function") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             val stats = stubActivityStats()
             activityDataSource.insertStats(stats)
             activityDataSource.updateStats { actual ->
@@ -226,6 +229,12 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("updateStats should save updated stats to database") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
             activityDataSource.insertStats(stubActivityStats())
             val expected = stubActivityStats(
                 totalTime = 10.hours,
