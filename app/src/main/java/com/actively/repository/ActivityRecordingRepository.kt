@@ -10,9 +10,10 @@ import kotlinx.datetime.Instant
 
 interface ActivityRecordingRepository {
 
+    //todo: no use
     suspend fun isActivityPresent(): Boolean
 
-    suspend fun getActivity(): Activity?
+    suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(): Flow<Activity.Stats>
 
@@ -33,6 +34,12 @@ interface ActivityRecordingRepository {
     suspend fun setState(state: RecorderState)
 
     fun getState(): Flow<RecorderState>
+
+    suspend fun markActivityAsRecorded()
+
+    suspend fun getRecordedActivitiesId(): List<Activity.Id>
+
+    suspend fun removeActivities(ids: List<Activity.Id>)
 }
 
 class ActivityRecordingRepositoryImpl(
@@ -41,7 +48,7 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun isActivityPresent() = activityRecordingDataSource.getActivityCount() == 1
 
-    override suspend fun getActivity() = activityRecordingDataSource.getActivity()
+    override suspend fun getActivity(id: Activity.Id) = activityRecordingDataSource.getActivity(id)
 
     override fun getStats() = activityRecordingDataSource.getStats()
 
@@ -70,4 +77,13 @@ class ActivityRecordingRepositoryImpl(
         .setState(state)
 
     override fun getState() = activityRecordingDataSource.getState()
+
+    override suspend fun markActivityAsRecorded() =
+        activityRecordingDataSource.markActivityAsRecorded()
+
+    override suspend fun getRecordedActivitiesId() =
+        activityRecordingDataSource.getRecordedActivitiesId()
+
+    override suspend fun removeActivities(ids: List<Activity.Id>) =
+        activityRecordingDataSource.removeActivities(ids)
 }
