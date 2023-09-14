@@ -1,5 +1,5 @@
 [versions]
-agp = "8.2.0-alpha13"
+agp = "8.2.0-beta03"
 kotlinx-datetime = "0.4.0"
 sqldelight = "2.0.0"
 sqldelight-plugin = "2.0.0"

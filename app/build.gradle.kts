@@ -82,6 +82,7 @@ sqldelight {
     databases {
         create("ActivityDatabase") {
             packageName.set("com.actively")
+            version = 1
         }
     }
 }
