@@ -31,20 +31,22 @@ class ActivityRecordingRepositoryTest : FunSpec({
 
     context("getActivity()") {
         val repository = ActivityRecordingRepositoryImpl(activityRecordingDataSource)
-        coEvery { activityRecordingDataSource.getActivity() } returns stubActivity(id = "1")
+        coEvery { activityRecordingDataSource.getActivity(id = Activity.Id("1")) } returns stubActivity(
+            id = "1"
+        )
 
         test("Should return activity with given id") {
-            repository.getActivity() shouldBe stubActivity(id = "1")
+            repository.getActivity(id = Activity.Id("1")) shouldBe stubActivity(id = "1")
         }
 
         test("Should return null if no Activity was found") {
-            coEvery { activityRecordingDataSource.getActivity() } returns null
-            repository.getActivity().shouldBeNull()
+            coEvery { activityRecordingDataSource.getActivity(id = Activity.Id("1")) } returns null
+            repository.getActivity(id = Activity.Id("1")).shouldBeNull()
         }
 
         test("Should call ActivityRecordingDataSource getActivity") {
-            repository.getActivity()
-            coVerify(exactly = 1) { activityRecordingDataSource.getActivity() }
+            repository.getActivity(id = Activity.Id("1"))
+            coVerify(exactly = 1) { activityRecordingDataSource.getActivity(id = Activity.Id("1")) }
         }
     }
 

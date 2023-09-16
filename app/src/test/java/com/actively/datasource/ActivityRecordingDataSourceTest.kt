@@ -41,7 +41,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 activity.sport,
                 activity.stats
             )
-            activityDataSource.getActivity() shouldBe activity
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe activity
         }
 
         test("Should return 0 if no activities found in database") {
@@ -49,7 +49,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
         }
 
         test("Should return null Activity if none were found") {
-            activityDataSource.getActivity().shouldBeNull()
+            activityDataSource.getActivity(id = Activity.Id("1")).shouldBeNull()
         }
 
         test("Should insert and retrieve activity stats") {
