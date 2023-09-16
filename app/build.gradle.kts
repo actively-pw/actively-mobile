@@ -116,4 +116,5 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.sqldelight.coroutines)
     testImplementation(libs.sqldelight.test.driver)
+    implementation(libs.androidx.work)
 }
