@@ -2,7 +2,6 @@ package com.actively.synchronizer.usecases
 
 import com.actively.activity.Activity
 import com.actively.repository.ActivityRecordingRepository
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 interface SynchronizeActivitiesUseCase {
 
@@ -21,10 +21,10 @@ interface SynchronizeActivitiesUseCase {
 class SynchronizeActivitiesUseCaseImpl(
     private val sendActivityUseCase: SendActivityUseCase,
     private val recordingRepository: ActivityRecordingRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val context: CoroutineContext = Dispatchers.IO
 ) : SynchronizeActivitiesUseCase {
 
-    override suspend operator fun invoke() = withContext(dispatcher) {
+    override suspend operator fun invoke() = withContext(context) {
         recordingRepository.getRecordedActivitiesId()
             .asFlow()
             .flatMapMerge(concurrency = SYNC_CONCURRENCY) { id -> synchronizeActivity(id) }
