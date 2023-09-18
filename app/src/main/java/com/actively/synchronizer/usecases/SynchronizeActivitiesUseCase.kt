@@ -35,8 +35,7 @@ class SynchronizeActivitiesUseCaseImpl(
     private fun synchronizeActivity(id: Activity.Id) = flow {
         val activity = recordingRepository.getActivity(id) ?: return@flow
         val result = sendActivityUseCase(activity)
-        result.getOrThrow()
-        emit(id)
+        result.getOrNull()?.let { emit(id) }
     }
 
     private companion object {
