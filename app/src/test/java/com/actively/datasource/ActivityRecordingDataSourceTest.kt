@@ -6,12 +6,12 @@ import com.actively.activity.Activity
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.recorder.RecorderState
-import com.actively.stubs.stubActivity
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubLocation
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.testCoroutineScheduler
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,15 +33,41 @@ class ActivityRecordingDataSourceTest : FunSpec({
     context("ActivityDataSourceTest") {
         val activityDataSource = ActivityRecordingDataSourceImpl(database, testCoroutineScheduler)
 
-        test("Should insert and retrieve activity") {
-            val activity = stubActivity(id = "1", route = emptyList())
+        test("Should insert and retrieve activity along with stats and saved route") {
             activityDataSource.insertActivity(
-                activity.id,
-                activity.title,
-                activity.sport,
-                activity.stats
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
             )
-            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe activity
+            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
+            activityDataSource.insertLocationToLatestRouteSlice(
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(0))
+            )
+            activityDataSource.insertLocationToLatestRouteSlice(
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(1000))
+            )
+            activityDataSource.insertLocationToLatestRouteSlice(
+                stubLocation(timestamp = Instant.fromEpochMilliseconds(2000))
+            )
+            val expectedActivity = Activity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = stubActivityStats(),
+                route = listOf(
+                    RouteSlice(
+                        start = Instant.fromEpochMilliseconds(0),
+                        locations = listOf(
+                            stubLocation(timestamp = Instant.fromEpochMilliseconds(0)),
+                            stubLocation(timestamp = Instant.fromEpochMilliseconds(1000)),
+                            stubLocation(timestamp = Instant.fromEpochMilliseconds(2000))
+                        )
+                    )
+                )
+            )
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe expectedActivity
         }
 
         test("Should return 0 if no activities found in database") {
@@ -257,6 +283,24 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.markActivityAsRecorded()
             // default value if stats were not found in db
             activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+        }
+
+        test("removeActivity should remove activity with its stats and route") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.removeActivity(Activity.Id("1"))
+            activityDataSource.getActivity(Activity.Id("1")).shouldBeNull()
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+            activityDataSource.getRoute().first().shouldBeEmpty()
         }
     }
 })
