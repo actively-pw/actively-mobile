@@ -40,7 +40,7 @@ interface ActivityRecordingRepository {
 
     suspend fun getRecordedActivitiesId(): List<Activity.Id>
 
-    suspend fun removeActivities(ids: List<Activity.Id>)
+    suspend fun removeActivity(id: Activity.Id)
 
     suspend fun syncActivity(activity: Activity)
 }
@@ -88,8 +88,8 @@ class ActivityRecordingRepositoryImpl(
     override suspend fun getRecordedActivitiesId() =
         activityRecordingDataSource.getRecordedActivitiesId()
 
-    override suspend fun removeActivities(ids: List<Activity.Id>) =
-        activityRecordingDataSource.removeActivities(ids)
+    override suspend fun removeActivity(id: Activity.Id) =
+        activityRecordingDataSource.removeActivity(id)
 
     override suspend fun syncActivity(activity: Activity) =
         syncActivitiesDataSource.syncActivity(activity)

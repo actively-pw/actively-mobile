@@ -108,5 +108,5 @@ UPDATE ActivityEntity
 SET isBeingRecorded = FALSE
 WHERE isBeingRecorded = TRUE;
 
-removeActivities:
-DELETE FROM ActivityEntity WHERE uuid IN :ids;
+removeActivity:
+DELETE FROM ActivityEntity WHERE uuid = :id;

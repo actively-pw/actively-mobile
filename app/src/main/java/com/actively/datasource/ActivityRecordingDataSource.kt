@@ -54,7 +54,7 @@ interface ActivityRecordingDataSource {
 
     suspend fun markActivityAsRecorded()
 
-    suspend fun removeActivities(ids: List<Activity.Id>)
+    suspend fun removeActivity(id: Activity.Id)
 
     suspend fun getRecordedActivitiesId(): List<Activity.Id>
 }
@@ -184,8 +184,8 @@ class ActivityRecordingDataSourceImpl(
         query.markActivityAsRecorded()
     }
 
-    override suspend fun removeActivities(ids: List<Activity.Id>) = withContext(coroutineContext) {
-        query.removeActivities(ids.map(Activity.Id::value))
+    override suspend fun removeActivity(id: Activity.Id) = withContext(coroutineContext) {
+        query.removeActivity(id.value)
     }
 
     override suspend fun getRecordedActivitiesId() = withContext(coroutineContext) {

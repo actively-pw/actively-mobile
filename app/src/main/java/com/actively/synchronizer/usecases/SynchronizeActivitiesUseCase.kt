@@ -28,7 +28,7 @@ class SynchronizeActivitiesUseCaseImpl(
         recordingRepository.getRecordedActivitiesId()
             .asFlow()
             .flatMapMerge(concurrency = SYNC_CONCURRENCY) { id -> synchronizeActivity(id) }
-            .onEach { recordingRepository.removeActivities(listOf(it)) }
+            .onEach { recordingRepository.removeActivity(it) }
             .collect()
     }
 
