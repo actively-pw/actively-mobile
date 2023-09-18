@@ -117,4 +117,9 @@ dependencies {
     implementation(libs.sqldelight.coroutines)
     testImplementation(libs.sqldelight.test.driver)
     implementation(libs.androidx.work)
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.android)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.negotiation)
+    implementation(libs.ktor.serialization)
 }
