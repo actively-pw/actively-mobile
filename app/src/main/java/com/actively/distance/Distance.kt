@@ -1,5 +1,8 @@
 package com.actively.distance
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 @JvmInline
 value class Distance private constructor(private val rawValue: Long) {
 

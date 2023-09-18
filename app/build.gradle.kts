@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.serialization)
 }
 
 val apiKeysProperties = Properties()

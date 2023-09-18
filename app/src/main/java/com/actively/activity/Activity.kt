@@ -7,9 +7,11 @@ import com.mapbox.geojson.Point
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
+@Serializable
 data class Activity(
     val id: Id,
     val title: String?,
@@ -17,9 +19,10 @@ data class Activity(
     val stats: Stats,
     val route: List<RouteSlice>
 ) {
-
+    @Serializable
     data class Id(val value: String)
 
+    @Serializable
     data class Stats(
         val totalTime: Duration,
         val distance: Distance,
@@ -33,11 +36,13 @@ data class Activity(
     }
 }
 
+@Serializable
 data class RouteSlice(
     val start: Instant,
     val locations: List<Location>
 )
 
+@Serializable
 data class Location(
     val timestamp: Instant,
     val latitude: Double,
