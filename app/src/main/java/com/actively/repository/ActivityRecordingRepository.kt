@@ -4,6 +4,7 @@ import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.datasource.ActivityRecordingDataSource
+import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.recorder.RecorderState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
@@ -40,10 +41,13 @@ interface ActivityRecordingRepository {
     suspend fun getRecordedActivitiesId(): List<Activity.Id>
 
     suspend fun removeActivities(ids: List<Activity.Id>)
+
+    suspend fun syncActivity(activity: Activity)
 }
 
 class ActivityRecordingRepositoryImpl(
-    private val activityRecordingDataSource: ActivityRecordingDataSource
+    private val activityRecordingDataSource: ActivityRecordingDataSource,
+    private val syncActivitiesDataSource: SyncActivitiesDataSource,
 ) : ActivityRecordingRepository {
 
     override suspend fun isActivityPresent() = activityRecordingDataSource.getActivityCount() == 1
@@ -86,4 +90,7 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun removeActivities(ids: List<Activity.Id>) =
         activityRecordingDataSource.removeActivities(ids)
+
+    override suspend fun syncActivity(activity: Activity) =
+        syncActivitiesDataSource.syncActivity(activity)
 }
