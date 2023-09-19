@@ -23,7 +23,7 @@ class LaunchSynchronizationUseCaseImpl(
     override fun invoke() {
         workManager.enqueueUniqueWork(
             SYNC_WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
             synchronizationRequest()
         )
     }
