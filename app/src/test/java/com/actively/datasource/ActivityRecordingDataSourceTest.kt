@@ -90,6 +90,27 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getStats().first() shouldBe stats
         }
 
+        test("Should retrieve stats of activity that is being recorded") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.markActivityAsRecorded()
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+            activityDataSource.insertActivity(
+                id = Activity.Id("2"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            val expectedStats = stubActivityStats(2.hours, 30.kilometers, averageSpeed = 10.0)
+            activityDataSource.insertStats(expectedStats)
+            activityDataSource.getStats().first() shouldBe expectedStats
+        }
+
         test("Should replace already saved stats") {
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
@@ -160,6 +181,25 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 )
             )
             activityDataSource.getRoute().first() shouldBe expectedRoute
+        }
+
+        test("Should getRoute only from activity that is being recorded") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.getRoute().first() shouldBe listOf(
+                RouteSlice(
+                    start = Instant.fromEpochMilliseconds(0),
+                    locations = listOf(stubLocation())
+                )
+            )
+            activityDataSource.markActivityAsRecorded()
+            activityDataSource.getRoute().first().shouldBeEmpty()
         }
 
         test("getLatestLocationFromLastRouteSlice should get latest location from latest route slice") {
