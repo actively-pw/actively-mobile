@@ -20,4 +20,8 @@ class SynchronizeActivitiesWorker(
     } catch (e: Exception) {
         Result.retry()
     }
+
+    companion object {
+        const val SYNC_WORK_NAME = "sync-activities-work"
+    }
 }

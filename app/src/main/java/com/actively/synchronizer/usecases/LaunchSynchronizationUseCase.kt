@@ -22,7 +22,7 @@ class LaunchSynchronizationUseCaseImpl(
 
     override fun invoke() {
         workManager.enqueueUniqueWork(
-            SYNC_WORK_NAME,
+            SynchronizeActivitiesWorker.SYNC_WORK_NAME,
             ExistingWorkPolicy.APPEND_OR_REPLACE,
             synchronizationRequest()
         )
@@ -33,8 +33,4 @@ class LaunchSynchronizationUseCaseImpl(
         .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, Duration.ofMinutes(10))
         .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
         .build()
-
-    private companion object {
-        const val SYNC_WORK_NAME = "sync-activities-work"
-    }
 }
