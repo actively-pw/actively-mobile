@@ -12,7 +12,6 @@ import com.actively.distance.Distance.Companion.meters
 import com.actively.recorder.RecorderState
 import com.actively.recorder.asString
 import com.actively.recorder.toRecorderState
-import database.GetRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -74,7 +73,9 @@ class ActivityRecordingDataSourceImpl(
         query.suspendingTransactionWithResult(coroutineContext) {
             val activityWithStatsQuery = query.getActivity(id.value)
                 .executeAsOneOrNull() ?: return@suspendingTransactionWithResult null
-            val routeQuery = query.getRoute().executeAsList()
+            val routeQuery = query
+                .getRouteByActivityId(id.value, ::RouteQuery)
+                .executeAsList()
             Activity(
                 id = Activity.Id(activityWithStatsQuery.uuid),
                 title = activityWithStatsQuery.title,
@@ -119,7 +120,7 @@ class ActivityRecordingDataSourceImpl(
         }
     }
 
-    override fun getRoute() = query.getRoute()
+    override fun getRoute() = query.getRecordingRoute(::RouteQuery)
         .asFlow()
         .mapToList(coroutineContext)
         .map { it.toRouteSlices() }
@@ -192,7 +193,7 @@ class ActivityRecordingDataSourceImpl(
         query.getRecordedActivitiesId().executeAsList().map(Activity::Id)
     }
 
-    private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
+    private fun List<RouteQuery>.toRouteSlices() = groupBy { it.start }
         .map { (start, getRouteQuery) ->
             RouteSlice(
                 start = Instant.fromEpochMilliseconds(start),

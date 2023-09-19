@@ -51,7 +51,18 @@ SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
 INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
 WHERE isBeingRecorded = TRUE;
 
-getRoute:
+getRouteByActivityId:
+SELECT
+    RouteSliceEntity.id,
+    RouteSliceEntity.start,
+    LocationEntity.timestamp,
+    LocationEntity.latitude,
+    LocationEntity.longitude
+FROM RouteSliceEntity
+LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
+WHERE activityId = :id ORDER BY start ASC;
+
+getRecordingRoute:
 SELECT
     RouteSliceEntity.id,
     RouteSliceEntity.start,
