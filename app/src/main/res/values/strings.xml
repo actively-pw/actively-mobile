@@ -6,4 +6,8 @@
     <string name="save_button">Save</string>
     <string name="title_label">Title your ride</string>
     <string name="discard_activity">Discard activity</string>
+    <string name="discard">Discard</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard_warning">Warning</string>
+    <string name="discard_text">Discarded activity will be permanently lost</string>
 </resources>

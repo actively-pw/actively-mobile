@@ -24,4 +24,13 @@ class SaveActivityViewModel : ViewModel() {
     fun onDiscardClick() = viewModelScope.launch {
         _showDiscardDialog.emit(true)
     }
+
+    fun onDismissDialog() = viewModelScope.launch {
+        _showDiscardDialog.emit(false)
+    }
+
+    fun onConfirmDiscard() = viewModelScope.launch {
+        _showDiscardDialog.emit(false)
+        //todo: delete current activity
+    }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +43,13 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
             }
         ) {
             val title by viewModel.title.collectAsState()
+            val showDialog by viewModel.showDiscardDialog.collectAsState(initial = false)
+            if (showDialog) {
+                DiscardActivityDialog(
+                    onConfirmDiscard = viewModel::onConfirmDiscard,
+                    onDismissDialog = viewModel::onDismissDialog
+                )
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -104,8 +112,35 @@ fun DiscardActivityButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun DiscardActivityDialog(onConfirmDiscard: () -> Unit, onDismissDialog: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismissDialog,
+        confirmButton = {
+            TextButton(onClick = onConfirmDiscard) {
+                Text(stringResource(id = R.string.discard))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissDialog) {
+                Text(stringResource(id = R.string.cancel))
+            }
+        },
+        title = { Text(stringResource(id = R.string.discard_warning)) },
+        text = { Text(stringResource(id = R.string.discard_text)) }
+    )
+}
+
 @Preview
 @Composable
 fun SaveRecordingScreenPreview() {
     SaveRecordingScreen(SaveActivityViewModel())
+}
+
+@Preview
+@Composable
+fun DiscardActivityDialogPreview() {
+    ActivelyTheme {
+        DiscardActivityDialog(onConfirmDiscard = {}, onDismissDialog = {})
+    }
 }
