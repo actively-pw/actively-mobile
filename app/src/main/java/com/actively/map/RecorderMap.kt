@@ -1,7 +1,10 @@
 package com.actively.map
 
 import android.content.Context
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,37 +34,39 @@ fun RecorderMap(
     isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     val lineColor = MaterialTheme.colorScheme.primary
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            MapView(context, mapInitOptions = mapInitOptions(context)).apply {
-                getMapboxMap().apply {
-                    loadStyle(
-                        style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
-                            +geoJsonSource(SOURCE_ID)
-                            +lineLayer(LINE_LAYER_ID, SOURCE_ID) {
-                                lineWidth(4.0)
-                                lineColor(lineColor.toArgb())
+    Column(modifier = modifier) {
+        AndroidView(
+            factory = { context ->
+                MapView(context, mapInitOptions = mapInitOptions(context)).apply {
+                    layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                    getMapboxMap().apply {
+                        loadStyle(
+                            style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
+                                +geoJsonSource(SOURCE_ID)
+                                +lineLayer(LINE_LAYER_ID, SOURCE_ID) {
+                                    lineWidth(4.0)
+                                    lineColor(lineColor.toArgb())
+                                }
                             }
+                        )
+                        location.addOnIndicatorPositionChangedListener {
+                            setCamera(cameraOptions(it, cameraState.zoom))
                         }
-                    )
-                    location.addOnIndicatorPositionChangedListener {
-                        setCamera(cameraOptions(it, cameraState.zoom))
+                    }
+                    location.updateSettings {
+                        enabled = true
                     }
                 }
-                location.updateSettings {
-                    enabled = true
+            },
+            update = { mapView ->
+                routeGeoJson?.let { geoJson ->
+                    mapView.getMapboxMap().getStyle()
+                        ?.getSourceAs<GeoJsonSource>(SOURCE_ID)
+                        ?.data(geoJson)
                 }
             }
-        },
-        update = { mapView ->
-            routeGeoJson?.let { geoJson ->
-                mapView.getMapboxMap().getStyle()
-                    ?.getSourceAs<GeoJsonSource>(SOURCE_ID)
-                    ?.data(geoJson)
-            }
-        }
-    )
+        )
+    }
 }
 
 private fun mapInitOptions(context: Context): MapInitOptions {

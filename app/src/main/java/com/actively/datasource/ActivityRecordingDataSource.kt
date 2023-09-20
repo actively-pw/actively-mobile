@@ -12,7 +12,6 @@ import com.actively.distance.Distance.Companion.meters
 import com.actively.recorder.RecorderState
 import com.actively.recorder.asString
 import com.actively.recorder.toRecorderState
-import database.GetRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,7 +24,7 @@ interface ActivityRecordingDataSource {
 
     suspend fun getActivityCount(): Int
 
-    suspend fun getActivity(): Activity?
+    suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(): Flow<Activity.Stats>
 
@@ -51,6 +50,12 @@ interface ActivityRecordingDataSource {
     suspend fun setState(state: RecorderState)
 
     fun getState(): Flow<RecorderState>
+
+    suspend fun markActivityAsRecorded()
+
+    suspend fun removeActivity(id: Activity.Id)
+
+    suspend fun getRecordedActivitiesId(): List<Activity.Id>
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -64,11 +69,13 @@ class ActivityRecordingDataSourceImpl(
         query.getActivityCount().executeAsOne().toInt()
     }
 
-    override suspend fun getActivity(): Activity? = withContext(coroutineContext) {
-        query.transactionWithResult {
-            val activityWithStatsQuery = query.getActivity()
-                .executeAsOneOrNull() ?: return@transactionWithResult null
-            val routeQuery = query.getRoute().executeAsList()
+    override suspend fun getActivity(id: Activity.Id): Activity? =
+        query.suspendingTransactionWithResult(coroutineContext) {
+            val activityWithStatsQuery = query.getActivity(id.value)
+                .executeAsOneOrNull() ?: return@suspendingTransactionWithResult null
+            val routeQuery = query
+                .getRouteByActivityId(id.value, ::RouteQuery)
+                .executeAsList()
             Activity(
                 id = Activity.Id(activityWithStatsQuery.uuid),
                 title = activityWithStatsQuery.title,
@@ -81,10 +88,9 @@ class ActivityRecordingDataSourceImpl(
                 route = routeQuery.toRouteSlices()
             )
         }
-    }
 
     override fun getStats() = query
-        .getActivityStats { _, totalTime, distanceMeters, averageSpeed ->
+        .getActivityStats { totalTime, distanceMeters, averageSpeed ->
             Activity.Stats(
                 totalTime = totalTime.milliseconds,
                 distance = distanceMeters.meters,
@@ -95,72 +101,66 @@ class ActivityRecordingDataSourceImpl(
         .mapToOneOrDefault(Activity.Stats.empty(), coroutineContext)
 
     override suspend fun updateStats(transform: (Activity.Stats) -> Activity.Stats): Activity.Stats {
-        return withContext(coroutineContext) {
-            query.transactionWithResult {
-                val currentStats = query
-                    .getActivityStats { _, totalTime, distanceMeters, averageSpeed ->
-                        Activity.Stats(
-                            totalTime = totalTime.milliseconds,
-                            distance = distanceMeters.meters,
-                            averageSpeed = averageSpeed
-                        )
-                    }.executeAsOneOrNull() ?: Activity.Stats.empty()
-                transform(currentStats).also {
-                    query.insertActivityStats(
-                        it.totalTime.inWholeMilliseconds,
-                        it.distance.inMeters,
-                        it.averageSpeed
+        return query.suspendingTransactionWithResult(coroutineContext) {
+            val currentStats = query
+                .getActivityStats { totalTime, distanceMeters, averageSpeed ->
+                    Activity.Stats(
+                        totalTime = totalTime.milliseconds,
+                        distance = distanceMeters.meters,
+                        averageSpeed = averageSpeed
                     )
-                }
+                }.executeAsOneOrNull() ?: Activity.Stats.empty()
+            transform(currentStats).also {
+                query.insertActivityStats(
+                    it.totalTime.inWholeMilliseconds,
+                    it.distance.inMeters,
+                    it.averageSpeed
+                )
             }
         }
     }
 
-    override fun getRoute() = query.getRoute()
+    override fun getRoute() = query.getRecordingRoute(::RouteQuery)
         .asFlow()
         .mapToList(coroutineContext)
         .map { it.toRouteSlices() }
 
-    override suspend fun getLatestLocationFromLastRouteSlice() =
-        withContext(coroutineContext) {
-            query.getLatestLocationFromLastRouteSlice { _, timestamp, latitude, longitude ->
-                Location(
-                    timestamp = Instant.fromEpochMilliseconds(timestamp),
-                    latitude = latitude,
-                    longitude = longitude
-                )
-            }.executeAsOneOrNull()
-        }
+    override suspend fun getLatestLocationFromLastRouteSlice() = withContext(coroutineContext) {
+        query.getLatestLocationFromLastRouteSlice { _, timestamp, latitude, longitude ->
+            Location(
+                timestamp = Instant.fromEpochMilliseconds(timestamp),
+                latitude = latitude,
+                longitude = longitude
+            )
+        }.executeAsOneOrNull()
+    }
 
     override suspend fun insertActivity(
         id: Activity.Id,
         title: String?,
         sport: String,
         stats: Activity.Stats
-    ) = withContext(coroutineContext) {
-        query.transaction {
-            query.insertActivity(uuid = id.value, title = title, sport = sport)
-            query.insertActivityStats(
-                totalTime = stats.totalTime.inWholeMilliseconds,
-                totalDistanceMeters = stats.distance.inMeters,
-                averageSpeed = stats.averageSpeed
-            )
-        }
+    ) = query.suspendingTransaction(coroutineContext) {
+        query.insertActivity(uuid = id.value, title = title, sport = sport)
+        query.insertActivityStats(
+            totalTime = stats.totalTime.inWholeMilliseconds,
+            totalDistanceMeters = stats.distance.inMeters,
+            averageSpeed = stats.averageSpeed
+        )
+
     }
 
-    override suspend fun insertStats(stats: Activity.Stats) =
-        withContext(coroutineContext) {
-            query.insertActivityStats(
-                totalTime = stats.totalTime.inWholeMilliseconds,
-                totalDistanceMeters = stats.distance.inMeters,
-                averageSpeed = stats.averageSpeed
-            )
-        }
+    override suspend fun insertStats(stats: Activity.Stats) = withContext(coroutineContext) {
+        query.insertActivityStats(
+            totalTime = stats.totalTime.inWholeMilliseconds,
+            totalDistanceMeters = stats.distance.inMeters,
+            averageSpeed = stats.averageSpeed
+        )
+    }
 
-    override suspend fun insertEmptyRouteSlice(start: Instant) =
-        withContext(coroutineContext) {
-            query.insertRouteSlice(id = null, start = start.toEpochMilliseconds())
-        }
+    override suspend fun insertEmptyRouteSlice(start: Instant) = withContext(coroutineContext) {
+        query.insertRouteSlice(id = null, start = start.toEpochMilliseconds())
+    }
 
     override suspend fun insertLocationToLatestRouteSlice(location: Location) {
         withContext(coroutineContext) {
@@ -172,10 +172,8 @@ class ActivityRecordingDataSourceImpl(
         }
     }
 
-    override suspend fun setState(state: RecorderState) {
-        withContext(coroutineContext) {
-            query.setRecorderState(state.asString())
-        }
+    override suspend fun setState(state: RecorderState) = withContext(coroutineContext) {
+        query.setRecorderState(state.asString())
     }
 
     override fun getState() =
@@ -183,7 +181,19 @@ class ActivityRecordingDataSourceImpl(
             .asFlow()
             .mapToOneOrDefault(RecorderState.Idle, coroutineContext)
 
-    private fun List<GetRoute>.toRouteSlices() = groupBy { it.start }
+    override suspend fun markActivityAsRecorded() = withContext(coroutineContext) {
+        query.markActivityAsRecorded()
+    }
+
+    override suspend fun removeActivity(id: Activity.Id) = withContext(coroutineContext) {
+        query.removeActivity(id.value)
+    }
+
+    override suspend fun getRecordedActivitiesId() = withContext(coroutineContext) {
+        query.getRecordedActivitiesId().executeAsList().map(Activity::Id)
+    }
+
+    private fun List<RouteQuery>.toRouteSlices() = groupBy { it.start }
         .map { (start, getRouteQuery) ->
             RouteSlice(
                 start = Instant.fromEpochMilliseconds(start),

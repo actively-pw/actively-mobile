@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.serialization)
 }
 
 val apiKeysProperties = Properties()
@@ -82,6 +83,7 @@ sqldelight {
     databases {
         create("ActivityDatabase") {
             packageName.set("com.actively")
+            version = 1
         }
     }
 }
@@ -115,4 +117,10 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.sqldelight.coroutines)
     testImplementation(libs.sqldelight.test.driver)
+    implementation(libs.androidx.work)
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.android)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.negotiation)
+    implementation(libs.ktor.serialization)
 }

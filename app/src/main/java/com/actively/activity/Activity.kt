@@ -17,7 +17,6 @@ data class Activity(
     val stats: Stats,
     val route: List<RouteSlice>
 ) {
-
     data class Id(val value: String)
 
     data class Stats(
