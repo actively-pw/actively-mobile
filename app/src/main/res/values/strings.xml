@@ -5,4 +5,5 @@
     <string name="save_activity_top_bar_title">Save Activity</string>
     <string name="save_button">Save</string>
     <string name="title_label">Title your ride</string>
+    <string name="discard_activity">Discard activity</string>
 </resources>
