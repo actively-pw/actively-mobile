@@ -15,6 +15,7 @@ import com.actively.location.LocationProviderImpl
 import com.actively.recorder.RecorderStateMachine
 import com.actively.recorder.RecorderStateMachineImpl
 import com.actively.recorder.ui.RecorderViewModel
+import com.actively.recorder.ui.SaveActivityViewModel
 import com.actively.recorder.usecase.GetRecorderStateUseCase
 import com.actively.recorder.usecase.GetRecorderStateUseCaseImpl
 import com.actively.recorder.usecase.PauseRecordingUseCase
@@ -66,6 +67,7 @@ object KoinSetup {
 
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
+        viewModel { SaveActivityViewModel() }
     }
 
     private val useCasesModule = module {
