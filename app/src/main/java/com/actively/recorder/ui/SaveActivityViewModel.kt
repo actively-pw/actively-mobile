@@ -33,4 +33,12 @@ class SaveActivityViewModel : ViewModel() {
         _showDiscardDialog.emit(false)
         //todo: delete current activity
     }
+
+    fun onSaveClick() = viewModelScope.launch {
+        //todo: save current activity
+    }
+
+    fun onBackClick() = viewModelScope.launch {
+        //todo: navigate back to recorder screen
+    }
 }

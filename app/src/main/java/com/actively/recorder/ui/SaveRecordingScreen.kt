@@ -39,7 +39,7 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
     ActivelyTheme {
         Scaffold(
             topBar = {
-                TopBar(onBackClick = { }, onSaveClick = {})
+                TopBar(onBackClick = viewModel::onBackClick, onSaveClick = viewModel::onSaveClick)
             }
         ) {
             val title by viewModel.title.collectAsState()
