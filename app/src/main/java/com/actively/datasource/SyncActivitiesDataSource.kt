@@ -2,6 +2,7 @@ package com.actively.datasource
 
 
 import com.actively.activity.Activity
+import com.actively.http.dtos.toDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -18,7 +19,7 @@ class SyncActivitiesDataSourceImpl(private val client: HttpClient) : SyncActivit
     override suspend fun syncActivity(activity: Activity) {
         client.post("https://activelypw.azurewebsites.net/Activities") {
             contentType(ContentType.Application.Json)
-            setBody(activity)
+            setBody(activity.toDto())
         }
     }
 }
