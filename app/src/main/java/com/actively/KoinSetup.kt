@@ -72,7 +72,7 @@ object KoinSetup {
 
     private val useCasesModule = module {
         factory<RecordActivityUseCase> { RecordActivityUseCaseImpl(get(), get(), get()) }
-        factory { RecordingControlUseCases(get(), get(), get(), get()) }
+        factory { RecordingControlUseCases(get(), get(), get()) }
         factory<StartRecordingUseCase> {
             StartRecordingUseCaseImpl(get(), get(), androidContext())
         }
