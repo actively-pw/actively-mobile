@@ -3,6 +3,7 @@ package com.actively.recorder.usecase
 import android.content.Context
 import android.content.Intent
 import com.actively.recorder.RecordActivityService
+import com.actively.recorder.RecorderState
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
 
@@ -24,6 +25,7 @@ class StopRecordingUseCaseImpl(
         context.startForegroundService(stopRecordingIntent)
         activityRecordingRepository.updateRecordingActivityTitle(activityTitle)
         activityRecordingRepository.markActivityAsRecorded()
+        activityRecordingRepository.setState(RecorderState.Idle)
         launchSynchronizationUseCase()
     }
 }
