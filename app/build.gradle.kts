@@ -123,4 +123,5 @@ dependencies {
     implementation(libs.ktor.logging)
     implementation(libs.ktor.negotiation)
     implementation(libs.ktor.serialization)
+    implementation(libs.androidx.navigation.compose)
 }
