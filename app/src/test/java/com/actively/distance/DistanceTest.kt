@@ -3,6 +3,7 @@ package com.actively.distance
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.inWholeKilometers
+import com.actively.distance.Distance.Companion.inWholeMeters
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.distance.Distance.Companion.plus
@@ -74,6 +75,16 @@ class DistanceTest : FunSpec({
                 row(0.meters, 0),
             ) { distance, expectedKilometers ->
                 distance.inWholeKilometers shouldBe expectedKilometers
+            }
+        }
+
+        test("inWholeMeters should return whole value of kilometers") {
+            forAll(
+                row(101.1.meters, 101),
+                row(10.9999.meters, 10),
+                row(10.0.meters, 10),
+            ) { distance, expectedMeters ->
+                distance.inWholeMeters shouldBe expectedMeters
             }
         }
     }
