@@ -45,6 +45,8 @@ interface ActivityRecordingRepository {
     suspend fun syncActivity(activity: Activity)
 
     suspend fun removeRecordingActivity()
+
+    suspend fun updateRecordingActivityTitle(title: String)
 }
 
 class ActivityRecordingRepositoryImpl(
@@ -98,5 +100,9 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun removeRecordingActivity() {
         activityRecordingDataSource.removeRecordingActivity()
+    }
+
+    override suspend fun updateRecordingActivityTitle(title: String) {
+        activityRecordingDataSource.updateRecordingActivityTitle(title)
     }
 }

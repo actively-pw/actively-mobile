@@ -49,7 +49,7 @@ SELECT COUNT(uuid) FROM ActivityEntity;
 getActivityStats:
 SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
 INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
-WHERE isBeingRecorded = TRUE;
+WHERE isBeingRecorded = TRUE LIMIT 1;
 
 getRouteByActivityId:
 SELECT
@@ -124,3 +124,8 @@ DELETE FROM ActivityEntity WHERE uuid = :id;
 
 removeActivityThatIsBeingRecorded:
 DELETE FROM ActivityEntity WHERE isBeingRecorded = TRUE;
+
+updateRecordingActivityTitle:
+UPDATE ActivityEntity
+SET title = :title
+WHERE isBeingRecorded = TRUE;

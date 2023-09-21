@@ -7,7 +7,6 @@ import com.actively.recorder.usecase.PauseRecordingUseCase
 import com.actively.recorder.usecase.RecordingControlUseCases
 import com.actively.recorder.usecase.ResumeRecordingUseCase
 import com.actively.recorder.usecase.StartRecordingUseCase
-import com.actively.recorder.usecase.StopRecordingUseCase
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.stubs.stubActivityStats
 import com.actively.stubs.stubRoute
@@ -36,12 +35,10 @@ class RecorderViewModelTest : FunSpec({
     val startRecordingUseCase = mockk<StartRecordingUseCase>(relaxUnitFun = true)
     val pauseRecordingUseCase = mockk<PauseRecordingUseCase>(relaxUnitFun = true)
     val resumeRecordingUseCase = mockk<ResumeRecordingUseCase>(relaxUnitFun = true)
-    val stopRecordingUseCase = mockk<StopRecordingUseCase>(relaxUnitFun = true)
     val useCases = RecordingControlUseCases(
         startRecording = startRecordingUseCase,
         pauseRecording = pauseRecordingUseCase,
         resumeRecording = resumeRecordingUseCase,
-        stopRecording = stopRecordingUseCase,
     )
     val timeProvider = mockk<TimeProvider>()
     val repository = mockk<ActivityRecordingRepository>(relaxed = true)
@@ -146,11 +143,6 @@ class RecorderViewModelTest : FunSpec({
         test("Resume recording calls repository to launch stats updates") {
             viewModel.resumeRecording()
             verify(exactly = 2) { repository.getStats() }
-        }
-
-        test("Stop recording calls StopRecordingUseCase") {
-            viewModel.stopRecording()
-            coVerify(exactly = 1) { useCases.stopRecording() }
         }
     }
 

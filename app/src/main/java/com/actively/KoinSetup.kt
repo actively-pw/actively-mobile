@@ -16,6 +16,8 @@ import com.actively.recorder.RecorderStateMachine
 import com.actively.recorder.RecorderStateMachineImpl
 import com.actively.recorder.ui.RecorderViewModel
 import com.actively.recorder.ui.SaveActivityViewModel
+import com.actively.recorder.usecase.DiscardActivityUseCase
+import com.actively.recorder.usecase.DiscardActivityUseCaseImpl
 import com.actively.recorder.usecase.GetRecorderStateUseCase
 import com.actively.recorder.usecase.GetRecorderStateUseCaseImpl
 import com.actively.recorder.usecase.PauseRecordingUseCase
@@ -67,12 +69,12 @@ object KoinSetup {
 
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
-        viewModel { SaveActivityViewModel() }
+        viewModel { SaveActivityViewModel(get(), get()) }
     }
 
     private val useCasesModule = module {
         factory<RecordActivityUseCase> { RecordActivityUseCaseImpl(get(), get(), get()) }
-        factory { RecordingControlUseCases(get(), get(), get(), get()) }
+        factory { RecordingControlUseCases(get(), get(), get()) }
         factory<StartRecordingUseCase> {
             StartRecordingUseCaseImpl(get(), get(), androidContext())
         }
@@ -80,13 +82,14 @@ object KoinSetup {
             ResumeRecordingUseCaseImpl(get(), androidContext())
         }
         factory<PauseRecordingUseCase> { PauseRecordingUseCaseImpl(androidContext()) }
-        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(androidContext()) }
+        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(get(), get(), androidContext()) }
         factory<CreateActivityUseCase> { CreateActivityUseCaseImpl(get()) }
         factory<SetRecorderStateUseCase> { SetRecorderStateUseCaseImpl(get()) }
         factory<GetRecorderStateUseCase> { GetRecorderStateUseCaseImpl(get()) }
         factory<SynchronizeActivitiesUseCase> { SynchronizeActivitiesUseCaseImpl(get(), get()) }
         factory<LaunchSynchronizationUseCase> { LaunchSynchronizationUseCaseImpl(get()) }
         factory<SendActivityUseCase> { SendActivityUseCaseImpl(get()) }
+        factory<DiscardActivityUseCase> { DiscardActivityUseCaseImpl(get()) }
     }
 
     private val commonModule = module {
@@ -121,6 +124,6 @@ object KoinSetup {
         single<ActivityRecordingRepository> { ActivityRecordingRepositoryImpl(get(), get()) }
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
-        single<RecorderStateMachine> { RecorderStateMachineImpl() }
+        factory<RecorderStateMachine> { RecorderStateMachineImpl() }
     }
 }

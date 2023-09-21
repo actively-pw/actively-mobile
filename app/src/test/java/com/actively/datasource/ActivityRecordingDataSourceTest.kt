@@ -367,5 +367,36 @@ class ActivityRecordingDataSourceTest : FunSpec({
             )
             activityDataSource.getActivity(id = Activity.Id("2")).shouldBeNull()
         }
+
+        test("updateRecordingActivityTitle updated title of activity that is being recorded") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.markActivityAsRecorded()
+            activityDataSource.insertActivity(
+                id = Activity.Id("2"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.updateRecordingActivityTitle("Morning activity")
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe Activity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty(),
+                route = emptyList()
+            )
+            activityDataSource.getActivity(id = Activity.Id("2")) shouldBe Activity(
+                id = Activity.Id("2"),
+                title = "Morning activity",
+                sport = "Cycling",
+                stats = Activity.Stats.empty(),
+                route = emptyList()
+            )
+        }
     }
 })

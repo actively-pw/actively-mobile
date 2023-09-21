@@ -58,6 +58,8 @@ interface ActivityRecordingDataSource {
     suspend fun getRecordedActivitiesId(): List<Activity.Id>
 
     suspend fun removeRecordingActivity()
+
+    suspend fun updateRecordingActivityTitle(title: String)
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -197,6 +199,10 @@ class ActivityRecordingDataSourceImpl(
 
     override suspend fun removeRecordingActivity() = withContext(coroutineContext) {
         query.removeActivityThatIsBeingRecorded()
+    }
+
+    override suspend fun updateRecordingActivityTitle(title: String) {
+        query.updateRecordingActivityTitle(title)
     }
 
     private fun List<RouteQuery>.toRouteSlices() = groupBy { it.start }
