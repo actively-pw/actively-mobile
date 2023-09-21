@@ -13,7 +13,7 @@ rootProject.file("apikey.properties").also { apiKeysProperties.load(it.inputStre
 
 android {
     namespace = "com.actively"
-    compileSdk = 33
+    compileSdk = 34
 
     buildFeatures {
         buildConfig = true
