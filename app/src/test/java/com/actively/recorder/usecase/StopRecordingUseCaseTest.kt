@@ -1,6 +1,7 @@
 package com.actively.recorder.usecase
 
 import android.content.Context
+import com.actively.recorder.RecorderState
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
 import io.kotest.core.spec.IsolationMode
@@ -35,5 +36,10 @@ class StopRecordingUseCaseTest : FunSpec({
     test("Should launch synchronization") {
         stopRecordingUseCase("Morning activity")
         verify(exactly = 1) { syncUseCase() }
+    }
+
+    test("Should set recorded state to Idle") {
+        stopRecordingUseCase("Morning activity")
+        coVerify(exactly = 1) { repository.setState(RecorderState.Idle) }
     }
 })
