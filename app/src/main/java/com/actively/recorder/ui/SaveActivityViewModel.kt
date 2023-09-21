@@ -35,10 +35,6 @@ class SaveActivityViewModel : ViewModel() {
     }
 
     fun onSaveClick() = viewModelScope.launch {
-        //todo: save current activity
-    }
-
-    fun onBackClick() = viewModelScope.launch {
-        //todo: navigate back to recorder screen
+        //todo: finish recording and sent activity to backend
     }
 }
