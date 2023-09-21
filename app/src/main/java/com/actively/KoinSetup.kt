@@ -67,7 +67,7 @@ object KoinSetup {
 
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
-        viewModel { SaveActivityViewModel() }
+        viewModel { SaveActivityViewModel(get(), get()) }
     }
 
     private val useCasesModule = module {
@@ -80,7 +80,7 @@ object KoinSetup {
             ResumeRecordingUseCaseImpl(get(), androidContext())
         }
         factory<PauseRecordingUseCase> { PauseRecordingUseCaseImpl(androidContext()) }
-        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(androidContext()) }
+        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(get(), get(), androidContext()) }
         factory<CreateActivityUseCase> { CreateActivityUseCaseImpl(get()) }
         factory<SetRecorderStateUseCase> { SetRecorderStateUseCaseImpl(get()) }
         factory<GetRecorderStateUseCase> { GetRecorderStateUseCaseImpl(get()) }
