@@ -18,14 +18,14 @@ class DistanceTest : FunSpec({
     context("conversions") {
         test("Should convert given Int number to distance properly") {
             forAll(
-                row(5000.meters, 5000, 5.0),
-                row(2500.meters, 2500, 2.5),
-                row(250.meters, 250, 0.250),
-                row(0.meters, 0, 0.0),
-                row(6.kilometers, 6000, 6.0),
-                row(1.kilometers, 1000, 1.0),
-                row(0.kilometers, 0, 0.0),
-            ) { distance, inMeters: Long, inKilometers ->
+                row(5000.meters, 5000.0, 5.0),
+                row(2500.meters, 2500.0, 2.5),
+                row(250.meters, 250.0, 0.250),
+                row(0.meters, 0.0, 0.0),
+                row(6.kilometers, 6000.0, 6.0),
+                row(1.kilometers, 1000.0, 1.0),
+                row(0.kilometers, 0.0, 0.0),
+            ) { distance, inMeters, inKilometers ->
                 distance.inMeters shouldBe inMeters
                 distance.inKilometers shouldBe inKilometers
             }
@@ -33,10 +33,10 @@ class DistanceTest : FunSpec({
 
         test("Should convert given Double number to distance properly") {
             forAll(
-                row(6.52.kilometers, 6520, 6.52),
-                row(1.66.kilometers, 1660, 1.66),
-                row(0.0.kilometers, 0, 0),
-            ) { distance, inMeters: Long, inKilometers ->
+                row(6.52.kilometers, 6520.0, 6.52),
+                row(1.66.kilometers, 1660.0, 1.66),
+                row(0.0.kilometers, 0.0, 0),
+            ) { distance, inMeters, inKilometers ->
                 distance.inMeters shouldBe inMeters
                 distance.inKilometers shouldBe inKilometers
             }

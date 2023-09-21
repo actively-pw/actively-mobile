@@ -8,7 +8,7 @@ CREATE TABLE ActivityEntity(
 CREATE TABLE ActivityStatsEntity(
     activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
     totalTime INTEGER NOT NULL,
-    totalDistanceMeters INTEGER NOT NULL,
+    totalDistanceMeters REAL NOT NULL,
     averageSpeed REAL NOT NULL,
     FOREIGN KEY (activityId) REFERENCES ActivityEntity (uuid) ON DELETE CASCADE
 );

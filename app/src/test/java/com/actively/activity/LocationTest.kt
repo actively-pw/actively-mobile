@@ -1,6 +1,7 @@
 package com.actively.activity
 
 import com.actively.distance.Distance.Companion.inWholeKilometers
+import com.actively.distance.Distance.Companion.inWholeMeters
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.stubs.stubLocation
@@ -48,7 +49,7 @@ class LocationTest : FunSpec({
                 71.meters
             ),
         ) { location1, location2, distance ->
-            location1.distanceTo(location2) shouldBe distance
+            location1.distanceTo(location2).inWholeMeters shouldBe distance.inWholeMeters
         }
     }
 

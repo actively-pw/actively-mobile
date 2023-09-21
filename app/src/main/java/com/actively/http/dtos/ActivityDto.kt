@@ -19,7 +19,7 @@ data class ActivityDto(
 @Serializable
 data class StatsDto(
     val duration: Long,
-    val distance: Long,
+    val distance: Double,
     val averageSpeed: Double,
 )
 

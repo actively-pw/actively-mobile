@@ -48,7 +48,7 @@ class ActivityDtoTest : FunSpec({
     test("Should properly map Activity.Stats to StatsDto") {
         val expectedStatsDto = StatsDto(
             duration = 51000,
-            distance = 540,
+            distance = 540.0,
             averageSpeed = 4.1
         )
         val stats = Activity.Stats(
@@ -66,7 +66,7 @@ class ActivityDtoTest : FunSpec({
             sport = "Cycling",
             stats = StatsDto(
                 duration = 51000,
-                distance = 540,
+                distance = 540.0,
                 averageSpeed = 4.1
             ),
             route = listOf(

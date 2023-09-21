@@ -49,7 +49,7 @@ data class Location(
         this.toPoint(),
         other.toPoint(),
         TurfConstants.UNIT_METERS
-    ).toLong().meters
+    ).meters
 }
 
 fun AndroidLocation.toLocation() = Location(

@@ -1,6 +1,7 @@
 package com.actively.recorder.usecase
 
 import com.actively.activity.Activity
+import com.actively.distance.Distance.Companion.inWholeMeters
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.location.LocationProvider
@@ -149,12 +150,10 @@ class RecordActivityUseCaseTest : FunSpec({
             } coAnswers {
                 transformLambdas.captured(stats)
             }
-            val expectedStats = Activity.Stats(
-                totalTime = 2.seconds,
-                distance = 157.meters,
-                averageSpeed = 282.6
-            )
-            recordActivityUseCase(start).first() shouldBe expectedStats
+            val actual = recordActivityUseCase(start).first()
+            actual.totalTime shouldBe 2.seconds
+            actual.distance.inWholeMeters shouldBe 157
+            actual.averageSpeed.toInt() shouldBe 283
         }
     }
 })
