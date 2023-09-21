@@ -121,6 +121,6 @@ object KoinSetup {
         single<ActivityRecordingRepository> { ActivityRecordingRepositoryImpl(get(), get()) }
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
-        single<RecorderStateMachine> { RecorderStateMachineImpl() }
+        factory<RecorderStateMachine> { RecorderStateMachineImpl() }
     }
 }
