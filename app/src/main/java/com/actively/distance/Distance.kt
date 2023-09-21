@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @JvmInline
-value class Distance private constructor(private val rawValue: Long) {
+value class Distance private constructor(private val rawValue: Double) {
 
     companion object {
 
@@ -14,8 +14,8 @@ value class Distance private constructor(private val rawValue: Long) {
             val rawDistance = this.toDouble()
             require(rawDistance >= 0)
             return when (unit) {
-                DistanceUnit.METERS -> Distance(rawDistance.toLong())
-                DistanceUnit.KILOMETERS -> Distance((rawDistance * METERS_IN_KILOMETERS).toLong())
+                DistanceUnit.METERS -> Distance(rawDistance)
+                DistanceUnit.KILOMETERS -> Distance(rawDistance * METERS_IN_KILOMETERS)
             }
         }
 
@@ -23,21 +23,25 @@ value class Distance private constructor(private val rawValue: Long) {
 
         val Long.meters: Distance get() = toDistance(DistanceUnit.METERS)
 
+        val Double.meters: Distance get() = toDistance(DistanceUnit.METERS)
+
         val Int.kilometers: Distance get() = toDistance(DistanceUnit.KILOMETERS)
 
         val Double.kilometers: Distance get() = toDistance(DistanceUnit.KILOMETERS)
 
         val Distance.inMeters get() = rawValue
 
-        val Distance.inKilometers get() = inMeters.toDouble() / METERS_IN_KILOMETERS
+        val Distance.inWholeMeters get() = rawValue.toLong()
 
-        val Distance.inWholeKilometers get() = (inMeters.toDouble() / METERS_IN_KILOMETERS).toInt()
+        val Distance.inKilometers get() = inMeters / METERS_IN_KILOMETERS
+
+        val Distance.inWholeKilometers get() = (inMeters / METERS_IN_KILOMETERS).toInt()
 
         operator fun Distance.times(number: Int) = Distance(rawValue * number)
 
         operator fun Int.times(distance: Distance) = distance.times(this)
 
-        operator fun Distance.times(number: Double) = Distance((rawValue * number).toLong())
+        operator fun Distance.times(number: Double) = Distance(rawValue * number)
 
         operator fun Double.times(distance: Distance) = distance.times(this)
 
