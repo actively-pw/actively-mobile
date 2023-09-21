@@ -17,17 +17,43 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
+import org.koin.androidx.compose.getViewModel
+
+fun NavGraphBuilder.recorderScreen(navController: NavController) {
+    composable("recording_screen") {
+        val viewModel = getViewModel<RecorderViewModel>()
+        val route by viewModel.route.collectAsState()
+        val controlsState by viewModel.controlsState.collectAsState()
+        val stats by viewModel.stats.collectAsState()
+        RecorderScreen(
+            stats = stats,
+            route = route,
+            controlsState = controlsState,
+            onStartRecordingClick = viewModel::startRecording,
+            onPauseRecordingClick = viewModel::pauseRecording,
+            onResumeRecordingClick = viewModel::resumeRecording,
+            onStopRecordingClick = {
+                navController.navigate("save_screen")
+            }
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecorderScreen(
+private fun RecorderScreen(
     stats: StatisticsState,
     route: String?,
     controlsState: ControlsState,
@@ -117,7 +143,7 @@ private fun LabeledValue(label: String, value: String, modifier: Modifier = Modi
 
 @Preview(showBackground = true)
 @Composable
-fun BottomSectionPreview() {
+private fun BottomSectionPreview() {
     ActivelyTheme {
         Column {
             StatsSection(
