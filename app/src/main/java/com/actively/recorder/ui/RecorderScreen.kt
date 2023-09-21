@@ -23,19 +23,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
 import org.koin.androidx.compose.getViewModel
 
+fun NavGraphBuilder.recorderScreen(navController: NavController) {
+    composable("recording_screen") {
+        val viewModel = getViewModel<RecorderViewModel>()
+        val route by viewModel.route.collectAsState()
+        val controlsState by viewModel.controlsState.collectAsState()
+        val stats by viewModel.stats.collectAsState()
+        RecorderScreen(
+            stats = stats,
+            route = route,
+            controlsState = controlsState,
+            onStartRecordingClick = viewModel::startRecording,
+            onPauseRecordingClick = viewModel::pauseRecording,
+            onResumeRecordingClick = viewModel::resumeRecording,
+            onStopRecordingClick = {
+                navController.navigate("save_screen")
+            }
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
+private fun RecorderScreen(
+    stats: StatisticsState,
+    route: String?,
+    controlsState: ControlsState,
+    onStartRecordingClick: () -> Unit,
+    onPauseRecordingClick: () -> Unit,
+    onResumeRecordingClick: () -> Unit,
+    onStopRecordingClick: () -> Unit,
+) {
     ActivelyTheme {
         Scaffold {
-            val stats by viewModel.stats.collectAsState()
-            val route by viewModel.route.collectAsState()
-            val controlsState by viewModel.controlsState.collectAsState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -58,10 +86,10 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .align(Alignment.End),
                     controlsState = controlsState,
-                    onStartClick = viewModel::startRecording,
-                    onPauseClick = viewModel::pauseRecording,
-                    onResumeClick = viewModel::resumeRecording,
-                    onStopClick = viewModel::stopRecording,
+                    onStartClick = onStartRecordingClick,
+                    onPauseClick = onPauseRecordingClick,
+                    onResumeClick = onResumeRecordingClick,
+                    onStopClick = onStopRecordingClick,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -115,7 +143,7 @@ private fun LabeledValue(label: String, value: String, modifier: Modifier = Modi
 
 @Preview(showBackground = true)
 @Composable
-fun BottomSectionPreview() {
+private fun BottomSectionPreview() {
     ActivelyTheme {
         Column {
             StatsSection(

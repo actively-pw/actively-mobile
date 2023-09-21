@@ -29,25 +29,59 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.actively.R
 import com.actively.ui.theme.ActivelyTheme
 import org.koin.androidx.compose.getViewModel
 
+fun NavGraphBuilder.saveRecordingScreen(navController: NavController) {
+    composable("save_screen") {
+        val viewModel = getViewModel<SaveActivityViewModel>()
+        val title by viewModel.title.collectAsState()
+        val showDialog by viewModel.showDiscardDialog.collectAsState(initial = false)
+        SaveRecordingScreen(
+            activityTitle = title,
+            showDiscardWarningDialog = showDialog,
+            onTitleChange = viewModel::onTitleChange,
+            onSaveClick = {
+                viewModel.onSaveClick()
+                navController.popBackStack()
+            },
+            onDiscardClick = viewModel::onDiscardClick,
+            onConfirmDiscard = {
+                viewModel.onConfirmDiscard()
+                navController.popBackStack()
+            },
+            onDismissDialog = viewModel::onDismissDialog,
+            onBackClick = navController::popBackStack
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
+private fun SaveRecordingScreen(
+    activityTitle: String,
+    showDiscardWarningDialog: Boolean,
+    onTitleChange: (String) -> Unit,
+    onSaveClick: () -> Unit,
+    onDiscardClick: () -> Unit,
+    onConfirmDiscard: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onBackClick: () -> Unit
+) {
     ActivelyTheme {
         Scaffold(
             topBar = {
-                TopBar(onBackClick = viewModel::onBackClick, onSaveClick = viewModel::onSaveClick)
+                TopBar(onBackClick = onBackClick, onSaveClick = onSaveClick)
             }
         ) {
-            val title by viewModel.title.collectAsState()
-            val showDialog by viewModel.showDiscardDialog.collectAsState(initial = false)
-            if (showDialog) {
+            if (showDiscardWarningDialog) {
                 DiscardActivityDialog(
-                    onConfirmDiscard = viewModel::onConfirmDiscard,
-                    onDismissDialog = viewModel::onDismissDialog
+                    onConfirmDiscard = onConfirmDiscard,
+                    onDismissDialog = onDismissDialog
                 )
             }
             Column(
@@ -61,8 +95,8 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .padding(12.dp),
                     label = { Text(stringResource(id = R.string.title_label)) },
-                    value = title,
-                    onValueChange = viewModel::onTitleChange
+                    value = activityTitle,
+                    onValueChange = onTitleChange
                 )
                 Spacer(Modifier.height(24.dp))
                 DiscardActivityButton(
@@ -70,7 +104,7 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .padding(12.dp)
                         .align(Alignment.End),
-                    onClick = viewModel::onDiscardClick
+                    onClick = onDiscardClick,
                 )
             }
         }
@@ -96,7 +130,7 @@ private fun TopBar(onBackClick: () -> Unit, onSaveClick: () -> Unit) {
 }
 
 @Composable
-fun DiscardActivityButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DiscardActivityButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     OutlinedButton(
         modifier = modifier,
         colors = ButtonDefaults.outlinedButtonColors(
@@ -113,7 +147,7 @@ fun DiscardActivityButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DiscardActivityDialog(onConfirmDiscard: () -> Unit, onDismissDialog: () -> Unit) {
+private fun DiscardActivityDialog(onConfirmDiscard: () -> Unit, onDismissDialog: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismissDialog,
         confirmButton = {
@@ -133,13 +167,24 @@ fun DiscardActivityDialog(onConfirmDiscard: () -> Unit, onDismissDialog: () -> U
 
 @Preview
 @Composable
-fun SaveRecordingScreenPreview() {
-    SaveRecordingScreen(SaveActivityViewModel())
+private fun SaveRecordingScreenPreview() {
+    ActivelyTheme {
+        SaveRecordingScreen(
+            activityTitle = "Morning activity",
+            showDiscardWarningDialog = false,
+            onTitleChange = {},
+            onSaveClick = {},
+            onDiscardClick = {},
+            onConfirmDiscard = {},
+            onDismissDialog = {},
+            onBackClick = {}
+        )
+    }
 }
 
 @Preview
 @Composable
-fun DiscardActivityDialogPreview() {
+private fun DiscardActivityDialogPreview() {
     ActivelyTheme {
         DiscardActivityDialog(onConfirmDiscard = {}, onDismissDialog = {})
     }
