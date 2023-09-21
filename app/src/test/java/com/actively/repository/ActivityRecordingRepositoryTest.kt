@@ -245,4 +245,14 @@ class ActivityRecordingRepositoryTest : FunSpec({
             coVerify(exactly = 1) { activityRecordingDataSource.removeRecordingActivity() }
         }
     }
+
+    context("updateRecordingActivityTitle()") {
+        val repository =
+            ActivityRecordingRepositoryImpl(activityRecordingDataSource, syncActivitiesDataSource)
+
+        test("Should call ActivityRecordingDataSource") {
+            repository.updateRecordingActivityTitle("Morning activity")
+            coVerify(exactly = 1) { activityRecordingDataSource.updateRecordingActivityTitle("Morning activity") }
+        }
+    }
 })
