@@ -31,7 +31,7 @@ value class Distance private constructor(private val rawValue: Double) {
 
         val Distance.inMeters get() = rawValue
 
-        val Distance.inWholeMeters get() = rawValue.toLong()
+        val Distance.inWholeMeters get() = rawValue.toInt()
 
         val Distance.inKilometers get() = inMeters / METERS_IN_KILOMETERS
 
