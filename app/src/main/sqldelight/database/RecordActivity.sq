@@ -49,7 +49,7 @@ SELECT COUNT(uuid) FROM ActivityEntity;
 getActivityStats:
 SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
 INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
-WHERE isBeingRecorded = TRUE;
+WHERE isBeingRecorded = TRUE LIMIT 1;
 
 getRouteByActivityId:
 SELECT
