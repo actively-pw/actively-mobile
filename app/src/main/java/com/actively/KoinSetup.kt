@@ -16,6 +16,8 @@ import com.actively.recorder.RecorderStateMachine
 import com.actively.recorder.RecorderStateMachineImpl
 import com.actively.recorder.ui.RecorderViewModel
 import com.actively.recorder.ui.SaveActivityViewModel
+import com.actively.recorder.usecase.DiscardActivityUseCase
+import com.actively.recorder.usecase.DiscardActivityUseCaseImpl
 import com.actively.recorder.usecase.GetRecorderStateUseCase
 import com.actively.recorder.usecase.GetRecorderStateUseCaseImpl
 import com.actively.recorder.usecase.PauseRecordingUseCase
@@ -87,6 +89,7 @@ object KoinSetup {
         factory<SynchronizeActivitiesUseCase> { SynchronizeActivitiesUseCaseImpl(get(), get()) }
         factory<LaunchSynchronizationUseCase> { LaunchSynchronizationUseCaseImpl(get()) }
         factory<SendActivityUseCase> { SendActivityUseCaseImpl(get()) }
+        factory<DiscardActivityUseCase> { DiscardActivityUseCaseImpl(get()) }
     }
 
     private val commonModule = module {
