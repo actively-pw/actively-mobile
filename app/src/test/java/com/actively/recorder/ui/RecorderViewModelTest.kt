@@ -147,11 +147,6 @@ class RecorderViewModelTest : FunSpec({
             viewModel.resumeRecording()
             verify(exactly = 2) { repository.getStats() }
         }
-
-        test("Stop recording calls StopRecordingUseCase") {
-            viewModel.stopRecording()
-            coVerify(exactly = 1) { useCases.stopRecording() }
-        }
     }
 
     beforeTest {

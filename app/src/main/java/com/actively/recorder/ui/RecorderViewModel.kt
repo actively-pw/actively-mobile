@@ -79,12 +79,6 @@ class RecorderViewModel(
         statsUpdates = launchStatsUpdates()
     }
 
-    fun stopRecording() = viewModelScope.launch {
-        recordingControlUseCases.stopRecording()
-        statsUpdates?.cancel()
-        statsUpdates = null
-    }
-
     private fun launchStatsUpdates() = activityRecordingRepository.getStats()
         .onEach { stats ->
             _stats.update { stats.toState() }
