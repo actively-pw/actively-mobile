@@ -17,8 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,16 +24,20 @@ import androidx.compose.ui.unit.dp
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
-import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
+fun RecorderScreen(
+    stats: StatisticsState,
+    route: String?,
+    controlsState: ControlsState,
+    onStartRecordingClick: () -> Unit,
+    onPauseRecordingClick: () -> Unit,
+    onResumeRecordingClick: () -> Unit,
+    onStopRecordingClick: () -> Unit,
+) {
     ActivelyTheme {
         Scaffold {
-            val stats by viewModel.stats.collectAsState()
-            val route by viewModel.route.collectAsState()
-            val controlsState by viewModel.controlsState.collectAsState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -58,10 +60,10 @@ fun RecorderScreen(viewModel: RecorderViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .align(Alignment.End),
                     controlsState = controlsState,
-                    onStartClick = viewModel::startRecording,
-                    onPauseClick = viewModel::pauseRecording,
-                    onResumeClick = viewModel::resumeRecording,
-                    onStopClick = viewModel::stopRecording,
+                    onStartClick = onStartRecordingClick,
+                    onPauseClick = onPauseRecordingClick,
+                    onResumeClick = onResumeRecordingClick,
+                    onStopClick = onStopRecordingClick,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
