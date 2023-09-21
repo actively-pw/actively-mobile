@@ -22,8 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,23 +29,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.actively.R
 import com.actively.ui.theme.ActivelyTheme
-import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
+fun SaveRecordingScreen(
+    activityTitle: String,
+    showDiscardWarningDialog: Boolean,
+    onTitleChange: (String) -> Unit,
+    onSaveClick: () -> Unit,
+    onDiscardClick: () -> Unit,
+    onConfirmDiscard: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onBackClick: () -> Unit
+) {
     ActivelyTheme {
         Scaffold(
             topBar = {
-                TopBar(onBackClick = viewModel::onBackClick, onSaveClick = viewModel::onSaveClick)
+                TopBar(onBackClick = onBackClick, onSaveClick = onSaveClick)
             }
         ) {
-            val title by viewModel.title.collectAsState()
-            val showDialog by viewModel.showDiscardDialog.collectAsState(initial = false)
-            if (showDialog) {
+            if (showDiscardWarningDialog) {
                 DiscardActivityDialog(
-                    onConfirmDiscard = viewModel::onConfirmDiscard,
-                    onDismissDialog = viewModel::onDismissDialog
+                    onConfirmDiscard = onConfirmDiscard,
+                    onDismissDialog = onDismissDialog
                 )
             }
             Column(
@@ -61,8 +65,8 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .padding(12.dp),
                     label = { Text(stringResource(id = R.string.title_label)) },
-                    value = title,
-                    onValueChange = viewModel::onTitleChange
+                    value = activityTitle,
+                    onValueChange = onTitleChange
                 )
                 Spacer(Modifier.height(24.dp))
                 DiscardActivityButton(
@@ -70,7 +74,7 @@ fun SaveRecordingScreen(viewModel: SaveActivityViewModel = getViewModel()) {
                         .fillMaxWidth()
                         .padding(12.dp)
                         .align(Alignment.End),
-                    onClick = viewModel::onDiscardClick
+                    onClick = onDiscardClick,
                 )
             }
         }
@@ -134,7 +138,18 @@ fun DiscardActivityDialog(onConfirmDiscard: () -> Unit, onDismissDialog: () -> U
 @Preview
 @Composable
 fun SaveRecordingScreenPreview() {
-    SaveRecordingScreen(SaveActivityViewModel())
+    ActivelyTheme {
+        SaveRecordingScreen(
+            activityTitle = "Morning activity",
+            showDiscardWarningDialog = false,
+            onTitleChange = {},
+            onSaveClick = {},
+            onDiscardClick = {},
+            onConfirmDiscard = {},
+            onDismissDialog = {},
+            onBackClick = {}
+        )
+    }
 }
 
 @Preview
