@@ -121,3 +121,6 @@ WHERE isBeingRecorded = TRUE;
 
 removeActivity:
 DELETE FROM ActivityEntity WHERE uuid = :id;
+
+removeActivityThatIsBeingRecorded:
+DELETE FROM ActivityEntity WHERE isBeingRecorded = TRUE;
