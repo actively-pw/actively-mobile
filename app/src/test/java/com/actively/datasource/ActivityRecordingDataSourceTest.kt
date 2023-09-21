@@ -342,5 +342,30 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
             activityDataSource.getRoute().first().shouldBeEmpty()
         }
+
+        test("removeRecordingActivity removes only activity that is being recorder") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.markActivityAsRecorded()
+            activityDataSource.insertActivity(
+                id = Activity.Id("2"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.removeRecordingActivity()
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe Activity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty(),
+                route = emptyList()
+            )
+            activityDataSource.getActivity(id = Activity.Id("2")).shouldBeNull()
+        }
     }
 })
