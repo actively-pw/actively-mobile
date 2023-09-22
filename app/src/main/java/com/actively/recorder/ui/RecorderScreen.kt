@@ -29,6 +29,8 @@ import androidx.navigation.compose.composable
 import com.actively.map.RecorderMap
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.koin.androidx.compose.getViewModel
 
 fun NavGraphBuilder.recorderScreen(navController: NavController) {
@@ -51,7 +53,7 @@ fun NavGraphBuilder.recorderScreen(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 private fun RecorderScreen(
     stats: StatisticsState,
@@ -81,12 +83,24 @@ private fun RecorderScreen(
                     stats = stats
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                val locationPermissions = rememberMultiplePermissionsState(
+                    listOf(
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                )
                 AnimatedRecorderControlsSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.End),
                     controlsState = controlsState,
-                    onStartClick = onStartRecordingClick,
+                    onStartClick = {
+                        if (locationPermissions.allPermissionsGranted) {
+                            onStartRecordingClick()
+                        } else {
+                            locationPermissions.launchMultiplePermissionRequest()
+                        }
+                    },
                     onPauseClick = onPauseRecordingClick,
                     onResumeClick = onResumeRecordingClick,
                     onStopClick = onStopRecordingClick,
