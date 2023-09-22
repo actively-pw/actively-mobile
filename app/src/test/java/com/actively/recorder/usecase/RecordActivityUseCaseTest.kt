@@ -1,6 +1,7 @@
 package com.actively.recorder.usecase
 
 import com.actively.activity.Activity
+import com.actively.distance.Distance.Companion.inWholeMeters
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.location.LocationProvider
@@ -40,7 +41,7 @@ class RecordActivityUseCaseTest : FunSpec({
         every { timeProvider.invoke() } returns Instant.fromEpochMilliseconds(1000)
         val latestLocation = stubLocation()
         every {
-            locationProvider.userLocation(4.seconds, 2.seconds)
+            locationProvider.userLocation(4.seconds, 2.seconds, 1.5.meters)
         } returns flowOf(latestLocation)
         coEvery { activityRecordingRepository.updateStats(any()) } coAnswers { Activity.Stats.empty() }
         coEvery { activityRecordingRepository.getLatestRouteLocation() } returns null
@@ -104,7 +105,7 @@ class RecordActivityUseCaseTest : FunSpec({
         val latestLocation = stubLocation(latitude = 0.001, longitude = 0.001)
         every { timeProvider.invoke() } returns Instant.fromEpochMilliseconds(2000)
         every {
-            locationProvider.userLocation(4.seconds, 2.seconds)
+            locationProvider.userLocation(4.seconds, 2.seconds, 1.5.meters)
         } returns flowOf(latestLocation)
         coEvery { activityRecordingRepository.getLatestRouteLocation() } returns previousLocation
         coEvery { activityRecordingRepository.getStats() } returns flowOf(
@@ -149,12 +150,10 @@ class RecordActivityUseCaseTest : FunSpec({
             } coAnswers {
                 transformLambdas.captured(stats)
             }
-            val expectedStats = Activity.Stats(
-                totalTime = 2.seconds,
-                distance = 157.meters,
-                averageSpeed = 282.6
-            )
-            recordActivityUseCase(start).first() shouldBe expectedStats
+            val actual = recordActivityUseCase(start).first()
+            actual.totalTime shouldBe 2.seconds
+            actual.distance.inWholeMeters shouldBe 157
+            actual.averageSpeed.toInt() shouldBe 283
         }
     }
 })

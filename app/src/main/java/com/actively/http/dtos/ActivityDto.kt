@@ -3,7 +3,7 @@ package com.actively.http.dtos
 import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
-import com.actively.distance.Distance.Companion.inMeters
+import com.actively.distance.Distance.Companion.inKilometers
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ data class ActivityDto(
 @Serializable
 data class StatsDto(
     val duration: Long,
-    val distance: Long,
+    val distance: Double,
     val averageSpeed: Double,
 )
 
@@ -46,7 +46,7 @@ fun Activity.toDto() = ActivityDto(
 
 fun Activity.Stats.toDto() = StatsDto(
     duration = totalTime.inWholeMilliseconds,
-    distance = distance.inMeters,
+    distance = distance.inKilometers,
     averageSpeed = averageSpeed
 )
 
