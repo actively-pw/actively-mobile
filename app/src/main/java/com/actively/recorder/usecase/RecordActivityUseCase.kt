@@ -61,7 +61,11 @@ class RecordActivityUseCaseImpl(
     }.buffer(capacity = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
 
     private fun totalDistanceFlow() = locationProvider
-        .userLocation(updateInterval = 4.seconds, fastestUpdateInterval = 2.seconds)
+        .userLocation(
+            updateInterval = 4.seconds,
+            fastestUpdateInterval = 2.seconds,
+            displacement = 1.5.meters
+        )
         .map { currentLocation ->
             val lastLocation = activityRecordingRepository.getLatestRouteLocation()
             activityRecordingRepository.insertLocation(currentLocation)
