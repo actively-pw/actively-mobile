@@ -3,7 +3,6 @@ package com.actively.map
 import android.content.Context
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,7 +30,6 @@ private const val LINE_LAYER_ID = "line-layer-id"
 fun RecorderMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
-    isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     val lineColor = MaterialTheme.colorScheme.primary
     Column(modifier = modifier) {
@@ -41,7 +39,7 @@ fun RecorderMap(
                     layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                     getMapboxMap().apply {
                         loadStyle(
-                            style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
+                            style(Style.OUTDOORS) {
                                 +geoJsonSource(SOURCE_ID)
                                 +lineLayer(LINE_LAYER_ID, SOURCE_ID) {
                                     lineWidth(4.0)
