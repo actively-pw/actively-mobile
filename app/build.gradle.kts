@@ -124,4 +124,5 @@ dependencies {
     implementation(libs.ktor.negotiation)
     implementation(libs.ktor.serialization)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.permissions)
 }

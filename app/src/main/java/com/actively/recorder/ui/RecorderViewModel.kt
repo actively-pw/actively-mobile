@@ -11,8 +11,10 @@ import com.actively.util.TimeProvider
 import com.mapbox.geojson.LineString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -37,6 +39,9 @@ class RecorderViewModel(
         ControlsState(current = RecorderState.Idle, previous = RecorderState.Idle)
     )
     val controlsState: StateFlow<ControlsState> = _controlsState.asStateFlow()
+
+    private val _showPermissionRequestDialog = MutableSharedFlow<Boolean>()
+    val showPermissionRequestDialog = _showPermissionRequestDialog.asSharedFlow()
 
     private var statsUpdates: Job? = null
 
@@ -77,6 +82,14 @@ class RecorderViewModel(
     fun resumeRecording() = viewModelScope.launch {
         recordingControlUseCases.resumeRecording(timeProvider())
         statsUpdates = launchStatsUpdates()
+    }
+
+    fun showRequestPermissionDialog() = viewModelScope.launch {
+        _showPermissionRequestDialog.emit(true)
+    }
+
+    fun dismissRequestPermissionDialog() = viewModelScope.launch {
+        _showPermissionRequestDialog.emit(false)
     }
 
     private fun launchStatsUpdates() = activityRecordingRepository.getStats()

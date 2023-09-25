@@ -1,5 +1,10 @@
 package com.actively.recorder.ui
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -11,14 +16,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,9 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.actively.BuildConfig
 import com.actively.map.RecorderMap
+import com.actively.permissions.requestPermissionsIfNotGranted
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.koin.androidx.compose.getViewModel
 
 fun NavGraphBuilder.recorderScreen(navController: NavController) {
@@ -37,30 +49,37 @@ fun NavGraphBuilder.recorderScreen(navController: NavController) {
         val route by viewModel.route.collectAsState()
         val controlsState by viewModel.controlsState.collectAsState()
         val stats by viewModel.stats.collectAsState()
+        val showPermissionRequestDialog by viewModel.showPermissionRequestDialog.collectAsState(
+            initial = false
+        )
         RecorderScreen(
             stats = stats,
             route = route,
             controlsState = controlsState,
+            showPermissionRequestDialog = showPermissionRequestDialog,
             onStartRecordingClick = viewModel::startRecording,
             onPauseRecordingClick = viewModel::pauseRecording,
             onResumeRecordingClick = viewModel::resumeRecording,
-            onStopRecordingClick = {
-                navController.navigate("save_screen")
-            }
+            onStopRecordingClick = { navController.navigate("save_screen") },
+            onShowPermissionRequestDialog = viewModel::showRequestPermissionDialog,
+            onDismissPermissionDialog = viewModel::dismissRequestPermissionDialog,
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 private fun RecorderScreen(
     stats: StatisticsState,
     route: String?,
     controlsState: ControlsState,
+    showPermissionRequestDialog: Boolean,
     onStartRecordingClick: () -> Unit,
     onPauseRecordingClick: () -> Unit,
     onResumeRecordingClick: () -> Unit,
     onStopRecordingClick: () -> Unit,
+    onShowPermissionRequestDialog: () -> Unit,
+    onDismissPermissionDialog: () -> Unit,
 ) {
     ActivelyTheme {
         Scaffold {
@@ -81,14 +100,33 @@ private fun RecorderScreen(
                     stats = stats
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                val locationPermissions = rememberMultiplePermissionsState(
+                    listOf(
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                )
+                if (showPermissionRequestDialog) {
+                    LocationPermissionRationaleDialog(onDismissDialog = onDismissPermissionDialog)
+                }
                 AnimatedRecorderControlsSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.End),
                     controlsState = controlsState,
-                    onStartClick = onStartRecordingClick,
+                    onStartClick = {
+                        locationPermissions.requestPermissionsIfNotGranted(
+                            onShowRationale = onShowPermissionRequestDialog,
+                            onPermissionsGranted = onStartRecordingClick
+                        )
+                    },
                     onPauseClick = onPauseRecordingClick,
-                    onResumeClick = onResumeRecordingClick,
+                    onResumeClick = {
+                        locationPermissions.requestPermissionsIfNotGranted(
+                            onShowRationale = onShowPermissionRequestDialog,
+                            onPermissionsGranted = onResumeRecordingClick
+                        )
+                    },
                     onStopClick = onStopRecordingClick,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -168,10 +206,51 @@ private fun BottomSectionPreview() {
     }
 }
 
+@Composable
+fun LocationPermissionRationaleDialog(onDismissDialog: () -> Unit) {
+    val requestLocationPermissionFromAppSettings = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { onDismissDialog() }
+    )
+    val openActivelySettingsIntent = remember {
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+        )
+    }
+    AlertDialog(
+        onDismissRequest = onDismissDialog,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    requestLocationPermissionFromAppSettings.launch(openActivelySettingsIntent)
+                }
+            ) {
+                Text(text = "Settings")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissDialog) {
+                Text(text = "Cancel")
+            }
+        },
+        title = { Text(text = "Permissions") },
+        text = { Text(text = "Location access permission is needed in order to record activity.") }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun StatPreview() {
     ActivelyTheme {
         LabeledValue(label = "Time", value = "01:58:34")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LocationPermissionRationaleDialogPreview() {
+    ActivelyTheme {
+        LocationPermissionRationaleDialog(onDismissDialog = {})
     }
 }
