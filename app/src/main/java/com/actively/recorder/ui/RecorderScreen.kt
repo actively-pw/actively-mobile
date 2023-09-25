@@ -246,3 +246,11 @@ fun StatPreview() {
         LabeledValue(label = "Time", value = "01:58:34")
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun LocationPermissionRationaleDialogPreview() {
+    ActivelyTheme {
+        LocationPermissionRationaleDialog(onDismissDialog = {})
+    }
+}
