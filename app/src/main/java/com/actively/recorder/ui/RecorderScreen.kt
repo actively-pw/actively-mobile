@@ -26,9 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +35,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.BuildConfig
 import com.actively.map.RecorderMap
+import com.actively.permissions.requestPermissionsIfNotGranted
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -50,16 +48,20 @@ fun NavGraphBuilder.recorderScreen(navController: NavController) {
         val route by viewModel.route.collectAsState()
         val controlsState by viewModel.controlsState.collectAsState()
         val stats by viewModel.stats.collectAsState()
+        val showPermissionRequestDialog by viewModel.showPermissionRequestDialog.collectAsState(
+            initial = false
+        )
         RecorderScreen(
             stats = stats,
             route = route,
             controlsState = controlsState,
+            showPermissionRequestDialog = showPermissionRequestDialog,
             onStartRecordingClick = viewModel::startRecording,
             onPauseRecordingClick = viewModel::pauseRecording,
             onResumeRecordingClick = viewModel::resumeRecording,
-            onStopRecordingClick = {
-                navController.navigate("save_screen")
-            }
+            onStopRecordingClick = { navController.navigate("save_screen") },
+            onShowPermissionRequestDialog = viewModel::showRequestPermissionDialog,
+            onDismissPermissionDialog = viewModel::dismissRequestPermissionDialog,
         )
     }
 }
@@ -70,10 +72,13 @@ private fun RecorderScreen(
     stats: StatisticsState,
     route: String?,
     controlsState: ControlsState,
+    showPermissionRequestDialog: Boolean,
     onStartRecordingClick: () -> Unit,
     onPauseRecordingClick: () -> Unit,
     onResumeRecordingClick: () -> Unit,
     onStopRecordingClick: () -> Unit,
+    onShowPermissionRequestDialog: () -> Unit,
+    onDismissPermissionDialog: () -> Unit,
 ) {
     ActivelyTheme {
         Scaffold {
@@ -100,13 +105,11 @@ private fun RecorderScreen(
                         android.Manifest.permission.ACCESS_FINE_LOCATION
                     )
                 )
-                var showDialog by remember { mutableStateOf(false) }
-                val requestLocationPermissionFromAppSettings =
-                    rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-                        showDialog = false
-                    }
-
-                if (showDialog) {
+                val requestLocationPermissionFromAppSettings = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult(),
+                    onResult = { onDismissPermissionDialog() }
+                )
+                if (showPermissionRequestDialog) {
                     LocationPermissionDialog(
                         onOpenSettings = {
                             requestLocationPermissionFromAppSettings.launch(
@@ -116,7 +119,8 @@ private fun RecorderScreen(
                                 )
                             )
                         },
-                        onDismissDialog = { showDialog = false })
+                        onDismissDialog = onDismissPermissionDialog
+                    )
                 }
                 AnimatedRecorderControlsSection(
                     modifier = Modifier
@@ -124,16 +128,18 @@ private fun RecorderScreen(
                         .align(Alignment.End),
                     controlsState = controlsState,
                     onStartClick = {
-                        if (locationPermissions.allPermissionsGranted) {
-                            onStartRecordingClick()
-                        } else if (locationPermissions.shouldShowRationale) {
-                            showDialog = true
-                        } else {
-                            locationPermissions.launchMultiplePermissionRequest()
-                        }
+                        locationPermissions.requestPermissionsIfNotGranted(
+                            onShowRationale = onShowPermissionRequestDialog,
+                            onPermissionsGranted = onStartRecordingClick
+                        )
                     },
                     onPauseClick = onPauseRecordingClick,
-                    onResumeClick = onResumeRecordingClick,
+                    onResumeClick = {
+                        locationPermissions.requestPermissionsIfNotGranted(
+                            onShowRationale = onShowPermissionRequestDialog,
+                            onPermissionsGranted = onResumeRecordingClick
+                        )
+                    },
                     onStopClick = onStopRecordingClick,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
