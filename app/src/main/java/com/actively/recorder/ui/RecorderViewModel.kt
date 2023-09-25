@@ -63,10 +63,7 @@ class RecorderViewModel(
 
         activityRecordingRepository.getState().onEach { newState ->
             _controlsState.update { currentState ->
-                ControlsState(
-                    current = newState,
-                    previous = currentState.current
-                ).also { println(it) }
+                ControlsState(current = newState, previous = currentState.current)
             }
         }.launchIn(viewModelScope)
     }
