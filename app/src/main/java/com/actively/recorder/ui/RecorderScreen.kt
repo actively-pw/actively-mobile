@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -105,22 +106,8 @@ private fun RecorderScreen(
                         android.Manifest.permission.ACCESS_FINE_LOCATION
                     )
                 )
-                val requestLocationPermissionFromAppSettings = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                    onResult = { onDismissPermissionDialog() }
-                )
                 if (showPermissionRequestDialog) {
-                    LocationPermissionDialog(
-                        onOpenSettings = {
-                            requestLocationPermissionFromAppSettings.launch(
-                                Intent(
-                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                    Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                                )
-                            )
-                        },
-                        onDismissDialog = onDismissPermissionDialog
-                    )
+                    LocationPermissionRationaleDialog(onDismissDialog = onDismissPermissionDialog)
                 }
                 AnimatedRecorderControlsSection(
                     modifier = Modifier
@@ -220,14 +207,25 @@ private fun BottomSectionPreview() {
 }
 
 @Composable
-fun LocationPermissionDialog(
-    onOpenSettings: () -> Unit,
-    onDismissDialog: () -> Unit,
-) {
+fun LocationPermissionRationaleDialog(onDismissDialog: () -> Unit) {
+    val requestLocationPermissionFromAppSettings = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { onDismissDialog() }
+    )
+    val openActivelySettingsIntent = remember {
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+        )
+    }
     AlertDialog(
         onDismissRequest = onDismissDialog,
         confirmButton = {
-            TextButton(onClick = onOpenSettings) {
+            TextButton(
+                onClick = {
+                    requestLocationPermissionFromAppSettings.launch(openActivelySettingsIntent)
+                }
+            ) {
                 Text(text = "Settings")
             }
         },
