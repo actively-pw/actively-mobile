@@ -3,16 +3,13 @@ package com.actively.map
 import android.content.Context
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.actively.BuildConfig
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
+import com.actively.ui.theme.DarkColors
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.ResourceOptions
@@ -31,9 +28,8 @@ private const val LINE_LAYER_ID = "line-layer-id"
 fun RecorderMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
-    isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
-    val lineColor = MaterialTheme.colorScheme.primary
+    val lineColor = DarkColors.tertiaryContainer
     Column(modifier = modifier) {
         AndroidView(
             factory = { context ->
@@ -41,7 +37,7 @@ fun RecorderMap(
                     layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                     getMapboxMap().apply {
                         loadStyle(
-                            style(if (isDarkTheme) Style.DARK else Style.OUTDOORS) {
+                            style(Style.OUTDOORS) {
                                 +geoJsonSource(SOURCE_ID)
                                 +lineLayer(LINE_LAYER_ID, SOURCE_ID) {
                                     lineWidth(4.0)
@@ -49,9 +45,6 @@ fun RecorderMap(
                                 }
                             }
                         )
-                        location.addOnIndicatorPositionChangedListener {
-                            setCamera(cameraOptions(it, cameraState.zoom))
-                        }
                     }
                     location.updateSettings {
                         enabled = true
@@ -75,9 +68,3 @@ private fun mapInitOptions(context: Context): MapInitOptions {
         .build()
     return MapInitOptions(context, resourceOptions = options)
 }
-
-private fun cameraOptions(userLocation: Point, zoom: Double) = CameraOptions.Builder()
-    .zoom(zoom)
-    .center(userLocation)
-    .build()
-
