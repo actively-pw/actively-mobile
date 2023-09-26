@@ -10,8 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.actively.BuildConfig
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.ResourceOptions
@@ -47,9 +45,6 @@ fun RecorderMap(
                                 }
                             }
                         )
-                        location.addOnIndicatorPositionChangedListener {
-                            setCamera(cameraOptions(it, cameraState.zoom))
-                        }
                     }
                     location.updateSettings {
                         enabled = true
@@ -73,9 +68,3 @@ private fun mapInitOptions(context: Context): MapInitOptions {
         .build()
     return MapInitOptions(context, resourceOptions = options)
 }
-
-private fun cameraOptions(userLocation: Point, zoom: Double) = CameraOptions.Builder()
-    .zoom(zoom)
-    .center(userLocation)
-    .build()
-
