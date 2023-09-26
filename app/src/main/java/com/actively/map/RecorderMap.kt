@@ -4,12 +4,12 @@ import android.content.Context
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.actively.BuildConfig
+import com.actively.ui.theme.DarkColors
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.ResourceOptions
@@ -29,7 +29,7 @@ fun RecorderMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
 ) {
-    val lineColor = MaterialTheme.colorScheme.primary
+    val lineColor = DarkColors.tertiaryContainer
     Column(modifier = modifier) {
         AndroidView(
             factory = { context ->
