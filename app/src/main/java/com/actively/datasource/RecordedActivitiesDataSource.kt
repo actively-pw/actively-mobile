@@ -28,7 +28,7 @@ class RecordedActivitiesDataSource(
                 .map(RecordedActivityDto::toRecordedActivity),
             prevKey = null,
             nextKey = response.headers[NEXT_PAGE_HEADER]?.toInt()?.takeIf { it >= 1 }
-        ).also(::println)
+        )
     } catch (e: Exception) {
         LoadResult.Error(e)
     }
