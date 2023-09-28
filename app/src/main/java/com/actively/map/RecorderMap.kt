@@ -1,6 +1,5 @@
 package com.actively.map
 
-import android.content.Context
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.foundation.layout.Column
@@ -8,11 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
-import com.actively.BuildConfig
 import com.actively.ui.theme.DarkColors
-import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapView
-import com.mapbox.maps.ResourceOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
@@ -60,11 +56,4 @@ fun RecorderMap(
             }
         )
     }
-}
-
-private fun mapInitOptions(context: Context): MapInitOptions {
-    val options = ResourceOptions.Builder()
-        .accessToken(BuildConfig.MAPBOX_PRIVATE_TOKEN)
-        .build()
-    return MapInitOptions(context, resourceOptions = options)
 }
