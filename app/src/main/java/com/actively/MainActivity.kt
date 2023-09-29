@@ -3,12 +3,11 @@ package com.actively
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,7 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -57,8 +56,8 @@ fun BaseScaffoldScreen(navController: NavController, content: @Composable (Paddi
     Scaffold(
         bottomBar = {
             val items = listOf(
-                BottomBarItem(R.string.home, Icons.Default.Home, route = "home_screen"),
-                BottomBarItem(R.string.recorder, Icons.Default.Add, route = "recording_screen"),
+                BottomBarItem(R.string.home, R.drawable.home, route = "home_screen"),
+                BottomBarItem(R.string.recorder, R.drawable.record, route = "recording_screen"),
             )
             var selectedItem by remember {
                 mutableStateOf(items.first())
@@ -92,11 +91,15 @@ fun BottomBar(
             NavigationBarItem(
                 selected = item == selectedItem,
                 onClick = { onItemClick(item) },
-                icon = { Icon(imageVector = item.icon, contentDescription = null) },
-                label = { Text(stringResource(id = item.stringResource)) }
+                icon = { Icon(painterResource(id = item.drawableId), contentDescription = null) },
+                label = { Text(stringResource(id = item.id)) }
             )
         }
     }
 }
 
-data class BottomBarItem(val stringResource: Int, val icon: ImageVector, val route: String)
+data class BottomBarItem(
+    @StringRes val id: Int,
+    @DrawableRes val drawableId: Int,
+    val route: String
+)
