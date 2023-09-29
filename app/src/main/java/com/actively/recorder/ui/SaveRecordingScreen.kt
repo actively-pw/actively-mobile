@@ -47,12 +47,16 @@ fun NavGraphBuilder.saveRecordingScreen(navController: NavController) {
             onTitleChange = viewModel::onTitleChange,
             onSaveClick = {
                 viewModel.onSaveClick()
-                navController.popBackStack()
+                navController.navigate("home_screen") {
+                    popUpTo("home_screen")
+                }
             },
             onDiscardClick = viewModel::onDiscardClick,
             onConfirmDiscard = {
                 viewModel.onConfirmDiscard()
-                navController.popBackStack()
+                navController.navigate("home_screen") {
+                    popUpTo("home_screen")
+                }
             },
             onDismissDialog = viewModel::onDismissDialog,
             onBackClick = navController::popBackStack
