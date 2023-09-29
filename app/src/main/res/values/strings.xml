@@ -10,4 +10,6 @@
     <string name="cancel">Cancel</string>
     <string name="discard_warning">Warning</string>
     <string name="discard_text">Discarded activity will be permanently lost</string>
+    <string name="home">Home</string>
+    <string name="recorder">Record</string>
 </resources>
