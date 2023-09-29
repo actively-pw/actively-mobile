@@ -10,9 +10,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.actively.activity.RecordedActivity
 import com.actively.ui.theme.ActivelyTheme
+import org.koin.androidx.compose.getViewModel
+
+fun NavGraphBuilder.homeScreen() {
+    composable("home_screen") {
+        val viewModel: HomeViewModel = getViewModel()
+        val activities = viewModel.activitiesPager.flow.collectAsLazyPagingItems()
+        HomeScreen(activities = activities)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
