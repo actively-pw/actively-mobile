@@ -4,8 +4,10 @@ import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.inKilometers
+import com.actively.distance.Distance.Companion.kilometers
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.milliseconds
 
 @Serializable
 data class ActivityDto(
@@ -21,7 +23,13 @@ data class StatsDto(
     val duration: Long,
     val distance: Double,
     val averageSpeed: Double,
-)
+) {
+    fun toActivityStats() = Activity.Stats(
+        totalTime = duration.milliseconds,
+        distance = distance.kilometers,
+        averageSpeed = averageSpeed
+    )
+}
 
 @Serializable
 data class RouteSliceDto(

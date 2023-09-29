@@ -125,4 +125,6 @@ dependencies {
     implementation(libs.ktor.serialization)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 }

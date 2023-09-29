@@ -8,8 +8,10 @@ import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
 import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
+import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
+import com.actively.home.ui.HomeViewModel
 import com.actively.location.LocationProvider
 import com.actively.location.LocationProviderImpl
 import com.actively.recorder.RecorderStateMachine
@@ -48,7 +50,7 @@ import com.mapbox.common.location.compat.LocationEngineProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -70,6 +72,7 @@ object KoinSetup {
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
         viewModel { SaveActivityViewModel(get(), get()) }
+        viewModel { HomeViewModel(get()) }
     }
 
     private val useCasesModule = module {
@@ -108,10 +111,11 @@ object KoinSetup {
                     json(Json {
                         isLenient = true
                         prettyPrint = true
+                        ignoreUnknownKeys = true
                     })
                 }
                 install(Logging) {
-                    logger = Logger.DEFAULT
+                    logger = Logger.ANDROID
                     level = LogLevel.ALL
                 }
                 expectSuccess = true
@@ -125,5 +129,6 @@ object KoinSetup {
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
+        single { RecordedActivitiesDataSource(get()) }
     }
 }
