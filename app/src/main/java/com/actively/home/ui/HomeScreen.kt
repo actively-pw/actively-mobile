@@ -12,9 +12,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.actively.BaseScaffoldScreen
 import com.actively.activity.RecordedActivity
 import com.actively.ui.theme.ActivelyTheme
+import com.actively.util.BaseScaffoldScreen
 import org.koin.androidx.compose.getViewModel
 
 fun NavGraphBuilder.homeScreen(navController: NavController) {
