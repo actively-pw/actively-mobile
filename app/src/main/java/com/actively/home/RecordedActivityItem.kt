@@ -1,6 +1,8 @@
 package com.actively.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -33,11 +35,16 @@ fun RecordedActivityItem(
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(recordedActivity.title, style = MaterialTheme.typography.titleMedium)
+            Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
         }
-
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(350.dp)
+                .background(color = MaterialTheme.colorScheme.primary)
+        )
     }
 }
 
@@ -78,9 +85,9 @@ fun LabeledStat(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Light)
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Light)
         )
-        Text(text = value, style = MaterialTheme.typography.labelLarge)
+        Text(text = value, style = MaterialTheme.typography.headlineSmall)
     }
 }
 
