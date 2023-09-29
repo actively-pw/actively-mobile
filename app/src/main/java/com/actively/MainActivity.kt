@@ -3,31 +3,24 @@ package com.actively
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.actively.home.ui.homeScreen
+import com.actively.navigation.BottomBar
+import com.actively.navigation.BottomBarItem
 import com.actively.recorder.ui.recorderScreen
 import com.actively.recorder.ui.saveRecordingScreen
 import kotlinx.coroutines.CoroutineScope
@@ -87,28 +80,3 @@ fun BaseScaffoldScreen(navController: NavController, content: @Composable (Paddi
         content(it)
     }
 }
-
-@Composable
-fun BottomBar(
-    items: List<BottomBarItem>,
-    onItemClick: (BottomBarItem) -> Unit,
-    selectedItem: BottomBarItem,
-    modifier: Modifier = Modifier,
-) {
-    BottomAppBar(modifier = modifier) {
-        items.forEach { item ->
-            NavigationBarItem(
-                selected = item == selectedItem,
-                onClick = { onItemClick(item) },
-                icon = { Icon(painterResource(id = item.drawableId), contentDescription = null) },
-                label = { Text(stringResource(id = item.id)) }
-            )
-        }
-    }
-}
-
-data class BottomBarItem(
-    @StringRes val id: Int,
-    @DrawableRes val drawableId: Int,
-    val route: String
-)
