@@ -66,7 +66,7 @@ fun StatisticsRow(stats: Activity.Stats, modifier: Modifier = Modifier) {
         LabeledStat(
             label = "Time",
             value = String.format(
-                "%d:%2d h",
+                "%d:%02d h",
                 stats.totalTime.inWholeHours,
                 stats.totalTime.inWholeMinutes % 60
             )
