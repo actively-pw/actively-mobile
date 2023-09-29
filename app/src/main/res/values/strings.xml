@@ -12,4 +12,7 @@
     <string name="discard_text">Discarded activity will be permanently lost</string>
     <string name="home">Home</string>
     <string name="recorder">Record</string>
+    <string name="distance">Distance</string>
+    <string name="time">Time</string>
+    <string name="avg_speed">Avg speed</string>
 </resources>

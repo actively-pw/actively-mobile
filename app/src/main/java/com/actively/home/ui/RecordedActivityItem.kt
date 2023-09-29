@@ -18,9 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.actively.R
 import com.actively.activity.Activity
 import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.inKilometers
@@ -55,7 +57,7 @@ fun StatisticsRow(stats: Activity.Stats, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         LabeledStat(
-            label = "Distance",
+            label = stringResource(R.string.distance),
             value = String.format("%.2f km", stats.distance.inKilometers)
         )
         Divider(
@@ -64,7 +66,7 @@ fun StatisticsRow(stats: Activity.Stats, modifier: Modifier = Modifier) {
                 .fillMaxHeight()
         )
         LabeledStat(
-            label = "Time",
+            label = stringResource(R.string.time),
             value = String.format(
                 "%d:%02d h",
                 stats.totalTime.inWholeHours,
@@ -76,7 +78,10 @@ fun StatisticsRow(stats: Activity.Stats, modifier: Modifier = Modifier) {
                 .width(1.dp)
                 .fillMaxHeight()
         )
-        LabeledStat(label = "Avg", value = String.format("%.2f km/h", stats.averageSpeed))
+        LabeledStat(
+            label = stringResource(R.string.avg_speed),
+            value = String.format("%.2f km/h", stats.averageSpeed)
+        )
     }
 }
 
