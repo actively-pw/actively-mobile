@@ -1,4 +1,4 @@
-package com.actively.home
+package com.actively.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
