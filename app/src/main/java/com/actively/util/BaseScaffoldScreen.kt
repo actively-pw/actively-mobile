@@ -19,8 +19,13 @@ import com.actively.navigation.BottomBarItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseScaffoldScreen(navController: NavController, content: @Composable () -> Unit) {
+fun BaseScaffoldScreen(
+    navController: NavController,
+    topBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
+) {
     Scaffold(
+        topBar = topBar,
         bottomBar = {
             val items = listOf(
                 BottomBarItem(R.string.home, R.drawable.home, route = "home_screen"),
