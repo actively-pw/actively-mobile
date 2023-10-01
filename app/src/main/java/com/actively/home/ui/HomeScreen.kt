@@ -8,9 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -18,17 +22,24 @@ import androidx.navigation.compose.composable
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.actively.R
 import com.actively.activity.RecordedActivity
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
 import org.koin.androidx.compose.getViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.homeScreen(navController: NavController) {
     composable("home_screen") {
         val viewModel: HomeViewModel = getViewModel()
         val activities = viewModel.activitiesPager.flow.collectAsLazyPagingItems()
         ActivelyTheme {
-            BaseScaffoldScreen(navController = navController) {
+            BaseScaffoldScreen(
+                navController = navController,
+                topBar = {
+                    TopAppBar(title = { Text(stringResource(R.string.your_activities)) })
+                }
+            ) {
                 HomeScreen(activities = activities)
             }
         }
