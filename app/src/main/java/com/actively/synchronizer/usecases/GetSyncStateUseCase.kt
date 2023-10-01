@@ -7,12 +7,12 @@ import com.actively.synchronizer.WorkState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-interface GetSyncWorkInfoUseCase {
+interface GetSyncStateUseCase {
 
     operator fun invoke(): Flow<WorkState?>
 }
 
-class GetSyncWorkInfoUseCaseImpl(private val workManager: WorkManager) : GetSyncWorkInfoUseCase {
+class GetSyncStateUseCaseImpl(private val workManager: WorkManager) : GetSyncStateUseCase {
 
     override fun invoke() = workManager
         .getWorkInfosForUniqueWorkFlow(SynchronizeActivitiesWorker.SYNC_WORK_NAME)
