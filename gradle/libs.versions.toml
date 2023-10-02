@@ -29,6 +29,7 @@ androidx-work = "2.9.0-beta01"
 ktor = "2.3.4"
 serialization = "1.8.10"
 turbine = "1.0.0"
+pullrefresh = "1.0.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
@@ -68,6 +69,7 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+pullrefresh = { module = "eu.bambooapps:compose-material3-pullrefresh", version.ref = "pullrefresh" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

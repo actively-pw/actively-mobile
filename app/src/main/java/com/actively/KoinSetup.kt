@@ -8,7 +8,8 @@ import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
 import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
-import com.actively.datasource.RecordedActivitiesDataSource
+import com.actively.datasource.RecordedActivitiesDataSourceFactory
+import com.actively.datasource.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
 import com.actively.home.ui.HomeViewModel
@@ -135,7 +136,7 @@ object KoinSetup {
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
-        single { RecordedActivitiesDataSource(get()) }
+        single<RecordedActivitiesDataSourceFactory> { RecordedActivitiesDataSourceFactoryImpl(get()) }
         single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     }
 }

@@ -1,6 +1,7 @@
 package com.actively.home.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,9 @@ import com.actively.activity.RecordedActivity
 import com.actively.synchronizer.WorkState
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
+import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
+import eu.bambooapps.material3.pullrefresh.pullRefresh
+import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,23 +55,22 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     activities: LazyPagingItems<RecordedActivity>,
     syncState: WorkState?
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        if (activities.loadState.refresh == LoadState.Loading) {
-            item {
-                Column(
-                    modifier = Modifier.fillParentMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-        } else {
+    val refreshState = rememberPullRefreshState(
+        refreshing = activities.loadState.refresh == LoadState.Loading,
+        onRefresh = activities::refresh
+    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(refreshState),
+        ) {
             syncState?.let {
                 if (it is WorkState.Running || it is WorkState.Enqueued) {
                     item {
@@ -98,5 +101,10 @@ fun HomeScreen(
                 }
             }
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = activities.loadState.refresh == LoadState.Loading,
+            state = refreshState
+        )
     }
 }
