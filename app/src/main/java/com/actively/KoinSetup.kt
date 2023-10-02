@@ -57,6 +57,9 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
@@ -73,7 +76,7 @@ object KoinSetup {
 
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
-        viewModel { SaveActivityViewModel(get(), get()) }
+        viewModel { SaveActivityViewModel(get(), get(), get()) }
         viewModel { HomeViewModel(get()) }
     }
 
@@ -133,5 +136,6 @@ object KoinSetup {
         single<UUIDProvider> { UUIDProviderImpl() }
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
         single { RecordedActivitiesDataSource(get()) }
+        single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     }
 }
