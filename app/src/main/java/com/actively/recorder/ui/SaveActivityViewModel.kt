@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.actively.recorder.usecase.DiscardActivityUseCase
 import com.actively.recorder.usecase.StopRecordingUseCase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 class SaveActivityViewModel(
     private val stopRecordingUseCase: StopRecordingUseCase,
     private val discardActivityUseCase: DiscardActivityUseCase,
+    private val nonCancellableScope: CoroutineScope,
 ) : ViewModel() {
 
     private val _title = MutableStateFlow("")
@@ -34,12 +36,11 @@ class SaveActivityViewModel(
         _showDiscardDialog.emit(false)
     }
 
-    fun onConfirmDiscard() = viewModelScope.launch {
-        _showDiscardDialog.emit(false)
+    fun onConfirmDiscard() = nonCancellableScope.launch {
         discardActivityUseCase()
     }
 
-    fun onSaveClick() = viewModelScope.launch {
+    fun onSaveClick() = nonCancellableScope.launch {
         stopRecordingUseCase(_title.value)
     }
 }
