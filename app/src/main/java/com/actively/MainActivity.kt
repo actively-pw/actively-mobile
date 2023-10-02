@@ -7,6 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.actively.recorder.ui.recorderScreen
 import com.actively.recorder.ui.saveRecordingScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,5 +21,11 @@ class MainActivity : ComponentActivity() {
                 saveRecordingScreen(navController)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val scope by inject<CoroutineScope>()
+        scope.cancel()
     }
 }
