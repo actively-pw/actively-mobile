@@ -16,5 +16,5 @@
     <string name="time">Time</string>
     <string name="avg_speed">Avg speed</string>
     <string name="your_activities">Your Activities</string>
-    <string name="processing_activities">Processing activities</string>
+    <string name="syncing_activities">Syncing activities</string>
 </resources>

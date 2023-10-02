@@ -26,7 +26,7 @@ fun SyncInProgressItem(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(stringResource(id = R.string.processing_activities))
+            Text(stringResource(id = R.string.syncing_activities))
             CircularProgressIndicator()
         }
     }
