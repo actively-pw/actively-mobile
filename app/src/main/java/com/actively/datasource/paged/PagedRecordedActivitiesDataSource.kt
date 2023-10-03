@@ -1,4 +1,4 @@
-package com.actively.datasource
+package com.actively.datasource.paged
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -10,7 +10,7 @@ import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class RecordedActivitiesDataSource(
+class PagedRecordedActivitiesDataSource(
     private val client: HttpClient
 ) : PagingSource<Int, RecordedActivity>() {
 

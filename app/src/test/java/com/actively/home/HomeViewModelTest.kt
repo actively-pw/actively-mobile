@@ -1,8 +1,8 @@
 package com.actively.home
 
 import app.cash.turbine.test
-import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.RecordedActivitiesDataSourceFactory
+import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
 import com.actively.home.ui.HomeViewModel
 import com.actively.synchronizer.WorkState
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
@@ -24,8 +24,8 @@ class HomeViewModelTest : FunSpec({
     isolationMode = IsolationMode.InstancePerTest
     coroutineTestScope = true
     val recordedActivitiesDataSourceFactory = mockk<RecordedActivitiesDataSourceFactory>()
-    val recordedActivitiesDataSource = mockk<RecordedActivitiesDataSource>(relaxed = true)
-    every { recordedActivitiesDataSourceFactory.create() } returns recordedActivitiesDataSource
+    val pagedRecordedActivitiesDataSource = mockk<PagedRecordedActivitiesDataSource>(relaxed = true)
+    every { recordedActivitiesDataSourceFactory.create() } returns pagedRecordedActivitiesDataSource
     val getSyncStateUseCase = mockk<GetSyncStateUseCase>()
 
     test("syncState should represent current state returned from getSyncStateUseCase") {
