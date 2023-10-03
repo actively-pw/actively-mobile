@@ -63,7 +63,7 @@ class ActivityDtoTest : FunSpec({
         val expectedActivityDto = ActivityDto(
             id = "1",
             title = "Morning activity",
-            sport = "Cycling",
+            sport = 0,
             stats = StatsDto(
                 duration = 51000,
                 distance = 0.54,
