@@ -128,4 +128,5 @@ dependencies {
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
     testImplementation(libs.turbine)
+    implementation(libs.pullrefresh)
 }

@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.milliseconds
 data class ActivityDto(
     val id: String,
     val title: String,
-    val sport: String,
+    val sport: Int,
     val stats: StatsDto,
     val route: List<RouteSliceDto>,
 )
@@ -47,7 +47,7 @@ data class LocationDto(
 fun Activity.toDto() = ActivityDto(
     id = id.value,
     title = title ?: "",
-    sport = sport,
+    sport = 0,
     stats = stats.toDto(),
     route = route.map(RouteSlice::toDto)
 )
