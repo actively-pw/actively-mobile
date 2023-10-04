@@ -29,20 +29,38 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.PasswordTextField
+import com.actively.auth.ui.TextFieldState
 import com.actively.ui.theme.ActivelyTheme
 
 
 fun NavGraphBuilder.loginScreen(navController: NavController) {
     composable("login_screen") {
+        var emailState by remember {
+            mutableStateOf(TextFieldState(""))
+        }
+        var passwordState by remember {
+            mutableStateOf(TextFieldState(""))
+        }
         ActivelyTheme {
-            LoginScreen(onNavigateBack = { navController.popBackStack() })
+            LoginScreen(
+                emailState = emailState,
+                passwordState = passwordState,
+                onEmailChange = { emailState = emailState.copy(value = it) },
+                onPasswordChange = { passwordState = passwordState.copy(value = it) },
+                onNavigateBack = { navController.popBackStack() })
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onNavigateBack: () -> Unit) {
+fun LoginScreen(
+    emailState: TextFieldState,
+    passwordState: TextFieldState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -61,8 +79,6 @@ fun LoginScreen(onNavigateBack: () -> Unit) {
                 .padding(it)
                 .padding(horizontal = 16.dp),
         ) {
-            var email by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
             Spacer(Modifier.height(50.dp))
             Text(
                 text = "Log in to Actively",
@@ -71,20 +87,20 @@ fun LoginScreen(onNavigateBack: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             EmailTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = email,
-                onValueChange = { email = it }
+                value = emailState.value,
+                onValueChange = onEmailChange
             )
             Spacer(Modifier.height(16.dp))
             PasswordTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = { password = it },
-                onDone = { println("Credentials: $email, $password") }
+                value = passwordState.value,
+                onValueChange = onPasswordChange,
+                onDone = { }
             )
             Spacer(Modifier.height(20.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { println("Credentials: $email, $password") }) {
+                onClick = { }) {
                 Text("Log in")
             }
         }
@@ -95,6 +111,12 @@ fun LoginScreen(onNavigateBack: () -> Unit) {
 @Composable
 fun LoginScreenPreview() {
     ActivelyTheme {
-        LoginScreen(onNavigateBack = {})
+        LoginScreen(
+            emailState = TextFieldState(value = "mail@co.", isError = true, "Invalid mail"),
+            passwordState = TextFieldState(value = "password"),
+            onEmailChange = {},
+            onPasswordChange = {},
+            onNavigateBack = {}
+        )
     }
 }
