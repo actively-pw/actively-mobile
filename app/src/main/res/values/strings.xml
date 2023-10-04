@@ -20,4 +20,5 @@
     <string name="ride">Ride</string>
     <string name="no_activities_home_screen_state">You don\'t have any recorded activities.</string>
     <string name="record_your_first_activity">Record your first activity!</string>
+    <string name="actively_list_error">Ops, something went wrong!\nPlease check your internet connection.</string>
 </resources>
