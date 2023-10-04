@@ -6,10 +6,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +28,22 @@ import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.PasswordTextField
 import com.actively.ui.theme.ActivelyTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
     ActivelyTheme {
-        Scaffold {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        }
+                    }
+                )
+            }
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -34,7 +52,7 @@ fun LoginScreen() {
             ) {
                 var email by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
-                Spacer(Modifier.height(70.dp))
+                Spacer(Modifier.height(50.dp))
                 Text(
                     text = "Log in to Actively",
                     style = MaterialTheme.typography.titleLarge
