@@ -1,10 +1,26 @@
 package com.actively.stubs
 
+import com.actively.activity.Activity
+import com.actively.activity.RecordedActivity
 import com.actively.http.dtos.RecordedActivityDto
 import com.actively.http.dtos.StatsDto
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+
+fun stubRecordedActivity(
+    id: String = "1",
+    title: String = "Morning activity",
+    sport: Int = 0,
+    stats: Activity.Stats = stubActivityStats(),
+    routeUrl: String = "route://activity.net/$id"
+) = RecordedActivity(
+    id = RecordedActivity.Id(id),
+    title = title,
+    sport = sport.toString(),
+    stats = stats,
+    routeUrl = routeUrl,
+)
 
 fun stubRecordedActivityDto(
     id: String = "1",

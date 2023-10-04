@@ -127,6 +127,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.paging.testing)
     testImplementation(libs.turbine)
     implementation(libs.pullrefresh)
 }

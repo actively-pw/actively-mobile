@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import com.actively.datasource.RecordedActivitiesDataSourceFactory
+import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

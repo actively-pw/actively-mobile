@@ -1,7 +1,5 @@
 package com.actively.datasource
 
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.actively.activity.RecordedActivity
 import com.actively.http.dtos.RecordedActivityDto
 import io.ktor.client.HttpClient
@@ -10,31 +8,33 @@ import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class RecordedActivitiesDataSource(
-    private val client: HttpClient
-) : PagingSource<Int, RecordedActivity>() {
+data class RecordedActivitiesPage(
+    val data: List<RecordedActivity>,
+    val nextPage: Int?
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordedActivity> = try {
-        val nextPageNumber = params.key ?: 1
+interface RecordedActivitiesDataSource {
+
+    suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
+}
+
+class RecordedActivitiesDataSourceImpl(
+    private val client: HttpClient
+) : RecordedActivitiesDataSource {
+
+    override suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
         val response = client.get("https://activelypw.azurewebsites.net/Activities") {
             contentType(ContentType.Application.Json)
             url {
-                parameters.append("Page", "$nextPageNumber")
-                parameters.append("ItemsPerPage", 5.toString())
+                parameters.append("Page", "$pageNumber")
+                parameters.append("ItemsPerPage", pageSize.toString())
             }
         }
-        LoadResult.Page(
+        return RecordedActivitiesPage(
             data = response.body<List<RecordedActivityDto>>()
                 .map(RecordedActivityDto::toRecordedActivity),
-            prevKey = null,
-            nextKey = response.headers[NEXT_PAGE_HEADER]?.toInt()?.takeIf { it >= 1 }
+            nextPage = response.headers[NEXT_PAGE_HEADER]?.toInt()?.takeIf { it >= 1 }
         )
-    } catch (e: Exception) {
-        LoadResult.Error(e)
-    }
-
-    override fun getRefreshKey(state: PagingState<Int, RecordedActivity>): Int? {
-        return null
     }
 
     private companion object {
