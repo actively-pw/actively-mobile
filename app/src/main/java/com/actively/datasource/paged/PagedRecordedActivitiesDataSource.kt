@@ -13,7 +13,7 @@ class PagedRecordedActivitiesDataSource(
         val nextPageNumber = params.key ?: 1
         val page = recordedActivitiesDataSource.get(
             pageNumber = nextPageNumber,
-            pageSize = params.loadSize
+            pageSize = PAGE_SIZE
         )
         LoadResult.Page(
             data = page.data,
@@ -26,5 +26,9 @@ class PagedRecordedActivitiesDataSource(
 
     override fun getRefreshKey(state: PagingState<Int, RecordedActivity>): Int? {
         return null
+    }
+
+    companion object {
+        const val PAGE_SIZE = 5
     }
 }
