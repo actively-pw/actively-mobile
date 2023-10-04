@@ -12,9 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.actively.R
 import com.actively.ui.theme.ActivelyTheme
 
 @Composable
@@ -26,13 +28,13 @@ fun EmptyActivitiesListItem(onNavigateToRecorder: () -> Unit, modifier: Modifier
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "You don't have any recorded activities.",
+            text = stringResource(R.string.no_activities_home_screen_state),
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(20.dp))
         Button(modifier = Modifier.fillMaxWidth(), onClick = onNavigateToRecorder) {
-            Text("Record your first activity!")
+            Text(stringResource(R.string.record_your_first_activity))
         }
     }
 }
