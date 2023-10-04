@@ -17,10 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,22 +31,24 @@ import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.PasswordTextField
 import com.actively.auth.ui.TextFieldState
 import com.actively.ui.theme.ActivelyTheme
+import org.koin.androidx.compose.getViewModel
 
 
 fun NavGraphBuilder.loginScreen(navController: NavController) {
     composable("login_screen") {
-        var emailState by remember {
-            mutableStateOf(TextFieldState(""))
-        }
-        var passwordState by remember {
-            mutableStateOf(TextFieldState(""))
-        }
+        val viewModel = getViewModel<LoginViewModel>()
+        val emailState by viewModel.email.collectAsState()
+        val passwordState by viewModel.password.collectAsState()
         ActivelyTheme {
             LoginScreen(
                 emailState = emailState,
                 passwordState = passwordState,
-                onEmailChange = { emailState = emailState.copy(value = it) },
-                onPasswordChange = { passwordState = passwordState.copy(value = it) },
+                onEmailChange = viewModel::onEmailChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onLogin = {
+                    viewModel.validateFields {
+                    }
+                },
                 onNavigateBack = { navController.popBackStack() })
         }
     }
@@ -61,6 +61,7 @@ fun LoginScreen(
     passwordState: TextFieldState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onLogin: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -90,19 +91,22 @@ fun LoginScreen(
             EmailTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = emailState.value,
-                onValueChange = onEmailChange
+                onValueChange = onEmailChange,
+                isError = !emailState.isValid,
             )
             Spacer(Modifier.height(16.dp))
             PasswordTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = passwordState.value,
                 onValueChange = onPasswordChange,
-                onDone = { }
+                isError = !passwordState.isValid,
+                onDone = { onLogin() }
             )
             Spacer(Modifier.height(20.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { }) {
+                onClick = onLogin
+            ) {
                 Text(stringResource(R.string.log_in))
             }
         }
@@ -114,10 +118,11 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     ActivelyTheme {
         LoginScreen(
-            emailState = TextFieldState(value = "mail@co.", isError = true, "Invalid mail"),
+            emailState = TextFieldState(value = "mail@co.", isValid = true, "Invalid mail"),
             passwordState = TextFieldState(value = "password"),
             onEmailChange = {},
             onPasswordChange = {},
+            onLogin = {},
             onNavigateBack = {}
         )
     }
