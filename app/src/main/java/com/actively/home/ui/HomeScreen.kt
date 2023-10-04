@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -48,7 +50,11 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
                     TopAppBar(title = { Text(stringResource(R.string.your_activities)) })
                 }
             ) {
-                HomeScreen(activities = activities, syncState)
+                HomeScreen(
+                    activities = activities,
+                    syncState = syncState,
+                    onNavigateToRecorder = { navController.navigate("recording_screen") }
+                )
             }
         }
 
@@ -59,7 +65,8 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
 @Composable
 fun HomeScreen(
     activities: LazyPagingItems<RecordedActivity>,
-    syncState: WorkState?
+    syncState: WorkState?,
+    onNavigateToRecorder: () -> Unit,
 ) {
     val refreshState = rememberPullRefreshState(
         refreshing = activities.loadState.refresh == LoadState.Loading,
@@ -73,32 +80,19 @@ fun HomeScreen(
         ) {
             syncState?.let {
                 if (it is WorkState.Running || it is WorkState.Enqueued) {
-                    item {
-                        SyncInProgressItem()
-                        Spacer(Modifier.height(6.dp))
-                    }
+                    syncInProgressItem()
                 }
             }
-            items(count = activities.itemCount) { index ->
-                activities[index]?.let {
-                    RecordedActivityItem(recordedActivity = it)
-                    if (index != activities.itemCount - 1) {
-                        Spacer(Modifier.height(6.dp))
-                    }
+            when {
+                activities.loadState.refresh is LoadState.Error -> errorItem()
+                activities.itemCount == 0 && activities.loadState.refresh != LoadState.Loading -> {
+                    emptyListItem(onNavigateToRecorder = onNavigateToRecorder)
                 }
+
+                else -> activitiesItems(activities)
             }
             if (activities.loadState.append == LoadState.Loading) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+                appendItemsProgressIndicator()
             }
         }
         PullRefreshIndicator(
@@ -106,5 +100,49 @@ fun HomeScreen(
             refreshing = activities.loadState.refresh == LoadState.Loading,
             state = refreshState
         )
+    }
+}
+
+fun LazyListScope.syncInProgressItem() = item {
+    SyncInProgressItem()
+    Spacer(Modifier.height(6.dp))
+}
+
+fun LazyListScope.errorItem() = item {
+    ErrorItem(
+        modifier = Modifier
+            .fillParentMaxSize()
+            .padding(20.dp)
+    )
+}
+
+fun LazyListScope.emptyListItem(onNavigateToRecorder: () -> Unit) = item {
+    EmptyActivitiesListItem(
+        modifier = Modifier
+            .fillParentMaxSize()
+            .padding(20.dp),
+        onNavigateToRecorder = onNavigateToRecorder
+    )
+}
+
+fun LazyListScope.activitiesItems(activities: LazyPagingItems<RecordedActivity>) =
+    items(count = activities.itemCount) { index ->
+        activities[index]?.let {
+            RecordedActivityItem(recordedActivity = it)
+            if (index != activities.itemCount - 1) {
+                Spacer(Modifier.height(6.dp))
+            }
+        }
+    }
+
+fun LazyListScope.appendItemsProgressIndicator() = item {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
