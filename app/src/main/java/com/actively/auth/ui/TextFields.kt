@@ -15,13 +15,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.actively.R
 
 @Composable
-fun EmailTextField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun EmailTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
         label = { Text(stringResource(R.string.email)) },
         singleLine = true,
+        isError = isError,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Password,
@@ -35,7 +41,8 @@ fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onDone: (KeyboardActionScope.() -> Unit)? = null
+    onDone: (KeyboardActionScope.() -> Unit)? = null,
+    isError: Boolean = false,
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -45,6 +52,7 @@ fun PasswordTextField(
         supportingText = { Text(stringResource(R.string.password_textfield_supporting_text)) },
         visualTransformation = PasswordVisualTransformation(),
         singleLine = true,
+        isError = isError,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Password,
