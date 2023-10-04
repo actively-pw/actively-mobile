@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -79,58 +80,19 @@ fun HomeScreen(
         ) {
             syncState?.let {
                 if (it is WorkState.Running || it is WorkState.Enqueued) {
-                    item {
-                        SyncInProgressItem()
-                        Spacer(Modifier.height(6.dp))
-                    }
+                    syncInProgressItem()
                 }
             }
             when {
-                activities.loadState.refresh is LoadState.Error -> {
-                    item {
-                        ErrorItem(
-                            modifier = Modifier
-                                .fillParentMaxSize()
-                                .padding(20.dp)
-                        )
-                    }
-                }
-
+                activities.loadState.refresh is LoadState.Error -> errorItem()
                 activities.itemCount == 0 && activities.loadState.refresh != LoadState.Loading -> {
-                    item {
-                        EmptyActivitiesListItem(
-                            modifier = Modifier
-                                .fillParentMaxSize()
-                                .padding(20.dp),
-                            onNavigateToRecorder = onNavigateToRecorder
-                        )
-                    }
+                    emptyListItem(onNavigateToRecorder = onNavigateToRecorder)
                 }
 
-                else -> {
-                    items(count = activities.itemCount) { index ->
-                        activities[index]?.let {
-                            RecordedActivityItem(recordedActivity = it)
-                            if (index != activities.itemCount - 1) {
-                                Spacer(Modifier.height(6.dp))
-                            }
-                        }
-                    }
-                }
-
+                else -> activitiesItems(activities)
             }
             if (activities.loadState.append == LoadState.Loading) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+                appendItemsProgressIndicator()
             }
         }
         PullRefreshIndicator(
@@ -138,5 +100,49 @@ fun HomeScreen(
             refreshing = activities.loadState.refresh == LoadState.Loading,
             state = refreshState
         )
+    }
+}
+
+fun LazyListScope.syncInProgressItem() = item {
+    SyncInProgressItem()
+    Spacer(Modifier.height(6.dp))
+}
+
+fun LazyListScope.errorItem() = item {
+    ErrorItem(
+        modifier = Modifier
+            .fillParentMaxSize()
+            .padding(20.dp)
+    )
+}
+
+fun LazyListScope.emptyListItem(onNavigateToRecorder: () -> Unit) = item {
+    EmptyActivitiesListItem(
+        modifier = Modifier
+            .fillParentMaxSize()
+            .padding(20.dp),
+        onNavigateToRecorder = onNavigateToRecorder
+    )
+}
+
+fun LazyListScope.activitiesItems(activities: LazyPagingItems<RecordedActivity>) =
+    items(count = activities.itemCount) { index ->
+        activities[index]?.let {
+            RecordedActivityItem(recordedActivity = it)
+            if (index != activities.itemCount - 1) {
+                Spacer(Modifier.height(6.dp))
+            }
+        }
+    }
+
+fun LazyListScope.appendItemsProgressIndicator() = item {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
