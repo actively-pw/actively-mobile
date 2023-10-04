@@ -24,4 +24,6 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="password_textfield_supporting_text">Passwords must contain at least 8 characters.</string>
+    <string name="log_in_screen_header">Log in to Actively</string>
+    <string name="log_in">Log in</string>
 </resources>

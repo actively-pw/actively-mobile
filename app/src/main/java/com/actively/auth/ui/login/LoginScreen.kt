@@ -22,11 +22,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.actively.R
 import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.PasswordTextField
 import com.actively.auth.ui.TextFieldState
@@ -81,7 +83,7 @@ fun LoginScreen(
         ) {
             Spacer(Modifier.height(50.dp))
             Text(
-                text = "Log in to Actively",
+                text = stringResource(R.string.log_in_screen_header),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(16.dp))
@@ -101,7 +103,7 @@ fun LoginScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { }) {
-                Text("Log in")
+                Text(stringResource(R.string.log_in))
             }
         }
     }
