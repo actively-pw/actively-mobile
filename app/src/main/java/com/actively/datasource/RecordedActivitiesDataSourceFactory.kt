@@ -1,7 +1,6 @@
 package com.actively.datasource
 
 import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
-import io.ktor.client.HttpClient
 
 interface RecordedActivitiesDataSourceFactory {
 
@@ -9,8 +8,8 @@ interface RecordedActivitiesDataSourceFactory {
 }
 
 class RecordedActivitiesDataSourceFactoryImpl(
-    private val client: HttpClient
+    private val dataSource: RecordedActivitiesDataSource
 ) : RecordedActivitiesDataSourceFactory {
 
-    override fun create() = PagedRecordedActivitiesDataSource(client)
+    override fun create() = PagedRecordedActivitiesDataSource(dataSource)
 }
