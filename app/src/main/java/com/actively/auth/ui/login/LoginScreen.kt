@@ -118,7 +118,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     ActivelyTheme {
         LoginScreen(
-            emailState = TextFieldState(value = "mail@co.", isValid = true, "Invalid mail"),
+            emailState = TextFieldState(value = "mail@co.", isValid = true),
             passwordState = TextFieldState(value = "password"),
             onEmailChange = {},
             onPasswordChange = {},
