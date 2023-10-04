@@ -20,7 +20,7 @@ class LoginViewModel : ViewModel() {
         _email.update {
             it.copy(
                 value = value,
-                isError = if (it.isError) !isEmailValid(value) else it.isError
+                isValid = if (!it.isValid) isEmailValid(value) else true
             )
         }
     }
@@ -29,15 +29,15 @@ class LoginViewModel : ViewModel() {
         _password.update {
             it.copy(
                 value = value,
-                isError = if (it.isError) !isPasswordValid(value) else it.isError
+                isValid = if (!it.isValid) isPasswordValid(value) else true
             )
         }
     }
 
     fun validateFields(onSuccess: () -> Unit) {
-        _email.update { it.copy(isError = !isEmailValid(it.value)) }
-        _password.update { it.copy(isError = !isPasswordValid(it.value)) }
-        if (!_email.value.isError && !_password.value.isError) {
+        _email.update { it.copy(isValid = isEmailValid(it.value)) }
+        _password.update { it.copy(isValid = isPasswordValid(it.value)) }
+        if (_email.value.isValid && _password.value.isValid) {
             onSuccess()
         }
     }
