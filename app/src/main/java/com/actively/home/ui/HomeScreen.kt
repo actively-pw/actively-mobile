@@ -85,24 +85,39 @@ fun HomeScreen(
                     }
                 }
             }
-            if (activities.itemCount == 0 && activities.loadState.refresh != LoadState.Loading) {
-                item {
-                    EmptyActivitiesListItem(
-                        modifier = Modifier
-                            .fillParentMaxSize()
-                            .padding(20.dp),
-                        onNavigateToRecorder = onNavigateToRecorder
-                    )
+            when {
+                activities.loadState.refresh is LoadState.Error -> {
+                    item {
+                        ErrorItem(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .padding(20.dp)
+                        )
+                    }
                 }
-            } else {
-                items(count = activities.itemCount) { index ->
-                    activities[index]?.let {
-                        RecordedActivityItem(recordedActivity = it)
-                        if (index != activities.itemCount - 1) {
-                            Spacer(Modifier.height(6.dp))
+
+                activities.itemCount == 0 && activities.loadState.refresh != LoadState.Loading -> {
+                    item {
+                        EmptyActivitiesListItem(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .padding(20.dp),
+                            onNavigateToRecorder = onNavigateToRecorder
+                        )
+                    }
+                }
+
+                else -> {
+                    items(count = activities.itemCount) { index ->
+                        activities[index]?.let {
+                            RecordedActivityItem(recordedActivity = it)
+                            if (index != activities.itemCount - 1) {
+                                Spacer(Modifier.height(6.dp))
+                            }
                         }
                     }
                 }
+
             }
             if (activities.loadState.append == LoadState.Loading) {
                 item {
