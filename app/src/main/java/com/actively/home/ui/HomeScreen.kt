@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +49,11 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
                     TopAppBar(title = { Text(stringResource(R.string.your_activities)) })
                 }
             ) {
-                HomeScreen(activities = activities, syncState)
+                HomeScreen(
+                    activities = activities,
+                    syncState = syncState,
+                    onNavigateToRecorder = { navController.navigate("recording_screen") }
+                )
             }
         }
 
@@ -59,7 +64,8 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
 @Composable
 fun HomeScreen(
     activities: LazyPagingItems<RecordedActivity>,
-    syncState: WorkState?
+    syncState: WorkState?,
+    onNavigateToRecorder: () -> Unit,
 ) {
     val refreshState = rememberPullRefreshState(
         refreshing = activities.loadState.refresh == LoadState.Loading,
@@ -79,11 +85,22 @@ fun HomeScreen(
                     }
                 }
             }
-            items(count = activities.itemCount) { index ->
-                activities[index]?.let {
-                    RecordedActivityItem(recordedActivity = it)
-                    if (index != activities.itemCount - 1) {
-                        Spacer(Modifier.height(6.dp))
+            if (activities.itemCount == 0 && activities.loadState.refresh != LoadState.Loading) {
+                item {
+                    EmptyActivitiesListItem(
+                        modifier = Modifier
+                            .fillParentMaxSize()
+                            .padding(20.dp),
+                        onNavigateToRecorder = onNavigateToRecorder
+                    )
+                }
+            } else {
+                items(count = activities.itemCount) { index ->
+                    activities[index]?.let {
+                        RecordedActivityItem(recordedActivity = it)
+                        if (index != activities.itemCount - 1) {
+                            Spacer(Modifier.height(6.dp))
+                        }
                     }
                 }
             }
