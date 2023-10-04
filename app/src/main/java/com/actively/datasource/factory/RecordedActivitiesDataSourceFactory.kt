@@ -1,5 +1,6 @@
-package com.actively.datasource
+package com.actively.datasource.factory
 
+import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
 
 interface RecordedActivitiesDataSourceFactory {

@@ -1,7 +1,7 @@
 package com.actively.home
 
 import app.cash.turbine.test
-import com.actively.datasource.RecordedActivitiesDataSourceFactory
+import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
 import com.actively.home.ui.HomeViewModel
 import com.actively.synchronizer.WorkState
