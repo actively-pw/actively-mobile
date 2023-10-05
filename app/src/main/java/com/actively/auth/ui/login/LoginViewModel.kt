@@ -1,10 +1,14 @@
 package com.actively.auth.ui.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.actively.auth.ui.TextFieldState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
 
@@ -16,6 +20,9 @@ class LoginViewModel : ViewModel() {
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible = _isPasswordVisible.asStateFlow()
+
+    private val _showLoginFailedDialog = MutableSharedFlow<Boolean>()
+    val showLoginFailedDialog = _showLoginFailedDialog.asSharedFlow()
 
     private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
 
@@ -46,7 +53,18 @@ class LoginViewModel : ViewModel() {
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
         if (_email.value.isValid && _password.value.isValid) {
             onSuccess()
+        } else {
+            onShowLoginFailedDialog()
         }
+    }
+
+
+    fun onDismissLoginFailedDialog() = viewModelScope.launch {
+        _showLoginFailedDialog.emit(false)
+    }
+
+    private fun onShowLoginFailedDialog() = viewModelScope.launch {
+        _showLoginFailedDialog.emit(true)
     }
 
     private fun isEmailValid(email: String) = email.isNotEmpty() && emailRegex.matches(email)
