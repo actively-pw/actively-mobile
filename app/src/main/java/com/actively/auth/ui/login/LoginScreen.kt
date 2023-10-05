@@ -28,6 +28,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.R
 import com.actively.auth.ui.EmailTextField
+import com.actively.auth.ui.InvalidCredentialsDialog
 import com.actively.auth.ui.PasswordTextField
 import com.actively.auth.ui.TextFieldState
 import com.actively.ui.theme.ActivelyTheme
@@ -40,6 +41,7 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
         val emailState by viewModel.email.collectAsState()
         val passwordState by viewModel.password.collectAsState()
         val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
+        val showLoginFailedDialog by viewModel.showLoginFailedDialog.collectAsState(initial = false)
         ActivelyTheme {
             LoginScreen(
                 emailState = emailState,
@@ -52,6 +54,8 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
                     viewModel.validateFields {
                     }
                 },
+                showLoginFailedDialog = showLoginFailedDialog,
+                onDismissLoginFailedDialog = viewModel::onDismissLoginFailedDialog,
                 onNavigateBack = { navController.popBackStack() })
         }
     }
@@ -67,6 +71,8 @@ fun LoginScreen(
     onChangePasswordVisibility: () -> Unit,
     isPasswordVisible: Boolean,
     onLogin: () -> Unit,
+    showLoginFailedDialog: Boolean,
+    onDismissLoginFailedDialog: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -87,6 +93,12 @@ fun LoginScreen(
                 .padding(it)
                 .padding(horizontal = 16.dp),
         ) {
+            if (showLoginFailedDialog) {
+                InvalidCredentialsDialog(
+                    message = { Text(stringResource(R.string.invalid_credentials_message)) },
+                    onDismiss = onDismissLoginFailedDialog
+                )
+            }
             Spacer(Modifier.height(50.dp))
             Text(
                 text = stringResource(R.string.log_in_screen_header),
@@ -120,6 +132,7 @@ fun LoginScreen(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
@@ -132,6 +145,8 @@ fun LoginScreenPreview() {
             onLogin = {},
             onChangePasswordVisibility = {},
             isPasswordVisible = true,
+            showLoginFailedDialog = false,
+            onDismissLoginFailedDialog = {},
             onNavigateBack = {}
         )
     }
