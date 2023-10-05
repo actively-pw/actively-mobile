@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.actively.R
 import com.actively.auth.ui.EmailTextField
+import com.actively.auth.ui.InvalidCredentialsDialog
 import com.actively.auth.ui.PasswordTextField
 import com.actively.auth.ui.TextFieldState
 import com.actively.ui.theme.ActivelyTheme
@@ -37,6 +38,8 @@ fun RegisterScreen(
     onRegister: () -> Unit,
     isPasswordVisible: Boolean,
     onChangePasswordVisibility: () -> Unit,
+    showInvalidCredentialsDialog: Boolean,
+    onDismissInvalidCredentialsDialog: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -57,6 +60,14 @@ fun RegisterScreen(
                 .padding(it)
                 .padding(horizontal = 16.dp),
         ) {
+            if (showInvalidCredentialsDialog) {
+                InvalidCredentialsDialog(
+                    message = {
+                        Text(stringResource(R.string.email_already_taken))
+                    },
+                    onDismiss = onDismissInvalidCredentialsDialog
+                )
+            }
             Spacer(Modifier.height(50.dp))
             Text(
                 text = stringResource(R.string.create_an_account),
@@ -102,7 +113,9 @@ fun RegisterScreenPreview() {
             onRegister = {},
             onNavigateBack = {},
             isPasswordVisible = false,
-            onChangePasswordVisibility = {}
+            onChangePasswordVisibility = {},
+            showInvalidCredentialsDialog = false,
+            onDismissInvalidCredentialsDialog = {}
         )
     }
 }

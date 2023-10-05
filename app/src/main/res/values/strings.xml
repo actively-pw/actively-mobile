@@ -30,4 +30,5 @@
     <string name="create_an_account">Create an Account</string>
     <string name="ok">OK</string>
     <string name="invalid_credentials_message">Email or password are invalid. Please try again.</string>
+    <string name="email_already_taken">There is already an account associated with this email</string>
 </resources>
