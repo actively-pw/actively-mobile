@@ -17,16 +17,49 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.actively.R
 import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.InvalidCredentialsDialog
 import com.actively.auth.ui.PasswordTextField
 import com.actively.auth.ui.TextFieldState
 import com.actively.ui.theme.ActivelyTheme
+import org.koin.androidx.compose.getViewModel
+
+fun NavGraphBuilder.registerScreen(navController: NavController) {
+    composable("register_screen") {
+        val viewModel = getViewModel<RegisterViewModel>()
+        val emailState by viewModel.email.collectAsState()
+        val passwordState by viewModel.password.collectAsState()
+        val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
+        val showRegistrationFailedDialog by viewModel.showRegistrationFailedDialog
+            .collectAsState(initial = false)
+        ActivelyTheme {
+            RegisterScreen(
+                emailState = emailState,
+                passwordState = passwordState,
+                onEmailChange = viewModel::onEmailChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onRegister = {
+                    viewModel.validateFields {}
+                },
+                isPasswordVisible = isPasswordVisible,
+                onChangePasswordVisibility = viewModel::changePasswordVisibility,
+                showInvalidCredentialsDialog = showRegistrationFailedDialog,
+                onDismissInvalidCredentialsDialog = viewModel::onDismissRegistrationFailedDialog,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
