@@ -6,6 +6,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
+import com.actively.auth.ui.login.LoginViewModel
 import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
 import com.actively.datasource.RecordedActivitiesDataSource
@@ -81,6 +82,7 @@ object KoinSetup {
         viewModel { RecorderViewModel(get(), get(), get()) }
         viewModel { SaveActivityViewModel(get(), get(), get()) }
         viewModel { HomeViewModel(get(), get()) }
+        viewModel { LoginViewModel() }
     }
 
     private val useCasesModule = module {

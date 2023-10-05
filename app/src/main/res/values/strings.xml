@@ -21,4 +21,11 @@
     <string name="no_activities_home_screen_state">You don\'t have any recorded activities.</string>
     <string name="record_your_first_activity">Record your first activity!</string>
     <string name="actively_list_error">Ops, something went wrong!\nPlease check your internet connection.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="password_textfield_supporting_text">Passwords must contain at least 8 characters.</string>
+    <string name="log_in_screen_header">Log in to Actively</string>
+    <string name="log_in">Log in</string>
+    <string name="ok">OK</string>
+    <string name="invalid_credentials_message">Email or password are invalid. Please try again.</string>
 </resources>
