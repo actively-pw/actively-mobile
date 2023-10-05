@@ -35,6 +35,8 @@ fun RegisterScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onRegister: () -> Unit,
+    isPasswordVisible: Boolean,
+    onChangePasswordVisibility: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -73,7 +75,9 @@ fun RegisterScreen(
                 value = passwordState.value,
                 onValueChange = onPasswordChange,
                 isError = !passwordState.isValid,
-                onDone = { onRegister() }
+                onDone = { onRegister() },
+                isPasswordVisible = isPasswordVisible,
+                onChangePasswordVisibility = onChangePasswordVisibility,
             )
             Spacer(Modifier.height(20.dp))
             Button(
@@ -96,7 +100,9 @@ fun RegisterScreenPreview() {
             onEmailChange = {},
             onPasswordChange = {},
             onRegister = {},
-            onNavigateBack = {}
+            onNavigateBack = {},
+            isPasswordVisible = false,
+            onChangePasswordVisibility = {}
         )
     }
 }
