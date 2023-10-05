@@ -9,4 +9,6 @@ interface AuthTokensDataSource {
     fun getRefreshToken(): String?
 
     fun setRefreshToken(refreshToken: String)
+
+    fun clearTokens()
 }
