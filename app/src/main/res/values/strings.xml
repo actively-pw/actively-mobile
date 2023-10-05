@@ -31,4 +31,6 @@
     <string name="ok">OK</string>
     <string name="invalid_credentials_message">Email or password are invalid. Please try again.</string>
     <string name="email_already_taken">There is already an account associated with this email</string>
+    <string name="track_your_active_life_in_one_place">Track your active life in one place</string>
+    <string name="join_for_free">Join for free</string>
 </resources>

@@ -13,12 +13,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.actively.R
 import com.actively.ui.theme.ActivelyTheme
 
 fun NavGraphBuilder.welcomeScreen(navController: NavController) {
@@ -47,22 +49,22 @@ fun WelcomeScreen(
             Spacer(Modifier.height(50.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Actively",
+                text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center
             )
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Track your active life in one place",
+                text = stringResource(R.string.track_your_active_life_in_one_place),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(80.dp))
             Button(modifier = Modifier.fillMaxWidth(), onClick = onNavigateToRegister) {
-                Text("Join for free")
+                Text(stringResource(R.string.join_for_free))
             }
             OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = onNavigateToLogIn) {
-                Text("Log in")
+                Text(stringResource(id = R.string.log_in))
             }
         }
     }
