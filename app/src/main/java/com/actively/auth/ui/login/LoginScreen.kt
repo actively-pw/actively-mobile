@@ -39,12 +39,15 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
         val viewModel = getViewModel<LoginViewModel>()
         val emailState by viewModel.email.collectAsState()
         val passwordState by viewModel.password.collectAsState()
+        val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
         ActivelyTheme {
             LoginScreen(
                 emailState = emailState,
                 passwordState = passwordState,
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
+                onChangePasswordVisibility = viewModel::changePasswordVisibility,
+                isPasswordVisible = isPasswordVisible,
                 onLogin = {
                     viewModel.validateFields {
                     }
@@ -61,6 +64,8 @@ fun LoginScreen(
     passwordState: TextFieldState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onChangePasswordVisibility: () -> Unit,
+    isPasswordVisible: Boolean,
     onLogin: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -100,7 +105,9 @@ fun LoginScreen(
                 value = passwordState.value,
                 onValueChange = onPasswordChange,
                 isError = !passwordState.isValid,
-                onDone = { onLogin() }
+                onDone = { onLogin() },
+                onChangePasswordVisibility = onChangePasswordVisibility,
+                isPasswordVisible = isPasswordVisible
             )
             Spacer(Modifier.height(20.dp))
             Button(
@@ -123,6 +130,8 @@ fun LoginScreenPreview() {
             onEmailChange = {},
             onPasswordChange = {},
             onLogin = {},
+            onChangePasswordVisibility = {},
+            isPasswordVisible = true,
             onNavigateBack = {}
         )
     }

@@ -14,6 +14,9 @@ class LoginViewModel : ViewModel() {
     private val _password = MutableStateFlow(TextFieldState(value = ""))
     val password = _password.asStateFlow()
 
+    private val _isPasswordVisible = MutableStateFlow(false)
+    val isPasswordVisible = _isPasswordVisible.asStateFlow()
+
     private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
 
     fun onEmailChange(value: String) {
@@ -32,6 +35,10 @@ class LoginViewModel : ViewModel() {
                 isValid = if (!it.isValid) isPasswordValid(value) else true
             )
         }
+    }
+
+    fun changePasswordVisibility() {
+        _isPasswordVisible.update { !it }
     }
 
     fun validateFields(onSuccess: () -> Unit) {
