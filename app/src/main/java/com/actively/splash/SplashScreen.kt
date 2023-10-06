@@ -23,8 +23,8 @@ fun NavGraphBuilder.splashScreen(navController: NavController) {
             LaunchedEffect(isLoggedIn) {
                 when (isLoggedIn) {
                     null -> {}
-                    true -> navController.navigate("home_screen")
-                    false -> navController.navigate("welcome_screen")
+                    true -> navController.navigate("authenticated_screens")
+                    false -> navController.navigate("auth_screens")
                 }
             }
             Column(

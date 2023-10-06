@@ -50,7 +50,9 @@ fun NavGraphBuilder.registerScreen(navController: NavController) {
                 onPasswordChange = viewModel::onPasswordChange,
                 onRegister = {
                     viewModel.onSuccessfulRegister {
-                        navController.navigate("splash_screen")
+                        navController.navigate("authenticated_screens") {
+                            popUpTo("auth_screens") { inclusive = true }
+                        }
                     }
                 },
                 isPasswordVisible = isPasswordVisible,

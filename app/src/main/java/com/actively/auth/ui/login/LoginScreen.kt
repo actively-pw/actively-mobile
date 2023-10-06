@@ -52,7 +52,9 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
                 isPasswordVisible = isPasswordVisible,
                 onLogin = {
                     viewModel.onSuccessfulLogin {
-                        navController.navigate("splash_screen")
+                        navController.navigate("authenticated_screens") {
+                            popUpTo("auth_screens") { inclusive = true }
+                        }
                     }
                 },
                 showLoginFailedDialog = showLoginFailedDialog,
