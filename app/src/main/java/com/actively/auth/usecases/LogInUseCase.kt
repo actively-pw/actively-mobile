@@ -7,12 +7,12 @@ import io.ktor.client.plugins.ClientRequestException
 
 interface LogInUseCase {
 
-    suspend operator fun invoke(credentials: Credentials): AuthResult
+    suspend operator fun invoke(credentials: Credentials.Login): AuthResult
 }
 
 class LogInUseCaseImpl(private val authRepository: AuthRepository) : LogInUseCase {
 
-    override suspend fun invoke(credentials: Credentials) = try {
+    override suspend fun invoke(credentials: Credentials.Login) = try {
         val (accessToken, refreshToken) = authRepository.login(credentials)
         authRepository.setAccessToken(accessToken)
         authRepository.setRefreshToken(refreshToken)

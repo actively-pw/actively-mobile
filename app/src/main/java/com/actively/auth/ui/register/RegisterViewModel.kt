@@ -59,7 +59,12 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         val areCredentialsValid = emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
-            val credentials = Credentials(emailField.value, passwordField.value)
+            val credentials = Credentials.Register(
+                name = "user",
+                surname = "surname",
+                email = emailField.value,
+                password = passwordField.value
+            )
             when (registerUseCase(credentials)) {
                 is AuthResult.Success -> block()
                 is AuthResult.AccountExists -> onShowRegistrationFailedDialog()

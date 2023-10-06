@@ -59,7 +59,7 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
         val areCredentialsValid = emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
-            val credentials = Credentials(emailField.value, passwordField.value)
+            val credentials = Credentials.Login(emailField.value, passwordField.value)
             when (logInUseCase(credentials)) {
                 is AuthResult.Success -> block()
                 is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
