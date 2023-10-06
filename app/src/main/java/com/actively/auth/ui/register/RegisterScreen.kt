@@ -49,7 +49,9 @@ fun NavGraphBuilder.registerScreen(navController: NavController) {
                 onEmailChange = viewModel::onEmailChange,
                 onPasswordChange = viewModel::onPasswordChange,
                 onRegister = {
-                    viewModel.validateFields {}
+                    viewModel.validateFields {
+                        navController.navigate("splash_screen")
+                    }
                 },
                 isPasswordVisible = isPasswordVisible,
                 onChangePasswordVisibility = viewModel::changePasswordVisibility,
