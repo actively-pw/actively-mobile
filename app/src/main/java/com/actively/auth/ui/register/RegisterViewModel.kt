@@ -51,7 +51,7 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         _isPasswordVisible.update { !it }
     }
 
-    fun validateFields(onSuccess: () -> Unit) {
+    fun onSuccessfulRegister(block: () -> Unit) {
         _email.update { it.copy(isValid = isEmailValid(it.value)) }
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
         val emailField = _email.value
@@ -61,7 +61,7 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         viewModelScope.launch {
             val credentials = Credentials(emailField.value, passwordField.value)
             when (registerUseCase(credentials)) {
-                is AuthResult.Success -> onSuccess()
+                is AuthResult.Success -> block()
                 is AuthResult.AccountExists -> onShowRegistrationFailedDialog()
                 else -> {}
             }
