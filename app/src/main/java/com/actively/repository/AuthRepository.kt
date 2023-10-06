@@ -17,9 +17,9 @@ interface AuthRepository {
 
     suspend fun inUserLoggedIn(): Boolean
 
-    suspend fun login(credentials: Credentials): Tokens
+    suspend fun login(credentials: Credentials.Login): Tokens
 
-    suspend fun register(credentials: Credentials): Tokens
+    suspend fun register(credentials: Credentials.Register): Tokens
 
     suspend fun refreshAuthTokens(tokens: Tokens): Tokens
 
@@ -43,7 +43,7 @@ class AuthRepositoryImpl(
             && authTokensDataSource.getAccessToken() != null
 
 
-    override suspend fun login(credentials: Credentials): Tokens {
+    override suspend fun login(credentials: Credentials.Login): Tokens {
         val result = client.post("https://activelypw.azurewebsites.net/Users/login") {
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
@@ -51,7 +51,7 @@ class AuthRepositoryImpl(
         return result.body<TokensDto>().toTokens()
     }
 
-    override suspend fun register(credentials: Credentials): Tokens {
+    override suspend fun register(credentials: Credentials.Register): Tokens {
         val result = client.post("https://activelypw.azurewebsites.net/Users/register") {
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
