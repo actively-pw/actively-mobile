@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.actively.auth.AuthResult
 import com.actively.auth.Credentials
-import com.actively.auth.ui.TextFieldState
 import com.actively.auth.usecases.RegisterUseCase
+import com.actively.field.Field
+import com.actively.field.Validator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,17 +16,15 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewModel() {
 
-    private val _name = MutableStateFlow(TextFieldState(value = ""))
-    val name = _name.asStateFlow()
+    private val nameField = Field(Validator.NonEmptyString)
+    private val surnameField = Field(Validator.NonEmptyString)
+    private val emailField = Field(Validator.Email)
+    private val passwordField = Field(Validator.lengthInRange(8..50))
 
-    private val _surname = MutableStateFlow(TextFieldState(value = ""))
-    val surname = _surname.asStateFlow()
-
-    private val _email = MutableStateFlow(TextFieldState(value = ""))
-    val email = _email.asStateFlow()
-
-    private val _password = MutableStateFlow(TextFieldState(value = ""))
-    val password = _password.asStateFlow()
+    val name = nameField.state
+    val surname = surnameField.state
+    val email = emailField.state
+    val password = passwordField.state
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible = _isPasswordVisible.asStateFlow()
@@ -33,63 +32,33 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     private val _showRegistrationFailedDialog = MutableSharedFlow<Boolean>()
     val showRegistrationFailedDialog = _showRegistrationFailedDialog.asSharedFlow()
 
-    private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+    fun onNameChange(value: String) = nameField.setValue(value)
 
-    fun onNameChange(value: String) {
-        _name.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) value.isNotEmpty() else true
-            )
-        }
-    }
+    fun onSurnameChange(value: String) = surnameField.setValue(value)
 
-    fun onSurnameChange(value: String) {
-        _surname.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) value.isNotEmpty() else true
-            )
-        }
-    }
+    fun onEmailChange(value: String) = emailField.setValue(value)
 
-    fun onEmailChange(value: String) {
-        _email.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isEmailValid(value) else true
-            )
-        }
-    }
-
-    fun onPasswordChange(value: String) {
-        _password.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isPasswordValid(value) else true
-            )
-        }
-    }
+    fun onPasswordChange(value: String) = passwordField.setValue(value)
 
     fun changePasswordVisibility() {
         _isPasswordVisible.update { !it }
     }
 
     fun onSuccessfulRegister(block: () -> Unit) {
-        _name.update { it.copy(isValid = it.value.isNotEmpty()) }
-        _surname.update { it.copy(isValid = it.value.isNotEmpty()) }
-        _email.update { it.copy(isValid = isEmailValid(it.value)) }
-        _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        val emailField = _email.value
-        val passwordField = _password.value
-        val areCredentialsValid = emailField.isValid && passwordField.isValid
+        validateFields()
+        val name = name.value
+        val surname = surname.value
+        val email = email.value
+        val password = password.value
+        val areCredentialsValid =
+            name.isValid && surname.isValid && email.isValid && password.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
             val credentials = Credentials.Register(
-                name = "user",
-                surname = "surname",
-                email = emailField.value,
-                password = passwordField.value
+                name = name.value,
+                surname = surname.value,
+                email = email.value,
+                password = password.value
             )
             when (registerUseCase(credentials)) {
                 is AuthResult.Success -> block()
@@ -107,7 +76,10 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
         _showRegistrationFailedDialog.emit(true)
     }
 
-    private fun isEmailValid(email: String) = email.isNotEmpty() && emailRegex.matches(email)
-
-    private fun isPasswordValid(password: String) = password.length in 8..50
+    private fun validateFields() {
+        nameField.validate()
+        surnameField.validate()
+        emailField.validate()
+        passwordField.validate()
+    }
 }
