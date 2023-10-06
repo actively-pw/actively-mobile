@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,7 +48,17 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
             BaseScaffoldScreen(
                 navController = navController,
                 topBar = {
-                    TopAppBar(title = { Text(stringResource(R.string.your_activities)) })
+                    TopAppBar(
+                        title = { Text(stringResource(R.string.your_activities)) },
+                        actions = {
+                            TextButton(
+                                onClick = {
+                                    viewModel.onLogout { navController.navigate("splash_screen") }
+                                }
+                            ) {
+                                Text(stringResource(id = R.string.logout))
+                            }
+                        })
                 }
             ) {
                 HomeScreen(

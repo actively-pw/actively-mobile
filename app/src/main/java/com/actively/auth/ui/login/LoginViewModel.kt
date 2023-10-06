@@ -2,7 +2,11 @@ package com.actively.auth.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.actively.auth.ui.TextFieldState
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
+import com.actively.auth.usecases.LogInUseCase
+import com.actively.field.Field
+import com.actively.field.Validator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,13 +14,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
 
-    private val _email = MutableStateFlow(TextFieldState(value = ""))
-    val email = _email.asStateFlow()
+    private val emailField = Field(Validator.Email)
+    private val passwordField = Field(Validator.lengthInRange(8..50))
 
-    private val _password = MutableStateFlow(TextFieldState(value = ""))
-    val password = _password.asStateFlow()
+    val email = emailField.state
+    val password = passwordField.state
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible = _isPasswordVisible.asStateFlow()
@@ -24,40 +28,38 @@ class LoginViewModel : ViewModel() {
     private val _showLoginFailedDialog = MutableSharedFlow<Boolean>()
     val showLoginFailedDialog = _showLoginFailedDialog.asSharedFlow()
 
-    private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+    private val _loginInProgress = MutableStateFlow(false)
+    val loginInProgress = _loginInProgress.asStateFlow()
 
     fun onEmailChange(value: String) {
-        _email.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isEmailValid(value) else true
-            )
-        }
+        emailField.value = value
     }
 
     fun onPasswordChange(value: String) {
-        _password.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isPasswordValid(value) else true
-            )
-        }
+        passwordField.value = value
     }
 
     fun changePasswordVisibility() {
         _isPasswordVisible.update { !it }
     }
 
-    fun validateFields(onSuccess: () -> Unit) {
-        _email.update { it.copy(isValid = isEmailValid(it.value)) }
-        _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        if (_email.value.isValid && _password.value.isValid) {
-            onSuccess()
-        } else {
-            onShowLoginFailedDialog()
+    fun onSuccessfulLogin(block: () -> Unit) {
+        if (loginInProgress.value) return
+        emailField.validate()
+        passwordField.validate()
+        val areCredentialsValid = emailField.isValid && passwordField.isValid
+        if (!areCredentialsValid) return
+        _loginInProgress.update { true }
+        viewModelScope.launch {
+            val credentials = Credentials.Login(emailField.value, passwordField.value)
+            when (logInUseCase(credentials)) {
+                is AuthResult.Success -> block()
+                is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
+                else -> {}
+            }
+            _loginInProgress.update { false }
         }
     }
-
 
     fun onDismissLoginFailedDialog() = viewModelScope.launch {
         _showLoginFailedDialog.emit(false)
@@ -66,8 +68,4 @@ class LoginViewModel : ViewModel() {
     private fun onShowLoginFailedDialog() = viewModelScope.launch {
         _showLoginFailedDialog.emit(true)
     }
-
-    private fun isEmailValid(email: String) = email.isNotEmpty() && emailRegex.matches(email)
-
-    private fun isPasswordValid(password: String) = password.length in 8..50
 }

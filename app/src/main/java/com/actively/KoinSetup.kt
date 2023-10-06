@@ -8,8 +8,16 @@ import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
 import com.actively.auth.ui.login.LoginViewModel
 import com.actively.auth.ui.register.RegisterViewModel
+import com.actively.auth.usecases.LogInUseCase
+import com.actively.auth.usecases.LogInUseCaseImpl
+import com.actively.auth.usecases.LogOutUseCase
+import com.actively.auth.usecases.LogOutUseCaseImpl
+import com.actively.auth.usecases.RegisterUseCase
+import com.actively.auth.usecases.RegisterUseCaseImpl
 import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
+import com.actively.datasource.AuthTokensDataSource
+import com.actively.datasource.AuthTokensDataSourceImpl
 import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.RecordedActivitiesDataSourceImpl
 import com.actively.datasource.SyncActivitiesDataSource
@@ -42,6 +50,9 @@ import com.actively.recorder.usecase.StopRecordingUseCase
 import com.actively.recorder.usecase.StopRecordingUseCaseImpl
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.ActivityRecordingRepositoryImpl
+import com.actively.repository.AuthRepository
+import com.actively.repository.AuthRepositoryImpl
+import com.actively.splash.SplashScreenViewModel
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import com.actively.synchronizer.usecases.GetSyncStateUseCaseImpl
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
@@ -82,9 +93,10 @@ object KoinSetup {
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
         viewModel { SaveActivityViewModel(get(), get(), get()) }
-        viewModel { HomeViewModel(get(), get()) }
-        viewModel { LoginViewModel() }
-        viewModel { RegisterViewModel() }
+        viewModel { HomeViewModel(get(), get(), get()) }
+        viewModel { LoginViewModel(get()) }
+        viewModel { RegisterViewModel(get()) }
+        viewModel { SplashScreenViewModel(get()) }
     }
 
     private val useCasesModule = module {
@@ -106,6 +118,9 @@ object KoinSetup {
         factory<SendActivityUseCase> { SendActivityUseCaseImpl(get()) }
         factory<DiscardActivityUseCase> { DiscardActivityUseCaseImpl(get()) }
         factory<GetSyncStateUseCase> { GetSyncStateUseCaseImpl(get()) }
+        factory<LogInUseCase> { LogInUseCaseImpl(get()) }
+        factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
+        factory<LogOutUseCase> { LogOutUseCaseImpl(get()) }
     }
 
     private val commonModule = module {
@@ -145,5 +160,8 @@ object KoinSetup {
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
         single<RecordedActivitiesDataSourceFactory> { RecordedActivitiesDataSourceFactoryImpl(get()) }
         single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+        single { androidContext().getSharedPreferences("prefs", Context.MODE_PRIVATE) }
+        single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
+        single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     }
 }

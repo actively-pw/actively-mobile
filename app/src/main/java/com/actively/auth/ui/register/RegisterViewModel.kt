@@ -2,7 +2,11 @@ package com.actively.auth.ui.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.actively.auth.ui.TextFieldState
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
+import com.actively.auth.usecases.RegisterUseCase
+import com.actively.field.Field
+import com.actively.field.Validator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,13 +14,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewModel() {
 
-    private val _email = MutableStateFlow(TextFieldState(value = ""))
-    val email = _email.asStateFlow()
+    private val nameField = Field(Validator.NonEmptyString)
+    private val surnameField = Field(Validator.NonEmptyString)
+    private val emailField = Field(Validator.Email)
+    private val passwordField = Field(Validator.lengthInRange(8..50))
 
-    private val _password = MutableStateFlow(TextFieldState(value = ""))
-    val password = _password.asStateFlow()
+    val name = nameField.state
+    val surname = surnameField.state
+    val email = emailField.state
+    val password = passwordField.state
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible = _isPasswordVisible.asStateFlow()
@@ -24,37 +32,49 @@ class RegisterViewModel : ViewModel() {
     private val _showRegistrationFailedDialog = MutableSharedFlow<Boolean>()
     val showRegistrationFailedDialog = _showRegistrationFailedDialog.asSharedFlow()
 
-    private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+    private val _registerInProgress = MutableStateFlow(false)
+    val registerInProgress = _registerInProgress.asStateFlow()
+
+    fun onNameChange(value: String) {
+        nameField.value = value
+    }
+
+    fun onSurnameChange(value: String) {
+        surnameField.value = value
+    }
 
     fun onEmailChange(value: String) {
-        _email.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isEmailValid(value) else true
-            )
-        }
+        emailField.value = value
     }
 
     fun onPasswordChange(value: String) {
-        _password.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isPasswordValid(value) else true
-            )
-        }
+        passwordField.value = value
     }
 
     fun changePasswordVisibility() {
         _isPasswordVisible.update { !it }
     }
 
-    fun validateFields(onSuccess: () -> Unit) {
-        _email.update { it.copy(isValid = isEmailValid(it.value)) }
-        _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        if (_email.value.isValid && _password.value.isValid) {
-            onSuccess()
-        } else {
-            onShowRegistrationFailedDialog()
+    fun onSuccessfulRegister(block: () -> Unit) {
+        if (_registerInProgress.value) return
+        validateFields()
+        val areCredentialsValid =
+            nameField.isValid && surnameField.isValid && emailField.isValid && passwordField.isValid
+        if (!areCredentialsValid) return
+        _registerInProgress.update { true }
+        viewModelScope.launch {
+            val credentials = Credentials.Register(
+                name = nameField.value,
+                surname = surnameField.value,
+                email = emailField.value,
+                password = passwordField.value
+            )
+            when (registerUseCase(credentials)) {
+                is AuthResult.Success -> block()
+                is AuthResult.AccountExists -> onShowRegistrationFailedDialog()
+                else -> {}
+            }
+            _registerInProgress.update { false }
         }
     }
 
@@ -66,7 +86,10 @@ class RegisterViewModel : ViewModel() {
         _showRegistrationFailedDialog.emit(true)
     }
 
-    private fun isEmailValid(email: String) = email.isNotEmpty() && emailRegex.matches(email)
-
-    private fun isPasswordValid(password: String) = password.length in 8..50
+    private fun validateFields() {
+        nameField.validate()
+        surnameField.validate()
+        emailField.validate()
+        passwordField.validate()
+    }
 }

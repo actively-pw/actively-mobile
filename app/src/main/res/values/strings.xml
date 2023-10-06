@@ -33,4 +33,7 @@
     <string name="email_already_taken">There is already an account associated with this email</string>
     <string name="track_your_active_life_in_one_place">Track your active life in one place</string>
     <string name="join_for_free">Join for free</string>
+    <string name="logout">Logout</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
 </resources>
