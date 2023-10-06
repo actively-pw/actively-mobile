@@ -1,7 +1,10 @@
 package com.actively.auth.ui.login
 
 import app.cash.turbine.test
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
 import com.actively.auth.ui.TextFieldState
+import com.actively.auth.usecases.LogInUseCase
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
@@ -9,6 +12,9 @@ import io.kotest.data.row
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,9 +25,11 @@ import kotlinx.coroutines.test.setMain
 class LoginViewModelTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
+    val loginUseCase = mockk<LogInUseCase>()
+    coEvery { loginUseCase(any()) } returns AuthResult.Success
 
     context("field validation") {
-        val viewModel = LoginViewModel()
+        val viewModel = LoginViewModel(loginUseCase)
 
         test("initial state of email field is valid") {
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
@@ -36,12 +44,12 @@ class LoginViewModelTest : FunSpec({
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
         }
 
-        test("validateFields sets email field to not valid if email field is empty") {
+        test("onSuccessfulLogin sets email field to not valid if email field is empty") {
             viewModel.onSuccessfulLogin { }
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
-        test("validateFields sets email field to not valid if email field contains invalid email") {
+        test("onSuccessfulLogin sets email field to not valid if email field contains invalid email") {
             forAll(
                 row("mail"),
                 row("mail@"),
@@ -58,7 +66,7 @@ class LoginViewModelTest : FunSpec({
             }
         }
 
-        test("validateFields sets email field to valid if email is valid") {
+        test("onSuccessfulLogin sets email field to valid if email is valid") {
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onSuccessfulLogin { }
             viewModel.email.value shouldBe TextFieldState(value = "mail@mail.com", isValid = true)
@@ -88,25 +96,25 @@ class LoginViewModelTest : FunSpec({
             viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
         }
 
-        test("validateFields sets password field to not valid if password field is empty") {
+        test("onSuccessfulLogin sets password field to not valid if password field is empty") {
             viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
-        test("validateFields sets password field to not valid if password field is shorter than 8 characters") {
+        test("onSuccessfulLogin sets password field to not valid if password field is shorter than 8 characters") {
             viewModel.onPasswordChange("fffffff")
             viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("fffffff", isValid = false)
         }
 
-        test("validateFields sets password field to not valid if password field is longer than 50 characters") {
+        test("onSuccessfulLogin sets password field to not valid if password field is longer than 50 characters") {
             val tooLongString = "f".repeat(51)
             viewModel.onPasswordChange(tooLongString)
             viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState(tooLongString, isValid = false)
         }
 
-        test("validateFields sets password field to valid if password is 8 to 50 characters long") {
+        test("onSuccessfulLogin sets password field to valid if password is 8 to 50 characters long") {
             viewModel.onPasswordChange("ffffffff")
             viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("ffffffff", isValid = true)
@@ -125,8 +133,13 @@ class LoginViewModelTest : FunSpec({
             viewModel.onPasswordChange("ffffffffff")
             viewModel.password.value shouldBe TextFieldState("ffffffffff", isValid = true)
         }
+    }
 
-        test("validateFields calls onSuccess if all fields were valid") {
+    context("login") {
+        val viewModel = LoginViewModel(loginUseCase)
+
+        test("onSuccessfulLogin calls block if login was successful") {
+            coEvery { loginUseCase(any()) } returns AuthResult.Success
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             var called = false
@@ -135,10 +148,32 @@ class LoginViewModelTest : FunSpec({
             }
             called.shouldBeTrue()
         }
+
+        test("onSuccessfulLogin calls onShowLoginFailedDialog if credentials were not valid") {
+            coEvery { loginUseCase(any()) } returns AuthResult.InvalidCredentials
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.showLoginFailedDialog.test {
+                var called = false
+                viewModel.onSuccessfulLogin {
+                    called = true
+                }
+                called.shouldBeFalse()
+                awaitItem().shouldBeTrue()
+            }
+        }
+
+        test("Calls LoginUseCase to log in") {
+            coEvery { loginUseCase(any()) } returns AuthResult.Success
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.onSuccessfulLogin { }
+            coVerify(exactly = 1) { loginUseCase(Credentials.Login("mail@mail.com", "password")) }
+        }
     }
 
     test("onDismissLoginFailedDialog closes dialog") {
-        val viewModel = LoginViewModel()
+        val viewModel = LoginViewModel(loginUseCase)
         viewModel.showLoginFailedDialog.test {
             viewModel.onDismissLoginFailedDialog()
             awaitItem().shouldBeFalse()
@@ -146,7 +181,7 @@ class LoginViewModelTest : FunSpec({
     }
 
     test("changePasswordVisibility properly changes state") {
-        val viewModel = LoginViewModel()
+        val viewModel = LoginViewModel(loginUseCase)
         viewModel.isPasswordVisible.value.shouldBeFalse()
         viewModel.changePasswordVisibility()
         viewModel.isPasswordVisible.value.shouldBeTrue()
