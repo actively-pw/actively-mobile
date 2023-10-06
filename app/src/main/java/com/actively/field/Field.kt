@@ -1,10 +1,10 @@
-package com.actively.form
+package com.actively.field
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class TextField(private val validator: (String) -> Boolean = { true }) {
+class Field(private val validator: Validator = Validator.None) {
 
     private val _state = MutableStateFlow(State("", isValid = true))
     val state = _state.asStateFlow()
