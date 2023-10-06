@@ -51,7 +51,7 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
         _isPasswordVisible.update { !it }
     }
 
-    fun validateFields(onSuccess: () -> Unit) {
+    fun onSuccessfulLogin(block: () -> Unit) {
         _email.update { it.copy(isValid = isEmailValid(it.value)) }
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
         val emailField = _email.value
@@ -61,7 +61,7 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
         viewModelScope.launch {
             val credentials = Credentials(emailField.value, passwordField.value)
             when (logInUseCase(credentials)) {
-                is AuthResult.Success -> onSuccess()
+                is AuthResult.Success -> block()
                 is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
                 else -> {}
             }

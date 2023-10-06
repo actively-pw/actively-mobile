@@ -51,7 +51,7 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
                 onChangePasswordVisibility = viewModel::changePasswordVisibility,
                 isPasswordVisible = isPasswordVisible,
                 onLogin = {
-                    viewModel.validateFields {
+                    viewModel.onSuccessfulLogin {
                         navController.navigate("splash_screen")
                     }
                 },

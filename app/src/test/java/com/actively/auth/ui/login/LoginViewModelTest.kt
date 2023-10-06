@@ -37,7 +37,7 @@ class LoginViewModelTest : FunSpec({
         }
 
         test("validateFields sets email field to not valid if email field is empty") {
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
@@ -53,19 +53,19 @@ class LoginViewModelTest : FunSpec({
                 row(".com"),
             ) { mailString ->
                 viewModel.onEmailChange(mailString)
-                viewModel.validateFields { }
+                viewModel.onSuccessfulLogin { }
                 viewModel.email.value shouldBe TextFieldState(value = mailString, isValid = false)
             }
         }
 
         test("validateFields sets email field to valid if email is valid") {
             viewModel.onEmailChange("mail@mail.com")
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.email.value shouldBe TextFieldState(value = "mail@mail.com", isValid = true)
         }
 
         test("onEmailChange validates email field if email field was marked as invalid") {
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.email.value shouldBe TextFieldState("", isValid = false)
             viewModel.onEmailChange("mail")
             viewModel.email.value shouldBe TextFieldState("mail", isValid = false)
@@ -89,34 +89,34 @@ class LoginViewModelTest : FunSpec({
         }
 
         test("validateFields sets password field to not valid if password field is empty") {
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
         test("validateFields sets password field to not valid if password field is shorter than 8 characters") {
             viewModel.onPasswordChange("fffffff")
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("fffffff", isValid = false)
         }
 
         test("validateFields sets password field to not valid if password field is longer than 50 characters") {
             val tooLongString = "f".repeat(51)
             viewModel.onPasswordChange(tooLongString)
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState(tooLongString, isValid = false)
         }
 
         test("validateFields sets password field to valid if password is 8 to 50 characters long") {
             viewModel.onPasswordChange("ffffffff")
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("ffffffff", isValid = true)
             viewModel.onPasswordChange("f".repeat(50))
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("f".repeat(50), isValid = true)
         }
 
         test("onPasswordChange validates password if password was marked as invalid") {
-            viewModel.validateFields { }
+            viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe TextFieldState("", isValid = false)
             viewModel.onPasswordChange("fff")
             viewModel.password.value shouldBe TextFieldState("fff", isValid = false)
@@ -130,7 +130,7 @@ class LoginViewModelTest : FunSpec({
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             var called = false
-            viewModel.validateFields {
+            viewModel.onSuccessfulLogin {
                 called = true
             }
             called.shouldBeTrue()
