@@ -32,6 +32,9 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     private val _showRegistrationFailedDialog = MutableSharedFlow<Boolean>()
     val showRegistrationFailedDialog = _showRegistrationFailedDialog.asSharedFlow()
 
+    private val _registerInProgress = MutableStateFlow(false)
+    val registerInProgress = _registerInProgress.asStateFlow()
+
     fun onNameChange(value: String) {
         nameField.value = value
     }
@@ -53,10 +56,12 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     }
 
     fun onSuccessfulRegister(block: () -> Unit) {
+        if (_registerInProgress.value) return
         validateFields()
         val areCredentialsValid =
             nameField.isValid && surnameField.isValid && emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
+        _registerInProgress.update { true }
         viewModelScope.launch {
             val credentials = Credentials.Register(
                 name = nameField.value,
@@ -69,6 +74,7 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
                 is AuthResult.AccountExists -> onShowRegistrationFailedDialog()
                 else -> {}
             }
+            _registerInProgress.update { false }
         }
     }
 
