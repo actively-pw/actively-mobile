@@ -2,7 +2,10 @@ package com.actively.auth.ui.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
 import com.actively.auth.ui.TextFieldState
+import com.actively.auth.usecases.RegisterUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewModel() {
 
     private val _email = MutableStateFlow(TextFieldState(value = ""))
     val email = _email.asStateFlow()
@@ -51,10 +54,17 @@ class RegisterViewModel : ViewModel() {
     fun validateFields(onSuccess: () -> Unit) {
         _email.update { it.copy(isValid = isEmailValid(it.value)) }
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        if (_email.value.isValid && _password.value.isValid) {
-            onSuccess()
-        } else {
-            onShowRegistrationFailedDialog()
+        val emailField = _email.value
+        val passwordField = _password.value
+        val areCredentialsValid = emailField.isValid && passwordField.isValid
+        if (!areCredentialsValid) return
+        viewModelScope.launch {
+            val credentials = Credentials(emailField.value, passwordField.value)
+            when (registerUseCase(credentials)) {
+                is AuthResult.Success -> onSuccess()
+                is AuthResult.AccountExists -> onShowRegistrationFailedDialog()
+                else -> {}
+            }
         }
     }
 

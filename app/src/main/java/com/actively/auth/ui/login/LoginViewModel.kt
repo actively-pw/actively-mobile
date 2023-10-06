@@ -2,7 +2,10 @@ package com.actively.auth.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
 import com.actively.auth.ui.TextFieldState
+import com.actively.auth.usecases.LogInUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
 
     private val _email = MutableStateFlow(TextFieldState(value = ""))
     val email = _email.asStateFlow()
@@ -51,13 +54,19 @@ class LoginViewModel : ViewModel() {
     fun validateFields(onSuccess: () -> Unit) {
         _email.update { it.copy(isValid = isEmailValid(it.value)) }
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        if (_email.value.isValid && _password.value.isValid) {
-            onSuccess()
-        } else {
-            onShowLoginFailedDialog()
+        val emailField = _email.value
+        val passwordField = _password.value
+        val areCredentialsValid = emailField.isValid && passwordField.isValid
+        if (!areCredentialsValid) return
+        viewModelScope.launch {
+            val credentials = Credentials(emailField.value, passwordField.value)
+            when (logInUseCase(credentials)) {
+                is AuthResult.Success -> onSuccess()
+                is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
+                else -> {}
+            }
         }
     }
-
 
     fun onDismissLoginFailedDialog() = viewModelScope.launch {
         _showLoginFailedDialog.emit(false)
