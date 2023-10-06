@@ -1,7 +1,10 @@
 package com.actively.auth.ui.register
 
 import app.cash.turbine.test
+import com.actively.auth.AuthResult
+import com.actively.auth.Credentials
 import com.actively.auth.ui.TextFieldState
+import com.actively.auth.usecases.RegisterUseCase
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
@@ -9,6 +12,9 @@ import io.kotest.data.row
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,9 +25,11 @@ import kotlinx.coroutines.test.setMain
 class RegisterViewModelTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
+    val registerUseCase = mockk<RegisterUseCase>()
+    coEvery { registerUseCase(any()) } returns AuthResult.Success
 
     context("field validation") {
-        val viewModel = RegisterViewModel()
+        val viewModel = RegisterViewModel(registerUseCase)
 
         test("initial state of email field is valid") {
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
@@ -36,12 +44,12 @@ class RegisterViewModelTest : FunSpec({
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
         }
 
-        test("validateFields sets email field to not valid if email field is empty") {
+        test("sonSuccessfulRegister ets email field to not valid if email field is empty") {
             viewModel.onSuccessfulRegister { }
             viewModel.email.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
-        test("validateFields sets email field to not valid if email field contains invalid email") {
+        test("onSuccessfulRegister sets email field to not valid if email field contains invalid email") {
             forAll(
                 row("mail"),
                 row("mail@"),
@@ -58,7 +66,7 @@ class RegisterViewModelTest : FunSpec({
             }
         }
 
-        test("validateFields sets email field to valid if email is valid") {
+        test("onSuccessfulRegister sets email field to valid if email is valid") {
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onSuccessfulRegister { }
             viewModel.email.value shouldBe TextFieldState(value = "mail@mail.com", isValid = true)
@@ -88,25 +96,25 @@ class RegisterViewModelTest : FunSpec({
             viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
         }
 
-        test("validateFields sets password field to not valid if password field is empty") {
+        test("onSuccessfulRegister sets password field to not valid if password field is empty") {
             viewModel.onSuccessfulRegister { }
             viewModel.password.value shouldBe TextFieldState(value = "", isValid = false)
         }
 
-        test("validateFields sets password field to not valid if password field is shorter than 8 characters") {
+        test("onSuccessfulRegister sets password field to not valid if password field is shorter than 8 characters") {
             viewModel.onPasswordChange("fffffff")
             viewModel.onSuccessfulRegister { }
             viewModel.password.value shouldBe TextFieldState("fffffff", isValid = false)
         }
 
-        test("validateFields sets password field to not valid if password field is longer than 50 characters") {
+        test("onSuccessfulRegister sets password field to not valid if password field is longer than 50 characters") {
             val tooLongString = "f".repeat(51)
             viewModel.onPasswordChange(tooLongString)
             viewModel.onSuccessfulRegister { }
             viewModel.password.value shouldBe TextFieldState(tooLongString, isValid = false)
         }
 
-        test("validateFields sets password field to valid if password is 8 to 50 characters long") {
+        test("onSuccessfulRegister sets password field to valid if password is 8 to 50 characters long") {
             viewModel.onPasswordChange("ffffffff")
             viewModel.onSuccessfulRegister { }
             viewModel.password.value shouldBe TextFieldState("ffffffff", isValid = true)
@@ -125,8 +133,13 @@ class RegisterViewModelTest : FunSpec({
             viewModel.onPasswordChange("ffffffffff")
             viewModel.password.value shouldBe TextFieldState("ffffffffff", isValid = true)
         }
+    }
 
-        test("validateFields calls onSuccess if all fields were valid") {
+    context("register") {
+        val viewModel = RegisterViewModel(registerUseCase)
+
+        test("onSuccessfulRegister calls block if register was successful") {
+            coEvery { registerUseCase(any()) } returns AuthResult.Success
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             var called = false
@@ -135,10 +148,39 @@ class RegisterViewModelTest : FunSpec({
             }
             called.shouldBeTrue()
         }
+
+        test("onSuccessfulRegister shows registerFailedDialog if account already exists") {
+            coEvery { registerUseCase(any()) } returns AuthResult.AccountExists
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.showRegistrationFailedDialog.test {
+                var called = false
+                viewModel.onSuccessfulRegister { called = true }
+                called.shouldBeFalse()
+                awaitItem().shouldBeTrue()
+            }
+        }
+
+        test("onSuccessfulRegister calls RegisterUseCase") {
+            coEvery { registerUseCase(any()) } returns AuthResult.Success
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.onSuccessfulRegister {}
+            coVerify(exactly = 1) {
+                registerUseCase(
+                    Credentials.Register(
+                        name = "user",
+                        surname = "surname",
+                        email = "mail@mail.com",
+                        password = "password"
+                    )
+                )
+            }
+        }
     }
 
     test("onDismissRegistrationFailedDialog closes dialog") {
-        val viewModel = RegisterViewModel()
+        val viewModel = RegisterViewModel(registerUseCase)
         viewModel.showRegistrationFailedDialog.test {
             viewModel.onDismissRegistrationFailedDialog()
             awaitItem().shouldBeFalse()
@@ -146,7 +188,7 @@ class RegisterViewModelTest : FunSpec({
     }
 
     test("changePasswordVisibility properly changes state") {
-        val viewModel = RegisterViewModel()
+        val viewModel = RegisterViewModel(registerUseCase)
         viewModel.isPasswordVisible.value.shouldBeFalse()
         viewModel.changePasswordVisibility()
         viewModel.isPasswordVisible.value.shouldBeTrue()
