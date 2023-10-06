@@ -1,5 +1,6 @@
 package com.actively.auth.ui.login
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,12 +41,14 @@ import org.koin.androidx.compose.getViewModel
 fun NavGraphBuilder.loginScreen(navController: NavController) {
     composable("login_screen") {
         val viewModel = getViewModel<LoginViewModel>()
+        val loginInProgress by viewModel.loginInProgress.collectAsState()
         val emailState by viewModel.email.collectAsState()
         val passwordState by viewModel.password.collectAsState()
         val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
         val showLoginFailedDialog by viewModel.showLoginFailedDialog.collectAsState(initial = false)
         ActivelyTheme {
             LoginScreen(
+                loginInProgress = loginInProgress,
                 emailState = emailState,
                 passwordState = passwordState,
                 onEmailChange = viewModel::onEmailChange,
@@ -67,6 +72,7 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
+    loginInProgress: Boolean,
     emailState: Field.State,
     passwordState: Field.State,
     onEmailChange: (String) -> Unit,
@@ -90,11 +96,10 @@ fun LoginScreen(
             )
         }
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .padding(horizontal = 16.dp),
         ) {
             if (showLoginFailedDialog) {
                 InvalidCredentialsDialog(
@@ -102,34 +107,47 @@ fun LoginScreen(
                     onDismiss = onDismissLoginFailedDialog
                 )
             }
-            Spacer(Modifier.height(50.dp))
-            Text(
-                text = stringResource(R.string.log_in_screen_header),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(Modifier.height(16.dp))
-            EmailTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = emailState.value,
-                onValueChange = onEmailChange,
-                isError = !emailState.isValid,
-            )
-            Spacer(Modifier.height(16.dp))
-            PasswordTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = passwordState.value,
-                onValueChange = onPasswordChange,
-                isError = !passwordState.isValid,
-                onDone = { onLogin() },
-                onChangePasswordVisibility = onChangePasswordVisibility,
-                isPasswordVisible = isPasswordVisible
-            )
-            Spacer(Modifier.height(20.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onLogin
+            if (loginInProgress) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text(stringResource(R.string.log_in))
+                Spacer(Modifier.height(50.dp))
+                Text(
+                    text = stringResource(R.string.log_in_screen_header),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(Modifier.height(16.dp))
+                EmailTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = emailState.value,
+                    onValueChange = onEmailChange,
+                    isError = !emailState.isValid,
+                )
+                Spacer(Modifier.height(16.dp))
+                PasswordTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = passwordState.value,
+                    onValueChange = onPasswordChange,
+                    isError = !passwordState.isValid,
+                    onDone = { onLogin() },
+                    onChangePasswordVisibility = onChangePasswordVisibility,
+                    isPasswordVisible = isPasswordVisible
+                )
+                Spacer(Modifier.height(20.dp))
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onLogin,
+                ) {
+                    Text(stringResource(R.string.log_in))
+                }
             }
         }
     }
@@ -141,6 +159,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     ActivelyTheme {
         LoginScreen(
+            loginInProgress = true,
             emailState = Field.State(value = "mail@co.", isValid = false),
             passwordState = Field.State(value = "password", isValid = true),
             onEmailChange = {},

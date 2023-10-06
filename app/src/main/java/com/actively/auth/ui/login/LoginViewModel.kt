@@ -28,6 +28,9 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     private val _showLoginFailedDialog = MutableSharedFlow<Boolean>()
     val showLoginFailedDialog = _showLoginFailedDialog.asSharedFlow()
 
+    private val _loginInProgress = MutableStateFlow(false)
+    val loginInProgress = _loginInProgress.asStateFlow()
+
     fun onEmailChange(value: String) {
         emailField.value = value
     }
@@ -41,10 +44,12 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     }
 
     fun onSuccessfulLogin(block: () -> Unit) {
+        if (loginInProgress.value) return
         emailField.validate()
         passwordField.validate()
         val areCredentialsValid = emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
+        _loginInProgress.update { true }
         viewModelScope.launch {
             val credentials = Credentials.Login(emailField.value, passwordField.value)
             when (logInUseCase(credentials)) {
@@ -52,6 +57,7 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
                 is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
                 else -> {}
             }
+            _loginInProgress.update { false }
         }
     }
 
