@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.actively.auth.AuthResult
 import com.actively.auth.Credentials
-import com.actively.auth.ui.TextFieldState
 import com.actively.auth.usecases.LogInUseCase
+import com.actively.field.Field
+import com.actively.field.Validator
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,11 +16,11 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
 
-    private val _email = MutableStateFlow(TextFieldState(value = ""))
-    val email = _email.asStateFlow()
+    private val emailField = Field(Validator.Email)
+    private val passwordField = Field(Validator.lengthInRange(8..50))
 
-    private val _password = MutableStateFlow(TextFieldState(value = ""))
-    val password = _password.asStateFlow()
+    val email = emailField.state
+    val password = passwordField.state
 
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible = _isPasswordVisible.asStateFlow()
@@ -27,24 +28,12 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     private val _showLoginFailedDialog = MutableSharedFlow<Boolean>()
     val showLoginFailedDialog = _showLoginFailedDialog.asSharedFlow()
 
-    private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
-
     fun onEmailChange(value: String) {
-        _email.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isEmailValid(value) else true
-            )
-        }
+        emailField.value = value
     }
 
     fun onPasswordChange(value: String) {
-        _password.update {
-            it.copy(
-                value = value,
-                isValid = if (!it.isValid) isPasswordValid(value) else true
-            )
-        }
+        passwordField.value = value
     }
 
     fun changePasswordVisibility() {
@@ -52,10 +41,8 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     }
 
     fun onSuccessfulLogin(block: () -> Unit) {
-        _email.update { it.copy(isValid = isEmailValid(it.value)) }
-        _password.update { it.copy(isValid = isPasswordValid(it.value)) }
-        val emailField = _email.value
-        val passwordField = _password.value
+        emailField.validate()
+        passwordField.validate()
         val areCredentialsValid = emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
@@ -75,8 +62,4 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     private fun onShowLoginFailedDialog() = viewModelScope.launch {
         _showLoginFailedDialog.emit(true)
     }
-
-    private fun isEmailValid(email: String) = email.isNotEmpty() && emailRegex.matches(email)
-
-    private fun isPasswordValid(password: String) = password.length in 8..50
 }

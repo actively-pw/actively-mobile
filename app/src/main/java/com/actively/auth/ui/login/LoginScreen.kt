@@ -30,7 +30,7 @@ import com.actively.R
 import com.actively.auth.ui.EmailTextField
 import com.actively.auth.ui.InvalidCredentialsDialog
 import com.actively.auth.ui.PasswordTextField
-import com.actively.auth.ui.TextFieldState
+import com.actively.field.Field
 import com.actively.ui.theme.ActivelyTheme
 import org.koin.androidx.compose.getViewModel
 
@@ -67,8 +67,8 @@ fun NavGraphBuilder.loginScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    emailState: TextFieldState,
-    passwordState: TextFieldState,
+    emailState: Field.State,
+    passwordState: Field.State,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onChangePasswordVisibility: () -> Unit,
@@ -141,8 +141,8 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     ActivelyTheme {
         LoginScreen(
-            emailState = TextFieldState(value = "mail@co.", isValid = true),
-            passwordState = TextFieldState(value = "password"),
+            emailState = Field.State(value = "mail@co.", isValid = false),
+            passwordState = Field.State(value = "password", isValid = true),
             onEmailChange = {},
             onPasswordChange = {},
             onLogin = {},

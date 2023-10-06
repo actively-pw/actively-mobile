@@ -34,7 +34,7 @@ fun EmailTextField(
         isError = isError,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Password,
+            keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
         )
     )
