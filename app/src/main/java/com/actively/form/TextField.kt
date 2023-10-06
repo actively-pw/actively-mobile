@@ -4,23 +4,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class TextField(private val validator: ((String) -> Boolean)? = null) {
+class TextField(private val validator: (String) -> Boolean = { true }) {
 
     private val _state = MutableStateFlow(State("", isValid = true))
     val state = _state.asStateFlow()
 
     fun setValue(value: String) = _state.update {
-        val isValid = if (it.isValid && validator != null) {
-            validator.invoke(value)
-        } else {
-            true
-        }
-        it.copy(value = value, isValid = isValid)
+        it.copy(
+            value = value,
+            isValid = if (!it.isValid) validator(value) else true
+        )
     }
 
     fun validate() {
-        if (validator == null) return
-        _state.update { it.copy(isValid = validator.invoke(it.value)) }
+        _state.update { it.copy(isValid = validator(it.value)) }
     }
 
     data class State(val value: String, val isValid: Boolean)
