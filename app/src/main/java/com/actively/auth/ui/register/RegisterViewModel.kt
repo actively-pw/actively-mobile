@@ -32,13 +32,21 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     private val _showRegistrationFailedDialog = MutableSharedFlow<Boolean>()
     val showRegistrationFailedDialog = _showRegistrationFailedDialog.asSharedFlow()
 
-    fun onNameChange(value: String) = nameField.setValue(value)
+    fun onNameChange(value: String) {
+        nameField.value = value
+    }
 
-    fun onSurnameChange(value: String) = surnameField.setValue(value)
+    fun onSurnameChange(value: String) {
+        surnameField.value = value
+    }
 
-    fun onEmailChange(value: String) = emailField.setValue(value)
+    fun onEmailChange(value: String) {
+        emailField.value = value
+    }
 
-    fun onPasswordChange(value: String) = passwordField.setValue(value)
+    fun onPasswordChange(value: String) {
+        passwordField.value = value
+    }
 
     fun changePasswordVisibility() {
         _isPasswordVisible.update { !it }
@@ -46,19 +54,15 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
 
     fun onSuccessfulRegister(block: () -> Unit) {
         validateFields()
-        val name = name.value
-        val surname = surname.value
-        val email = email.value
-        val password = password.value
         val areCredentialsValid =
-            name.isValid && surname.isValid && email.isValid && password.isValid
+            nameField.isValid && surnameField.isValid && emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
             val credentials = Credentials.Register(
-                name = name.value,
-                surname = surname.value,
-                email = email.value,
-                password = password.value
+                name = nameField.value,
+                surname = surnameField.value,
+                email = emailField.value,
+                password = passwordField.value
             )
             when (registerUseCase(credentials)) {
                 is AuthResult.Success -> block()

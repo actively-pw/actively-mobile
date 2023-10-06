@@ -9,12 +9,16 @@ class Field(private val validator: Validator = Validator.None) {
     private val _state = MutableStateFlow(State("", isValid = true))
     val state = _state.asStateFlow()
 
-    fun setValue(value: String) = _state.update {
-        it.copy(
-            value = value,
-            isValid = if (!it.isValid) validator(value) else true
-        )
-    }
+    var value: String
+        get() = _state.value.value
+        set(value) = _state.update {
+            it.copy(
+                value = value,
+                isValid = if (!it.isValid) validator(value) else true
+            )
+        }
+
+    val isValid: Boolean get() = _state.value.isValid
 
     fun validate() {
         _state.update { it.copy(isValid = validator(it.value)) }

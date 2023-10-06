@@ -28,9 +28,13 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     private val _showLoginFailedDialog = MutableSharedFlow<Boolean>()
     val showLoginFailedDialog = _showLoginFailedDialog.asSharedFlow()
 
-    fun onEmailChange(value: String) = emailField.setValue(value)
+    fun onEmailChange(value: String) {
+        emailField.value = value
+    }
 
-    fun onPasswordChange(value: String) = passwordField.setValue(value)
+    fun onPasswordChange(value: String) {
+        passwordField.value = value
+    }
 
     fun changePasswordVisibility() {
         _isPasswordVisible.update { !it }
@@ -39,12 +43,10 @@ class LoginViewModel(private val logInUseCase: LogInUseCase) : ViewModel() {
     fun onSuccessfulLogin(block: () -> Unit) {
         emailField.validate()
         passwordField.validate()
-        val email = email.value
-        val password = password.value
-        val areCredentialsValid = email.isValid && password.isValid
+        val areCredentialsValid = emailField.isValid && passwordField.isValid
         if (!areCredentialsValid) return
         viewModelScope.launch {
-            val credentials = Credentials.Login(email.value, password.value)
+            val credentials = Credentials.Login(emailField.value, passwordField.value)
             when (logInUseCase(credentials)) {
                 is AuthResult.Success -> block()
                 is AuthResult.InvalidCredentials -> onShowLoginFailedDialog()
