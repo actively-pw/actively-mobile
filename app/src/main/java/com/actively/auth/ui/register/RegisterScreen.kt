@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,6 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,6 +41,8 @@ import org.koin.androidx.compose.getViewModel
 fun NavGraphBuilder.registerScreen(navController: NavController) {
     composable("register_screen") {
         val viewModel = getViewModel<RegisterViewModel>()
+        val nameState by viewModel.name.collectAsState()
+        val surnameState by viewModel.surname.collectAsState()
         val emailState by viewModel.email.collectAsState()
         val passwordState by viewModel.password.collectAsState()
         val isPasswordVisible by viewModel.isPasswordVisible.collectAsState()
@@ -44,6 +50,10 @@ fun NavGraphBuilder.registerScreen(navController: NavController) {
             .collectAsState(initial = false)
         ActivelyTheme {
             RegisterScreen(
+                nameState = nameState,
+                surnameState = surnameState,
+                onNameChange = viewModel::onNameChange,
+                onSurnameChange = viewModel::onSurnameChange,
                 emailState = emailState,
                 passwordState = passwordState,
                 onEmailChange = viewModel::onEmailChange,
@@ -68,6 +78,10 @@ fun NavGraphBuilder.registerScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
+    nameState: TextFieldState,
+    surnameState: TextFieldState,
+    onNameChange: (String) -> Unit,
+    onSurnameChange: (String) -> Unit,
     emailState: TextFieldState,
     passwordState: TextFieldState,
     onEmailChange: (String) -> Unit,
@@ -111,6 +125,30 @@ fun RegisterScreen(
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = nameState.value,
+                onValueChange = onNameChange,
+                isError = !nameState.isValid,
+                label = { Text(stringResource(R.string.name)) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next,
+                )
+            )
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = surnameState.value,
+                onValueChange = onSurnameChange,
+                isError = !surnameState.isValid,
+                label = { Text(stringResource(R.string.surname)) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next,
+                )
+            )
+            Spacer(Modifier.height(16.dp))
             EmailTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = emailState.value,
@@ -143,6 +181,10 @@ fun RegisterScreen(
 fun RegisterScreenPreview() {
     ActivelyTheme {
         RegisterScreen(
+            nameState = TextFieldState(value = "John", isValid = true),
+            surnameState = TextFieldState(value = "Smith", isValid = true),
+            onNameChange = {},
+            onSurnameChange = {},
             emailState = TextFieldState(value = "mail@co.", isValid = true),
             passwordState = TextFieldState(value = "password"),
             onEmailChange = {},

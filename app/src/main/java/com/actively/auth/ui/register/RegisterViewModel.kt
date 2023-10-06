@@ -15,6 +15,12 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewModel() {
 
+    private val _name = MutableStateFlow(TextFieldState(value = ""))
+    val name = _name.asStateFlow()
+
+    private val _surname = MutableStateFlow(TextFieldState(value = ""))
+    val surname = _surname.asStateFlow()
+
     private val _email = MutableStateFlow(TextFieldState(value = ""))
     val email = _email.asStateFlow()
 
@@ -28,6 +34,24 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     val showRegistrationFailedDialog = _showRegistrationFailedDialog.asSharedFlow()
 
     private val emailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+
+    fun onNameChange(value: String) {
+        _name.update {
+            it.copy(
+                value = value,
+                isValid = if (!it.isValid) value.isNotEmpty() else true
+            )
+        }
+    }
+
+    fun onSurnameChange(value: String) {
+        _surname.update {
+            it.copy(
+                value = value,
+                isValid = if (!it.isValid) value.isNotEmpty() else true
+            )
+        }
+    }
 
     fun onEmailChange(value: String) {
         _email.update {
@@ -52,6 +76,8 @@ class RegisterViewModel(private val registerUseCase: RegisterUseCase) : ViewMode
     }
 
     fun onSuccessfulRegister(block: () -> Unit) {
+        _name.update { it.copy(isValid = it.value.isNotEmpty()) }
+        _surname.update { it.copy(isValid = it.value.isNotEmpty()) }
         _email.update { it.copy(isValid = isEmailValid(it.value)) }
         _password.update { it.copy(isValid = isPasswordValid(it.value)) }
         val emailField = _email.value
