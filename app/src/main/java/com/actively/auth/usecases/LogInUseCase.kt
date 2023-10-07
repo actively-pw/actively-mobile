@@ -13,9 +13,8 @@ interface LogInUseCase {
 class LogInUseCaseImpl(private val authRepository: AuthRepository) : LogInUseCase {
 
     override suspend fun invoke(credentials: Credentials.Login) = try {
-        val (accessToken, refreshToken) = authRepository.login(credentials)
-        authRepository.setAccessToken(accessToken)
-        authRepository.setRefreshToken(refreshToken)
+        val bearerTokens = authRepository.login(credentials)
+        authRepository.setBearerTokens(bearerTokens)
         AuthResult.Success
     } catch (e: ClientRequestException) {
         e.printStackTrace()

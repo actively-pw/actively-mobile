@@ -13,9 +13,8 @@ interface RegisterUseCase {
 class RegisterUseCaseImpl(private val authRepository: AuthRepository) : RegisterUseCase {
 
     override suspend fun invoke(credentials: Credentials.Register) = try {
-        val (accessToken, refreshToken) = authRepository.register(credentials)
-        authRepository.setAccessToken(accessToken)
-        authRepository.setRefreshToken(refreshToken)
+        val bearerTokens = authRepository.register(credentials)
+        authRepository.setBearerTokens(bearerTokens)
         AuthResult.Success
     } catch (e: ClientRequestException) {
         e.printStackTrace()
