@@ -14,11 +14,16 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.request
+import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 
-interface AuthorizedKtorClient : KtorClient {
+interface AuthorizedKtorClient {
+
+    suspend fun request(endpoint: String, builder: HttpRequestBuilder.() -> Unit): HttpResponse
+
+    fun close()
 
     fun clearCachedTokens()
 }
