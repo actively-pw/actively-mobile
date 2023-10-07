@@ -130,4 +130,5 @@ dependencies {
     implementation(libs.androidx.paging.testing)
     testImplementation(libs.turbine)
     implementation(libs.pullrefresh)
+    implementation(libs.androidx.datastore.preferences)
 }
