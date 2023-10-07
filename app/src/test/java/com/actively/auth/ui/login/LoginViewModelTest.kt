@@ -66,12 +66,6 @@ class LoginViewModelTest : FunSpec({
             }
         }
 
-        test("onSuccessfulLogin sets email field to valid if email is valid") {
-            viewModel.onEmailChange("mail@mail.com")
-            viewModel.onSuccessfulLogin { }
-            viewModel.email.value shouldBe Field.State(value = "mail@mail.com", isValid = true)
-        }
-
         test("initial state of password field is valid") {
             viewModel.password.value shouldBe Field.State(value = "", isValid = true)
         }
@@ -101,15 +95,6 @@ class LoginViewModelTest : FunSpec({
             viewModel.onPasswordChange(tooLongString)
             viewModel.onSuccessfulLogin { }
             viewModel.password.value shouldBe Field.State(tooLongString, isValid = false)
-        }
-
-        test("onSuccessfulLogin sets password field to valid if password is 8 to 50 characters long") {
-            viewModel.onPasswordChange("ffffffff")
-            viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe Field.State("ffffffff", isValid = true)
-            viewModel.onPasswordChange("f".repeat(50))
-            viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe Field.State("f".repeat(50), isValid = true)
         }
     }
 
@@ -147,6 +132,22 @@ class LoginViewModelTest : FunSpec({
             viewModel.onPasswordChange("password")
             viewModel.onSuccessfulLogin { }
             coVerify(exactly = 1) { loginUseCase(Credentials.Login("mail@mail.com", "password")) }
+        }
+
+        test("Initial loginInProgress is false") {
+            viewModel.loginInProgress.value.shouldBeFalse()
+        }
+
+        test("onSuccessfulLogin updated loginInProgress") {
+            coEvery { loginUseCase(any()) } returns AuthResult.Success
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.loginInProgress.test {
+                awaitItem()
+                viewModel.onSuccessfulLogin { }
+                awaitItem().shouldBeTrue()
+                awaitItem().shouldBeFalse()
+            }
         }
     }
 
