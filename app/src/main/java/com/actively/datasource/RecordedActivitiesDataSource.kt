@@ -1,7 +1,7 @@
 package com.actively.datasource
 
 import com.actively.activity.RecordedActivity
-import com.actively.http.client.KtorClient
+import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.dtos.RecordedActivityDto
 import io.ktor.client.call.body
 import io.ktor.http.ContentType
@@ -19,7 +19,7 @@ interface RecordedActivitiesDataSource {
 }
 
 class RecordedActivitiesDataSourceImpl(
-    private val client: KtorClient
+    private val client: AuthorizedKtorClient
 ) : RecordedActivitiesDataSource {
 
     override suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
