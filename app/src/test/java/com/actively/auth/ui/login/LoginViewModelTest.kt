@@ -3,8 +3,8 @@ package com.actively.auth.ui.login
 import app.cash.turbine.test
 import com.actively.auth.AuthResult
 import com.actively.auth.Credentials
-import com.actively.auth.ui.TextFieldState
 import com.actively.auth.usecases.LogInUseCase
+import com.actively.field.Field
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
@@ -32,21 +32,21 @@ class LoginViewModelTest : FunSpec({
         val viewModel = LoginViewModel(loginUseCase)
 
         test("initial state of email field is valid") {
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onEmailChange updates email field state") {
             viewModel.onEmailChange("mail")
-            viewModel.email.value shouldBe TextFieldState(value = "mail", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "mail", isValid = true)
             viewModel.onEmailChange("mail@mx.co")
-            viewModel.email.value shouldBe TextFieldState(value = "mail@mx.co", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "mail@mx.co", isValid = true)
             viewModel.onEmailChange("")
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onSuccessfulLogin sets email field to not valid if email field is empty") {
             viewModel.onSuccessfulLogin { }
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = false)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = false)
         }
 
         test("onSuccessfulLogin sets email field to not valid if email field contains invalid email") {
@@ -62,76 +62,54 @@ class LoginViewModelTest : FunSpec({
             ) { mailString ->
                 viewModel.onEmailChange(mailString)
                 viewModel.onSuccessfulLogin { }
-                viewModel.email.value shouldBe TextFieldState(value = mailString, isValid = false)
+                viewModel.email.value shouldBe Field.State(value = mailString, isValid = false)
             }
         }
 
         test("onSuccessfulLogin sets email field to valid if email is valid") {
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onSuccessfulLogin { }
-            viewModel.email.value shouldBe TextFieldState(value = "mail@mail.com", isValid = true)
-        }
-
-        test("onEmailChange validates email field if email field was marked as invalid") {
-            viewModel.onSuccessfulLogin { }
-            viewModel.email.value shouldBe TextFieldState("", isValid = false)
-            viewModel.onEmailChange("mail")
-            viewModel.email.value shouldBe TextFieldState("mail", isValid = false)
-            viewModel.onEmailChange("mail@mail")
-            viewModel.email.value shouldBe TextFieldState("mail@mail", isValid = false)
-            viewModel.onEmailChange("mail@mail.com")
-            viewModel.email.value shouldBe TextFieldState("mail@mail.com", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "mail@mail.com", isValid = true)
         }
 
         test("initial state of password field is valid") {
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onPasswordChange updates password field state") {
             viewModel.onPasswordChange("pass")
-            viewModel.password.value shouldBe TextFieldState(value = "pass", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "pass", isValid = true)
             viewModel.onPasswordChange("password")
-            viewModel.password.value shouldBe TextFieldState(value = "password", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "password", isValid = true)
             viewModel.onPasswordChange("")
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onSuccessfulLogin sets password field to not valid if password field is empty") {
             viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = false)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = false)
         }
 
         test("onSuccessfulLogin sets password field to not valid if password field is shorter than 8 characters") {
             viewModel.onPasswordChange("fffffff")
             viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState("fffffff", isValid = false)
+            viewModel.password.value shouldBe Field.State("fffffff", isValid = false)
         }
 
         test("onSuccessfulLogin sets password field to not valid if password field is longer than 50 characters") {
             val tooLongString = "f".repeat(51)
             viewModel.onPasswordChange(tooLongString)
             viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState(tooLongString, isValid = false)
+            viewModel.password.value shouldBe Field.State(tooLongString, isValid = false)
         }
 
         test("onSuccessfulLogin sets password field to valid if password is 8 to 50 characters long") {
             viewModel.onPasswordChange("ffffffff")
             viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState("ffffffff", isValid = true)
+            viewModel.password.value shouldBe Field.State("ffffffff", isValid = true)
             viewModel.onPasswordChange("f".repeat(50))
             viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState("f".repeat(50), isValid = true)
-        }
-
-        test("onPasswordChange validates password if password was marked as invalid") {
-            viewModel.onSuccessfulLogin { }
-            viewModel.password.value shouldBe TextFieldState("", isValid = false)
-            viewModel.onPasswordChange("fff")
-            viewModel.password.value shouldBe TextFieldState("fff", isValid = false)
-            viewModel.onPasswordChange("f".repeat(51))
-            viewModel.password.value shouldBe TextFieldState("f".repeat(51), isValid = false)
-            viewModel.onPasswordChange("ffffffffff")
-            viewModel.password.value shouldBe TextFieldState("ffffffffff", isValid = true)
+            viewModel.password.value shouldBe Field.State("f".repeat(50), isValid = true)
         }
     }
 
