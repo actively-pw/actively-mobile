@@ -88,7 +88,7 @@ object KoinSetup {
 
     fun initKoin(context: Context) = startKoin {
         androidContext(context)
-        modules(commonModule, useCasesModule, viewModelModule)
+        modules(dataModule, useCasesModule, viewModelModule)
     }
 
     private val viewModelModule = module {
@@ -124,7 +124,7 @@ object KoinSetup {
         factory<LogOutUseCase> { LogOutUseCaseImpl(get()) }
     }
 
-    private val commonModule = module {
+    private val dataModule = module {
         single { LocationEngineProvider.getBestLocationEngine(androidContext()) }
         single<LocationProvider> { LocationProviderImpl(get()) }
         single<SqlDriver> {
