@@ -3,6 +3,8 @@ package com.actively.repository
 import com.actively.datasource.AuthTokensDataSource
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import io.ktor.client.HttpClient
 import io.mockk.every
@@ -15,6 +17,18 @@ class AuthRepositoryTest : FunSpec({
     val authTokensDataSource = mockk<AuthTokensDataSource>(relaxUnitFun = true)
     val client = mockk<HttpClient>()
     val repository = AuthRepositoryImpl(authTokensDataSource, client)
+
+    test("isUserLoggedIn returns true if access and refresh tokens are present") {
+        every { authTokensDataSource.getAccessToken() } returns "access-token"
+        every { authTokensDataSource.getRefreshToken() } returns "refresh-token"
+        repository.isUserLoggedIn().shouldBeTrue()
+    }
+
+    test("isUserLoggedIn returns false if tokens are missing") {
+        every { authTokensDataSource.getAccessToken() } returns null
+        every { authTokensDataSource.getRefreshToken() } returns null
+        repository.isUserLoggedIn().shouldBeFalse()
+    }
 
     test("getAccessToken calls AuthTokensDataSource") {
         every { authTokensDataSource.getAccessToken() } returns "access-token"
