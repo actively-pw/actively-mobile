@@ -15,7 +15,7 @@ import io.ktor.http.contentType
 
 interface AuthRepository {
 
-    suspend fun inUserLoggedIn(): Boolean
+    suspend fun isUserLoggedIn(): Boolean
 
     suspend fun login(credentials: Credentials.Login): Tokens
 
@@ -39,7 +39,7 @@ class AuthRepositoryImpl(
     private val client: HttpClient
 ) : AuthRepository {
 
-    override suspend fun inUserLoggedIn() = authTokensDataSource.getRefreshToken() != null
+    override suspend fun isUserLoggedIn() = authTokensDataSource.getRefreshToken() != null
             && authTokensDataSource.getAccessToken() != null
 
 
