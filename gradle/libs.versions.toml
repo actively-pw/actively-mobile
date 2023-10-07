@@ -1,6 +1,7 @@
 [versions]
 accompanist-permissions = "0.30.1"
 agp = "8.2.0-beta03"
+datastore-preferences = "1.0.0"
 kotlinx-datetime = "0.4.0"
 navigation-compose = "2.7.3"
 paging-compose = "3.3.0-alpha02"
@@ -34,6 +35,7 @@ pullrefresh = "1.0.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging-runtime-ktx" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }

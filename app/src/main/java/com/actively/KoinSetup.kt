@@ -22,6 +22,7 @@ import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.RecordedActivitiesDataSourceImpl
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
+import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.home.ui.HomeViewModel
@@ -87,7 +88,7 @@ object KoinSetup {
 
     fun initKoin(context: Context) = startKoin {
         androidContext(context)
-        modules(commonModule, useCasesModule, viewModelModule)
+        modules(dataModule, useCasesModule, viewModelModule)
     }
 
     private val viewModelModule = module {
@@ -123,7 +124,7 @@ object KoinSetup {
         factory<LogOutUseCase> { LogOutUseCaseImpl(get()) }
     }
 
-    private val commonModule = module {
+    private val dataModule = module {
         single { LocationEngineProvider.getBestLocationEngine(androidContext()) }
         single<LocationProvider> { LocationProviderImpl(get()) }
         single<SqlDriver> {
@@ -160,7 +161,7 @@ object KoinSetup {
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
         single<RecordedActivitiesDataSourceFactory> { RecordedActivitiesDataSourceFactoryImpl(get()) }
         single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-        single { androidContext().getSharedPreferences("prefs", Context.MODE_PRIVATE) }
+        single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     }

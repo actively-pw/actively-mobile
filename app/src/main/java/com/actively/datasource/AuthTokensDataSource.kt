@@ -1,44 +1,50 @@
 package com.actively.datasource
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 interface AuthTokensDataSource {
 
-    fun getAccessToken(): String?
+    suspend fun getAccessToken(): String?
 
-    fun setAccessToken(accessToken: String)
+    suspend fun setAccessToken(accessToken: String)
 
-    fun getRefreshToken(): String?
+    suspend fun getRefreshToken(): String?
 
-    fun setRefreshToken(refreshToken: String)
+    suspend fun setRefreshToken(refreshToken: String)
 
-    fun clearTokens()
+    suspend fun clearTokens()
 }
 
 class AuthTokensDataSourceImpl(
-    private val sharedPreferences: SharedPreferences
+    private val dataStore: DataStore<Preferences>
 ) : AuthTokensDataSource {
 
-    override fun getAccessToken() = sharedPreferences.getString(ACCESS_TOKEN_KEY, null)
+    override suspend fun getAccessToken() = dataStore.data.map { it[ACCESS_TOKEN_KEY] }.first()
 
-    override fun setAccessToken(accessToken: String) = sharedPreferences.edit {
-        putString(ACCESS_TOKEN_KEY, accessToken)
+    override suspend fun setAccessToken(accessToken: String) {
+        dataStore.edit { it[ACCESS_TOKEN_KEY] = accessToken }
     }
 
-    override fun getRefreshToken() = sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+    override suspend fun getRefreshToken() = dataStore.data.map { it[REFRESH_TOKEN_KEY] }.first()
 
-    override fun setRefreshToken(refreshToken: String) = sharedPreferences.edit {
-        putString(REFRESH_TOKEN_KEY, refreshToken)
+    override suspend fun setRefreshToken(refreshToken: String) {
+        dataStore.edit { it[REFRESH_TOKEN_KEY] = refreshToken }
     }
 
-    override fun clearTokens() = sharedPreferences.edit {
-        putString(ACCESS_TOKEN_KEY, null)
-        putString(REFRESH_TOKEN_KEY, null)
+    override suspend fun clearTokens() {
+        dataStore.edit {
+            it.remove(ACCESS_TOKEN_KEY)
+            it.remove(REFRESH_TOKEN_KEY)
+        }
     }
 
     private companion object {
-        const val ACCESS_TOKEN_KEY = "access_token"
-        const val REFRESH_TOKEN_KEY = "refresh_token"
+        val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
+        val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
     }
 }
