@@ -22,6 +22,7 @@ import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.RecordedActivitiesDataSourceImpl
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
+import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.home.ui.HomeViewModel
@@ -161,6 +162,7 @@ object KoinSetup {
         single<RecordedActivitiesDataSourceFactory> { RecordedActivitiesDataSourceFactoryImpl(get()) }
         single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
         single { androidContext().getSharedPreferences("prefs", Context.MODE_PRIVATE) }
+        single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     }
