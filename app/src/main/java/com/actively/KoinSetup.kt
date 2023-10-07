@@ -26,6 +26,10 @@ import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.home.ui.HomeViewModel
+import com.actively.http.client.AuthorizedKtorClient
+import com.actively.http.client.AuthorizedKtorClientImpl
+import com.actively.http.client.KtorClient
+import com.actively.http.client.UnauthorizedKtorClient
 import com.actively.location.LocationProvider
 import com.actively.location.LocationProviderImpl
 import com.actively.recorder.RecorderStateMachine
@@ -66,19 +70,10 @@ import com.actively.util.TimeProvider
 import com.actively.util.UUIDProvider
 import com.actively.util.UUIDProviderImpl
 import com.mapbox.common.location.compat.LocationEngineProvider
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.ANDROID
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
-import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -134,22 +129,8 @@ object KoinSetup {
                 "recording_database.db"
             )
         }
-        single {
-            HttpClient(Android) {
-                install(ContentNegotiation) {
-                    json(Json {
-                        isLenient = true
-                        prettyPrint = true
-                        ignoreUnknownKeys = true
-                    })
-                }
-                install(Logging) {
-                    logger = Logger.ANDROID
-                    level = LogLevel.ALL
-                }
-                expectSuccess = true
-            }
-        }
+        single<KtorClient> { UnauthorizedKtorClient() }
+        single<AuthorizedKtorClient> { AuthorizedKtorClientImpl(get()) }
         single { WorkManager.getInstance(androidContext()) }
         single<ActivityDatabase> { ActivityDatabase(get()) }
         single<ActivityRecordingDataSource> { ActivityRecordingDataSourceImpl(get()) }

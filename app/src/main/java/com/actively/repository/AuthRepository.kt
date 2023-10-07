@@ -3,14 +3,14 @@ package com.actively.repository
 import com.actively.auth.Credentials
 import com.actively.auth.Tokens
 import com.actively.datasource.AuthTokensDataSource
+import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.dtos.TokensDto
 import com.actively.http.dtos.toDto
 import com.actively.http.dtos.toTokens
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
 interface AuthRepository {
@@ -36,7 +36,7 @@ interface AuthRepository {
 
 class AuthRepositoryImpl(
     private val authTokensDataSource: AuthTokensDataSource,
-    private val client: HttpClient
+    private val client: AuthorizedKtorClient
 ) : AuthRepository {
 
     override suspend fun isUserLoggedIn() = authTokensDataSource.getRefreshToken() != null
@@ -44,7 +44,8 @@ class AuthRepositoryImpl(
 
 
     override suspend fun login(credentials: Credentials.Login): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/login") {
+        val result = client.request("/Users/login") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
         }
@@ -52,7 +53,8 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun register(credentials: Credentials.Register): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/register") {
+        val result = client.request("/Users/register") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
         }
@@ -60,7 +62,8 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun refreshAuthTokens(tokens: Tokens): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/refreshToken") {
+        val result = client.request("/Users/refreshToken") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(tokens.toDto())
         }
@@ -81,6 +84,7 @@ class AuthRepositoryImpl(
 
     override suspend fun logout() {
         authTokensDataSource.clearTokens()
+        client.clearCachedTokens()
     }
 }
 
