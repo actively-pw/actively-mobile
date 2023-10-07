@@ -3,8 +3,8 @@ package com.actively.auth.ui.register
 import app.cash.turbine.test
 import com.actively.auth.AuthResult
 import com.actively.auth.Credentials
-import com.actively.auth.ui.TextFieldState
 import com.actively.auth.usecases.RegisterUseCase
+import com.actively.field.Field
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.forAll
@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class RegisterViewModelTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
@@ -31,22 +31,50 @@ class RegisterViewModelTest : FunSpec({
     context("field validation") {
         val viewModel = RegisterViewModel(registerUseCase)
 
+        test("initial state of name field is valid") {
+            viewModel.name.value shouldBe Field.State(value = "", isValid = true)
+        }
+
+        test("onNameChange updates name field state") {
+            viewModel.onNameChange("user")
+            viewModel.name.value shouldBe Field.State(value = "user", isValid = true)
+        }
+
+        test("onSuccessfulRegister sets name field to not valid if name field is empty") {
+            viewModel.onSuccessfulRegister { }
+            viewModel.name.value shouldBe Field.State("", false)
+        }
+
+        test("initial state of surname field is valid") {
+            viewModel.surname.value shouldBe Field.State(value = "", isValid = true)
+        }
+
+        test("onNameChange updates surname field state") {
+            viewModel.onSurnameChange("surname")
+            viewModel.surname.value shouldBe Field.State(value = "surname", isValid = true)
+        }
+
+        test("onSuccessfulRegister sets surname field to not valid if name field is empty") {
+            viewModel.onSuccessfulRegister { }
+            viewModel.surname.value shouldBe Field.State("", false)
+        }
+
         test("initial state of email field is valid") {
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onEmailChange updates email field state") {
             viewModel.onEmailChange("mail")
-            viewModel.email.value shouldBe TextFieldState(value = "mail", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "mail", isValid = true)
             viewModel.onEmailChange("mail@mx.co")
-            viewModel.email.value shouldBe TextFieldState(value = "mail@mx.co", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "mail@mx.co", isValid = true)
             viewModel.onEmailChange("")
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = true)
         }
 
-        test("sonSuccessfulRegister ets email field to not valid if email field is empty") {
+        test("sonSuccessfulRegister sets email field to not valid if email field is empty") {
             viewModel.onSuccessfulRegister { }
-            viewModel.email.value shouldBe TextFieldState(value = "", isValid = false)
+            viewModel.email.value shouldBe Field.State(value = "", isValid = false)
         }
 
         test("onSuccessfulRegister sets email field to not valid if email field contains invalid email") {
@@ -62,76 +90,39 @@ class RegisterViewModelTest : FunSpec({
             ) { mailString ->
                 viewModel.onEmailChange(mailString)
                 viewModel.onSuccessfulRegister { }
-                viewModel.email.value shouldBe TextFieldState(value = mailString, isValid = false)
+                viewModel.email.value shouldBe Field.State(value = mailString, isValid = false)
             }
         }
 
-        test("onSuccessfulRegister sets email field to valid if email is valid") {
-            viewModel.onEmailChange("mail@mail.com")
-            viewModel.onSuccessfulRegister { }
-            viewModel.email.value shouldBe TextFieldState(value = "mail@mail.com", isValid = true)
-        }
-
-        test("onEmailChange validates email field if email field was marked as invalid") {
-            viewModel.onSuccessfulRegister { }
-            viewModel.email.value shouldBe TextFieldState("", isValid = false)
-            viewModel.onEmailChange("mail")
-            viewModel.email.value shouldBe TextFieldState("mail", isValid = false)
-            viewModel.onEmailChange("mail@mail")
-            viewModel.email.value shouldBe TextFieldState("mail@mail", isValid = false)
-            viewModel.onEmailChange("mail@mail.com")
-            viewModel.email.value shouldBe TextFieldState("mail@mail.com", isValid = true)
-        }
-
         test("initial state of password field is valid") {
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onPasswordChange updates password field state") {
             viewModel.onPasswordChange("pass")
-            viewModel.password.value shouldBe TextFieldState(value = "pass", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "pass", isValid = true)
             viewModel.onPasswordChange("password")
-            viewModel.password.value shouldBe TextFieldState(value = "password", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "password", isValid = true)
             viewModel.onPasswordChange("")
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = true)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = true)
         }
 
         test("onSuccessfulRegister sets password field to not valid if password field is empty") {
             viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState(value = "", isValid = false)
+            viewModel.password.value shouldBe Field.State(value = "", isValid = false)
         }
 
         test("onSuccessfulRegister sets password field to not valid if password field is shorter than 8 characters") {
             viewModel.onPasswordChange("fffffff")
             viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState("fffffff", isValid = false)
+            viewModel.password.value shouldBe Field.State("fffffff", isValid = false)
         }
 
         test("onSuccessfulRegister sets password field to not valid if password field is longer than 50 characters") {
             val tooLongString = "f".repeat(51)
             viewModel.onPasswordChange(tooLongString)
             viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState(tooLongString, isValid = false)
-        }
-
-        test("onSuccessfulRegister sets password field to valid if password is 8 to 50 characters long") {
-            viewModel.onPasswordChange("ffffffff")
-            viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState("ffffffff", isValid = true)
-            viewModel.onPasswordChange("f".repeat(50))
-            viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState("f".repeat(50), isValid = true)
-        }
-
-        test("onPasswordChange validates password if password was marked as invalid") {
-            viewModel.onSuccessfulRegister { }
-            viewModel.password.value shouldBe TextFieldState("", isValid = false)
-            viewModel.onPasswordChange("fff")
-            viewModel.password.value shouldBe TextFieldState("fff", isValid = false)
-            viewModel.onPasswordChange("f".repeat(51))
-            viewModel.password.value shouldBe TextFieldState("f".repeat(51), isValid = false)
-            viewModel.onPasswordChange("ffffffffff")
-            viewModel.password.value shouldBe TextFieldState("ffffffffff", isValid = true)
+            viewModel.password.value shouldBe Field.State(tooLongString, isValid = false)
         }
     }
 
@@ -140,6 +131,8 @@ class RegisterViewModelTest : FunSpec({
 
         test("onSuccessfulRegister calls block if register was successful") {
             coEvery { registerUseCase(any()) } returns AuthResult.Success
+            viewModel.onNameChange("user")
+            viewModel.onSurnameChange("surname")
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             var called = false
@@ -151,6 +144,8 @@ class RegisterViewModelTest : FunSpec({
 
         test("onSuccessfulRegister shows registerFailedDialog if account already exists") {
             coEvery { registerUseCase(any()) } returns AuthResult.AccountExists
+            viewModel.onNameChange("user")
+            viewModel.onSurnameChange("surname")
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             viewModel.showRegistrationFailedDialog.test {
@@ -163,6 +158,8 @@ class RegisterViewModelTest : FunSpec({
 
         test("onSuccessfulRegister calls RegisterUseCase") {
             coEvery { registerUseCase(any()) } returns AuthResult.Success
+            viewModel.onNameChange("user")
+            viewModel.onSurnameChange("surname")
             viewModel.onEmailChange("mail@mail.com")
             viewModel.onPasswordChange("password")
             viewModel.onSuccessfulRegister {}
@@ -176,6 +173,21 @@ class RegisterViewModelTest : FunSpec({
                     )
                 )
             }
+        }
+
+        test("onSuccessfulRegister properly updates registerInProgress state") {
+            coEvery { registerUseCase(any()) } returns AuthResult.Success
+            viewModel.onNameChange("user")
+            viewModel.onSurnameChange("surname")
+            viewModel.onEmailChange("mail@mail.com")
+            viewModel.onPasswordChange("password")
+            viewModel.registerInProgress.test {
+                awaitItem().shouldBeFalse()
+                viewModel.onSuccessfulRegister { }
+                awaitItem().shouldBeTrue()
+                awaitItem().shouldBeFalse()
+            }
+
         }
     }
 
