@@ -161,7 +161,6 @@ object KoinSetup {
         factory<RecorderStateMachine> { RecorderStateMachineImpl() }
         single<RecordedActivitiesDataSourceFactory> { RecordedActivitiesDataSourceFactoryImpl(get()) }
         single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-        single { androidContext().getSharedPreferences("prefs", Context.MODE_PRIVATE) }
         single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
