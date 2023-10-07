@@ -15,7 +15,7 @@ class SplashScreenViewModel(private val authRepository: AuthRepository) : ViewMo
 
     init {
         viewModelScope.launch {
-            _isLoggedIn.update { authRepository.inUserLoggedIn() }
+            _isLoggedIn.update { authRepository.isUserLoggedIn() }
         }
     }
 }
