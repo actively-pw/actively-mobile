@@ -11,9 +11,6 @@ import kotlinx.datetime.Instant
 
 interface ActivityRecordingRepository {
 
-    //todo: no use
-    suspend fun isActivityPresent(): Boolean
-
     suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(): Flow<Activity.Stats>
@@ -25,8 +22,6 @@ interface ActivityRecordingRepository {
     suspend fun getLatestRouteLocation(): Location?
 
     suspend fun insertRoutelessActivity(activity: Activity)
-
-    suspend fun insertStats(stats: Activity.Stats)
 
     suspend fun insertEmptyRouteSlice(start: Instant)
 
@@ -47,14 +42,14 @@ interface ActivityRecordingRepository {
     suspend fun removeRecordingActivity()
 
     suspend fun updateRecordingActivityTitle(title: String)
+
+    suspend fun clear()
 }
 
 class ActivityRecordingRepositoryImpl(
     private val activityRecordingDataSource: ActivityRecordingDataSource,
     private val syncActivitiesDataSource: SyncActivitiesDataSource,
 ) : ActivityRecordingRepository {
-
-    override suspend fun isActivityPresent() = activityRecordingDataSource.getActivityCount() == 1
 
     override suspend fun getActivity(id: Activity.Id) = activityRecordingDataSource.getActivity(id)
 
@@ -71,9 +66,6 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun insertRoutelessActivity(activity: Activity) = activityRecordingDataSource
         .insertActivity(activity.id, activity.title, activity.sport, activity.stats)
-
-    override suspend fun insertStats(stats: Activity.Stats) =
-        activityRecordingDataSource.insertStats(stats)
 
     override suspend fun insertEmptyRouteSlice(start: Instant) =
         activityRecordingDataSource.insertEmptyRouteSlice(start)
@@ -104,5 +96,9 @@ class ActivityRecordingRepositoryImpl(
 
     override suspend fun updateRecordingActivityTitle(title: String) {
         activityRecordingDataSource.updateRecordingActivityTitle(title)
+    }
+
+    override suspend fun clear() {
+        activityRecordingDataSource.clearDatabase()
     }
 }

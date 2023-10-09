@@ -40,7 +40,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 sport = "Cycling",
                 stats = Activity.Stats.empty()
             )
-            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.updateStats { stubActivityStats() }
             activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
             activityDataSource.insertLocationToLatestRouteSlice(
                 stubLocation(timestamp = Instant.fromEpochMilliseconds(0))
@@ -70,62 +70,8 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.getActivity(id = Activity.Id("1")) shouldBe expectedActivity
         }
 
-        test("Should return 0 if no activities found in database") {
-            activityDataSource.getActivityCount() shouldBe 0
-        }
-
         test("Should return null Activity if none were found") {
             activityDataSource.getActivity(id = Activity.Id("1")).shouldBeNull()
-        }
-
-        test("Should insert and retrieve activity stats") {
-            val stats = stubActivityStats()
-            activityDataSource.insertActivity(
-                id = Activity.Id("1"),
-                title = "",
-                sport = "Cycling",
-                stats = Activity.Stats.empty()
-            )
-            activityDataSource.insertStats(stats = stats)
-            activityDataSource.getStats().first() shouldBe stats
-        }
-
-        test("Should retrieve stats of activity that is being recorded") {
-            activityDataSource.insertActivity(
-                id = Activity.Id("1"),
-                title = "",
-                sport = "Cycling",
-                stats = Activity.Stats.empty()
-            )
-            activityDataSource.insertStats(stubActivityStats())
-            activityDataSource.markActivityAsRecorded()
-            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
-            activityDataSource.insertActivity(
-                id = Activity.Id("2"),
-                title = "",
-                sport = "Cycling",
-                stats = Activity.Stats.empty()
-            )
-            val expectedStats = stubActivityStats(2.hours, 30.kilometers, averageSpeed = 10.0)
-            activityDataSource.insertStats(expectedStats)
-            activityDataSource.getStats().first() shouldBe expectedStats
-        }
-
-        test("Should replace already saved stats") {
-            activityDataSource.insertActivity(
-                id = Activity.Id("1"),
-                title = "",
-                sport = "Cycling",
-                stats = Activity.Stats.empty()
-            )
-            activityDataSource.insertStats(stubActivityStats())
-            val newStats = stubActivityStats(
-                totalTime = 2.hours,
-                distance = 25.kilometers,
-                averageSpeed = 15.0
-            )
-            activityDataSource.insertStats(newStats)
-            activityDataSource.getStats().first() shouldBe newStats
         }
 
         test("Should return empty Activity.Stats if none were found") {
@@ -282,7 +228,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 stats = Activity.Stats.empty()
             )
             val stats = stubActivityStats()
-            activityDataSource.insertStats(stats)
+            activityDataSource.updateStats { stats }
             activityDataSource.updateStats { actual ->
                 actual shouldBe stats
             }
@@ -301,7 +247,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 sport = "Cycling",
                 stats = Activity.Stats.empty()
             )
-            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.updateStats { stubActivityStats() }
             val expected = stubActivityStats(
                 totalTime = 10.hours,
                 distance = 100.kilometers,
@@ -318,7 +264,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 sport = "Cycling",
                 stats = Activity.Stats.empty()
             )
-            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.updateStats { stubActivityStats() }
             activityDataSource.getStats().first() shouldBe stubActivityStats()
             activityDataSource.markActivityAsRecorded()
             // default value if stats were not found in db
@@ -332,7 +278,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 sport = "Cycling",
                 stats = Activity.Stats.empty()
             )
-            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.updateStats { stubActivityStats() }
             activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
             activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
             activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
@@ -397,6 +343,26 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 stats = Activity.Stats.empty(),
                 route = emptyList()
             )
+        }
+
+        test("clearDatabase should clear all db's contents") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.updateStats { stubActivityStats() }
+            activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.setState(RecorderState.Started)
+            activityDataSource.clearDatabase()
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe null
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+            activityDataSource.getRoute().first() shouldBe emptyList()
+            activityDataSource.getState().first() shouldBe RecorderState.Idle
         }
     }
 })

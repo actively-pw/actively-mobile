@@ -47,6 +47,8 @@ import com.actively.recorder.usecase.RecordActivityUseCaseImpl
 import com.actively.recorder.usecase.RecordingControlUseCases
 import com.actively.recorder.usecase.ResumeRecordingUseCase
 import com.actively.recorder.usecase.ResumeRecordingUseCaseImpl
+import com.actively.recorder.usecase.SaveActivityUseCase
+import com.actively.recorder.usecase.SaveActivityUseCaseImpl
 import com.actively.recorder.usecase.SetRecorderStateUseCase
 import com.actively.recorder.usecase.SetRecorderStateUseCaseImpl
 import com.actively.recorder.usecase.StartRecordingUseCase
@@ -105,7 +107,8 @@ object KoinSetup {
             ResumeRecordingUseCaseImpl(get(), androidContext())
         }
         factory<PauseRecordingUseCase> { PauseRecordingUseCaseImpl(androidContext()) }
-        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(get(), get(), androidContext()) }
+        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(androidContext()) }
+        factory<SaveActivityUseCase> { SaveActivityUseCaseImpl(get(), get(), get()) }
         factory<CreateActivityUseCase> { CreateActivityUseCaseImpl(get()) }
         factory<SetRecorderStateUseCase> { SetRecorderStateUseCaseImpl(get()) }
         factory<GetRecorderStateUseCase> { GetRecorderStateUseCaseImpl(get()) }
@@ -116,7 +119,7 @@ object KoinSetup {
         factory<GetSyncStateUseCase> { GetSyncStateUseCaseImpl(get()) }
         factory<LogInUseCase> { LogInUseCaseImpl(get()) }
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
-        factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get()) }
+        factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
     }
 
     private val dataModule = module {

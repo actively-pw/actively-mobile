@@ -64,7 +64,6 @@ fun NavGraphBuilder.saveRecordingScreen(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SaveRecordingScreen(
     activityTitle: String,
