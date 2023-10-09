@@ -1,6 +1,5 @@
 package com.actively.recorder.usecase
 
-import android.content.Context
 import com.actively.recorder.RecorderState
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
@@ -13,33 +12,32 @@ import io.mockk.verify
 class SaveRecordingUseCaseTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
-    val context = mockk<Context>(relaxed = true)
+    val stopRecordingUseCase = mockk<StopRecordingUseCase>(relaxUnitFun = true)
     val syncUseCase = mockk<LaunchSynchronizationUseCase>(relaxUnitFun = true)
     val repository = mockk<ActivityRecordingRepository>(relaxed = true)
-    val stopRecordingUseCase = SaveRecordingUseCaseImpl(syncUseCase, repository, context)
-
-    test("Should start foreground service") {
-        stopRecordingUseCase("Morning Activity")
-        verify(exactly = 1) { context.startForegroundService(any()) }
-    }
+    val saveRecordingUseCase = SaveRecordingUseCaseImpl(
+        launchSynchronizationUseCase = syncUseCase,
+        activityRecordingRepository = repository,
+        stopRecordingUseCase = stopRecordingUseCase
+    )
 
     test("Should mark activity as recorded") {
-        stopRecordingUseCase("Morning Activity")
+        saveRecordingUseCase("Morning Activity")
         coVerify(exactly = 1) { repository.markActivityAsRecorded() }
     }
 
     test("Should update title of activity") {
-        stopRecordingUseCase("Morning Activity")
+        saveRecordingUseCase("Morning Activity")
         coVerify(exactly = 1) { repository.updateRecordingActivityTitle("Morning Activity") }
     }
 
     test("Should launch synchronization") {
-        stopRecordingUseCase("Morning activity")
+        saveRecordingUseCase("Morning activity")
         verify(exactly = 1) { syncUseCase() }
     }
 
     test("Should set recorded state to Idle") {
-        stopRecordingUseCase("Morning activity")
+        saveRecordingUseCase("Morning activity")
         coVerify(exactly = 1) { repository.setState(RecorderState.Idle) }
     }
 })
