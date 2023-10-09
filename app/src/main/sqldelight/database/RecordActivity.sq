@@ -129,3 +129,8 @@ updateRecordingActivityTitle:
 UPDATE ActivityEntity
 SET title = :title
 WHERE isBeingRecorded = TRUE;
+
+clearDatabase {
+    DELETE FROM ActivityEntity;
+    DELETE FROM RecorderStateEntity;
+}
