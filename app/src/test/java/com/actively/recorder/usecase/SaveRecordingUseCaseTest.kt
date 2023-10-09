@@ -10,13 +10,13 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
 
-class StopRecordingUseCaseTest : FunSpec({
+class SaveRecordingUseCaseTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
     val context = mockk<Context>(relaxed = true)
     val syncUseCase = mockk<LaunchSynchronizationUseCase>(relaxUnitFun = true)
     val repository = mockk<ActivityRecordingRepository>(relaxed = true)
-    val stopRecordingUseCase = StopRecordingUseCaseImpl(syncUseCase, repository, context)
+    val stopRecordingUseCase = SaveRecordingUseCaseImpl(syncUseCase, repository, context)
 
     test("Should start foreground service") {
         stopRecordingUseCase("Morning Activity")

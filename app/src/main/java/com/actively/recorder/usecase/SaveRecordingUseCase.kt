@@ -7,16 +7,16 @@ import com.actively.recorder.RecorderState
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
 
-interface StopRecordingUseCase {
+interface SaveRecordingUseCase {
 
     suspend operator fun invoke(activityTitle: String)
 }
 
-class StopRecordingUseCaseImpl(
+class SaveRecordingUseCaseImpl(
     private val launchSynchronizationUseCase: LaunchSynchronizationUseCase,
     private val activityRecordingRepository: ActivityRecordingRepository,
     private val context: Context
-) : StopRecordingUseCase {
+) : SaveRecordingUseCase {
 
     override suspend fun invoke(activityTitle: String) {
         val stopRecordingIntent = Intent(context, RecordActivityService::class.java).apply {

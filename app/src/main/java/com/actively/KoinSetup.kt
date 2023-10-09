@@ -47,12 +47,12 @@ import com.actively.recorder.usecase.RecordActivityUseCaseImpl
 import com.actively.recorder.usecase.RecordingControlUseCases
 import com.actively.recorder.usecase.ResumeRecordingUseCase
 import com.actively.recorder.usecase.ResumeRecordingUseCaseImpl
+import com.actively.recorder.usecase.SaveRecordingUseCase
+import com.actively.recorder.usecase.SaveRecordingUseCaseImpl
 import com.actively.recorder.usecase.SetRecorderStateUseCase
 import com.actively.recorder.usecase.SetRecorderStateUseCaseImpl
 import com.actively.recorder.usecase.StartRecordingUseCase
 import com.actively.recorder.usecase.StartRecordingUseCaseImpl
-import com.actively.recorder.usecase.StopRecordingUseCase
-import com.actively.recorder.usecase.StopRecordingUseCaseImpl
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.ActivityRecordingRepositoryImpl
 import com.actively.repository.AuthRepository
@@ -105,7 +105,7 @@ object KoinSetup {
             ResumeRecordingUseCaseImpl(get(), androidContext())
         }
         factory<PauseRecordingUseCase> { PauseRecordingUseCaseImpl(androidContext()) }
-        factory<StopRecordingUseCase> { StopRecordingUseCaseImpl(get(), get(), androidContext()) }
+        factory<SaveRecordingUseCase> { SaveRecordingUseCaseImpl(get(), get(), androidContext()) }
         factory<CreateActivityUseCase> { CreateActivityUseCaseImpl(get()) }
         factory<SetRecorderStateUseCase> { SetRecorderStateUseCaseImpl(get()) }
         factory<GetRecorderStateUseCase> { GetRecorderStateUseCaseImpl(get()) }
