@@ -1,86 +1,84 @@
 package com.actively.repository
 
 import com.actively.auth.Credentials
-import com.actively.auth.Tokens
 import com.actively.datasource.AuthTokensDataSource
+import com.actively.http.client.KtorClient
 import com.actively.http.dtos.TokensDto
+import com.actively.http.dtos.toBearerTokens
 import com.actively.http.dtos.toDto
-import com.actively.http.dtos.toTokens
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.post
+import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
 interface AuthRepository {
 
     suspend fun isUserLoggedIn(): Boolean
 
-    suspend fun login(credentials: Credentials.Login): Tokens
+    suspend fun login(credentials: Credentials.Login): BearerTokens
 
-    suspend fun register(credentials: Credentials.Register): Tokens
+    suspend fun register(credentials: Credentials.Register): BearerTokens
 
-    suspend fun refreshAuthTokens(tokens: Tokens): Tokens
+    suspend fun getFreshBearerTokens(tokens: BearerTokens): BearerTokens
 
-    suspend fun getAccessToken(): String?
+    suspend fun getBearerTokens(): BearerTokens?
 
-    suspend fun getRefreshToken(): String?
-
-    suspend fun setAccessToken(accessToken: String)
-
-    suspend fun setRefreshToken(refreshToken: String)
+    suspend fun setBearerTokens(bearerTokens: BearerTokens)
 
     suspend fun logout()
 }
 
 class AuthRepositoryImpl(
-    private val authTokensDataSource: AuthTokensDataSource,
-    private val client: HttpClient
+    private val authBearerTokensDataSource: AuthTokensDataSource,
+    private val client: KtorClient
 ) : AuthRepository {
 
-    override suspend fun isUserLoggedIn() = authTokensDataSource.getRefreshToken() != null
-            && authTokensDataSource.getAccessToken() != null
+    override suspend fun isUserLoggedIn() = authBearerTokensDataSource.getRefreshToken() != null
+            && authBearerTokensDataSource.getAccessToken() != null
 
 
-    override suspend fun login(credentials: Credentials.Login): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/login") {
+    override suspend fun login(credentials: Credentials.Login): BearerTokens {
+        val result = client.request("/Users/login") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
         }
-        return result.body<TokensDto>().toTokens()
+        return result.body<TokensDto>().toBearerTokens()
     }
 
-    override suspend fun register(credentials: Credentials.Register): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/register") {
+    override suspend fun register(credentials: Credentials.Register): BearerTokens {
+        val result = client.request("/Users/register") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(credentials.toDto())
         }
-        return result.body<TokensDto>().toTokens()
+        return result.body<TokensDto>().toBearerTokens()
     }
 
-    override suspend fun refreshAuthTokens(tokens: Tokens): Tokens {
-        val result = client.post("https://activelypw.azurewebsites.net/Users/refreshToken") {
+    override suspend fun getFreshBearerTokens(tokens: BearerTokens): BearerTokens {
+        val result = client.request("/Users/refreshToken") {
+            method = HttpMethod.Post
             contentType(ContentType.Application.Json)
             setBody(tokens.toDto())
         }
-        return result.body<TokensDto>().toTokens()
+        return result.body<TokensDto>().toBearerTokens()
     }
 
-    override suspend fun getAccessToken() = authTokensDataSource.getAccessToken()
-
-    override suspend fun getRefreshToken() = authTokensDataSource.getRefreshToken()
-
-    override suspend fun setAccessToken(accessToken: String) {
-        authTokensDataSource.setAccessToken(accessToken)
+    override suspend fun getBearerTokens(): BearerTokens? {
+        val accessToken = authBearerTokensDataSource.getAccessToken() ?: return null
+        val refreshToken = authBearerTokensDataSource.getRefreshToken() ?: return null
+        return BearerTokens(accessToken, refreshToken)
     }
 
-    override suspend fun setRefreshToken(refreshToken: String) {
-        authTokensDataSource.setRefreshToken(refreshToken)
+    override suspend fun setBearerTokens(bearerTokens: BearerTokens) {
+        authBearerTokensDataSource.setAccessToken(bearerTokens.accessToken)
+        authBearerTokensDataSource.setRefreshToken(bearerTokens.refreshToken)
     }
 
     override suspend fun logout() {
-        authTokensDataSource.clearTokens()
+        authBearerTokensDataSource.clearTokens()
     }
 }
 

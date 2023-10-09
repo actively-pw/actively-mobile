@@ -1,11 +1,11 @@
 package com.actively.datasource
 
 import com.actively.activity.RecordedActivity
+import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.dtos.RecordedActivityDto
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
 data class RecordedActivitiesPage(
@@ -19,11 +19,12 @@ interface RecordedActivitiesDataSource {
 }
 
 class RecordedActivitiesDataSourceImpl(
-    private val client: HttpClient
+    private val client: AuthorizedKtorClient
 ) : RecordedActivitiesDataSource {
 
     override suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
-        val response = client.get("https://activelypw.azurewebsites.net/Activities") {
+        val response = client.request("/Activities") {
+            method = HttpMethod.Get
             contentType(ContentType.Application.Json)
             url {
                 parameters.append("Page", "$pageNumber")

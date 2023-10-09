@@ -12,7 +12,7 @@ class TokensDtoTest : FunSpec({
     test("Maps TokensDto to Tokens") {
         val dto = TokensDto("access-token", "refresh-token")
         val tokens = Tokens("access-token", "refresh-token")
-        dto.toTokens() shouldBe tokens
+        dto.toBearerTokens() shouldBe tokens
     }
 
     test("Maps Tokens to TokensDto") {

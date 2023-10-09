@@ -123,6 +123,7 @@ dependencies {
     implementation(libs.ktor.logging)
     implementation(libs.ktor.negotiation)
     implementation(libs.ktor.serialization)
+    implementation(libs.ktor.client.auth)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.paging.runtime.ktx)

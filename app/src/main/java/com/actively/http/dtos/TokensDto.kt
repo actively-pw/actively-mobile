@@ -1,17 +1,17 @@
 package com.actively.http.dtos
 
-import com.actively.auth.Tokens
+import io.ktor.client.plugins.auth.providers.BearerTokens
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class TokensDto(val jwt: String, val refreshToken: String)
 
-fun TokensDto.toTokens() = Tokens(
+fun TokensDto.toBearerTokens() = BearerTokens(
     accessToken = jwt,
     refreshToken = refreshToken
 )
 
-fun Tokens.toDto() = TokensDto(
+fun BearerTokens.toDto() = TokensDto(
     jwt = accessToken,
     refreshToken = refreshToken
 )
