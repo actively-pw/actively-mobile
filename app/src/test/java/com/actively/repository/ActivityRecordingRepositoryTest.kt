@@ -10,8 +10,6 @@ import com.actively.stubs.stubLocation
 import com.actively.stubs.stubRouteSlice
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -50,26 +48,6 @@ class ActivityRecordingRepositoryTest : FunSpec({
         test("Should call ActivityRecordingDataSource getActivity") {
             repository.getActivity(id = Activity.Id("1"))
             coVerify(exactly = 1) { activityRecordingDataSource.getActivity(id = Activity.Id("1")) }
-        }
-    }
-
-    context("isActivityPresent()") {
-        val repository =
-            ActivityRecordingRepositoryImpl(activityRecordingDataSource, syncActivitiesDataSource)
-        coEvery { activityRecordingDataSource.getActivityCount() } returns 1
-
-        test("Should return true if activity is present in database") {
-            repository.isActivityPresent().shouldBeTrue()
-        }
-
-        test("Should return false if activity is not present in database") {
-            coEvery { activityRecordingDataSource.getActivityCount() } returns 0
-            repository.isActivityPresent().shouldBeFalse()
-        }
-
-        test("Should call ActivityRecordingDataSource to get count of activities") {
-            repository.isActivityPresent()
-            coVerify(exactly = 1) { activityRecordingDataSource.getActivityCount() }
         }
     }
 
@@ -142,19 +120,6 @@ class ActivityRecordingRepositoryTest : FunSpec({
                     activity.sport,
                     activity.stats
                 )
-            }
-        }
-    }
-
-    context("insertStats()") {
-        val repository =
-            ActivityRecordingRepositoryImpl(activityRecordingDataSource, syncActivitiesDataSource)
-
-        test("Should call ActivityRecordingDataSource") {
-            val stats = stubActivityStats()
-            repository.insertStats(stats)
-            coVerify(exactly = 1) {
-                activityRecordingDataSource.insertStats(stats)
             }
         }
     }

@@ -22,8 +22,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 interface ActivityRecordingDataSource {
 
-    suspend fun getActivityCount(): Int
-
     suspend fun getActivity(id: Activity.Id): Activity?
 
     fun getStats(): Flow<Activity.Stats>
@@ -40,8 +38,6 @@ interface ActivityRecordingDataSource {
         sport: String,
         stats: Activity.Stats
     )
-
-    suspend fun insertStats(stats: Activity.Stats)
 
     suspend fun insertEmptyRouteSlice(start: Instant)
 
@@ -70,10 +66,6 @@ class ActivityRecordingDataSourceImpl(
 ) : ActivityRecordingDataSource {
 
     private val query = database.recordActivityQueries
-
-    override suspend fun getActivityCount() = withContext(coroutineContext) {
-        query.getActivityCount().executeAsOne().toInt()
-    }
 
     override suspend fun getActivity(id: Activity.Id): Activity? =
         query.suspendingTransactionWithResult(coroutineContext) {
@@ -154,14 +146,6 @@ class ActivityRecordingDataSourceImpl(
             averageSpeed = stats.averageSpeed
         )
 
-    }
-
-    override suspend fun insertStats(stats: Activity.Stats) = withContext(coroutineContext) {
-        query.insertActivityStats(
-            totalTime = stats.totalTime.inWholeMilliseconds,
-            totalDistanceMeters = stats.distance.inMeters,
-            averageSpeed = stats.averageSpeed
-        )
     }
 
     override suspend fun insertEmptyRouteSlice(start: Instant) = withContext(coroutineContext) {
