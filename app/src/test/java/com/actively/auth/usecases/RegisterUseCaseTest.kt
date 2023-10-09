@@ -1,14 +1,15 @@
 package com.actively.auth.usecases
 
+import com.actively.asserts.tokensEq
 import com.actively.auth.AuthResult
 import com.actively.auth.Credentials
-import com.actively.auth.Tokens
 import com.actively.repository.AuthRepository
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.statement.HttpResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -26,7 +27,7 @@ class RegisterUseCaseTest : FunSpec({
         email = "user@mail.com",
         password = "password"
     )
-    coEvery { authRepository.register(any()) } returns Tokens("access", "refresh")
+    coEvery { authRepository.register(any()) } returns BearerTokens("access", "refresh")
 
     test("calls repository register with given credentials") {
         useCase(credentials)
@@ -35,8 +36,11 @@ class RegisterUseCaseTest : FunSpec({
 
     test("sets tokens returned from register") {
         useCase(credentials)
-        coVerify(exactly = 1) { authRepository.setAccessToken("access") }
-        coVerify(exactly = 1) { authRepository.setRefreshToken("refresh") }
+        coVerify(exactly = 1) {
+            authRepository.setBearerTokens(
+                tokensEq(BearerTokens("access", "refresh"))
+            )
+        }
     }
 
     test("Returns Success if register did not throw any exception") {
