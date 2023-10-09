@@ -398,5 +398,25 @@ class ActivityRecordingDataSourceTest : FunSpec({
                 route = emptyList()
             )
         }
+
+        test("clearDatabase should clear all db's contents") {
+            activityDataSource.insertActivity(
+                id = Activity.Id("1"),
+                title = "",
+                sport = "Cycling",
+                stats = Activity.Stats.empty()
+            )
+            activityDataSource.insertStats(stubActivityStats())
+            activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.insertLocationToLatestRouteSlice(stubLocation())
+            activityDataSource.setState(RecorderState.Started)
+            activityDataSource.clearDatabase()
+            activityDataSource.getActivity(id = Activity.Id("1")) shouldBe null
+            activityDataSource.getStats().first() shouldBe Activity.Stats.empty()
+            activityDataSource.getRoute().first() shouldBe emptyList()
+            activityDataSource.getState().first() shouldBe RecorderState.Idle
+        }
     }
 })
