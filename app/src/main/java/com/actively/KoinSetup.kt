@@ -116,7 +116,7 @@ object KoinSetup {
         factory<GetSyncStateUseCase> { GetSyncStateUseCaseImpl(get()) }
         factory<LogInUseCase> { LogInUseCaseImpl(get()) }
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
-        factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get()) }
+        factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
     }
 
     private val dataModule = module {
