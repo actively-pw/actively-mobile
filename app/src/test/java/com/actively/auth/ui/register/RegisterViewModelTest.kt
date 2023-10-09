@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
-@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class RegisterViewModelTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest

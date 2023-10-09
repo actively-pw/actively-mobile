@@ -43,9 +43,6 @@ getRecordedActivitiesId:
 SELECT uuid FROM ActivityEntity
 WHERE isBeingRecorded = FALSE;
 
-getActivityCount:
-SELECT COUNT(uuid) FROM ActivityEntity;
-
 getActivityStats:
 SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
 INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
