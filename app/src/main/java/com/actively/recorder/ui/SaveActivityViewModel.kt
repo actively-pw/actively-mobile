@@ -3,7 +3,7 @@ package com.actively.recorder.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.actively.recorder.usecase.DiscardActivityUseCase
-import com.actively.recorder.usecase.SaveRecordingUseCase
+import com.actively.recorder.usecase.SaveActivityUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SaveActivityViewModel(
-    private val saveRecordingUseCase: SaveRecordingUseCase,
+    private val saveActivityUseCase: SaveActivityUseCase,
     private val discardActivityUseCase: DiscardActivityUseCase,
     private val nonCancellableScope: CoroutineScope,
 ) : ViewModel() {
@@ -41,6 +41,6 @@ class SaveActivityViewModel(
     }
 
     fun onSaveClick() = nonCancellableScope.launch {
-        saveRecordingUseCase(_title.value)
+        saveActivityUseCase(_title.value)
     }
 }

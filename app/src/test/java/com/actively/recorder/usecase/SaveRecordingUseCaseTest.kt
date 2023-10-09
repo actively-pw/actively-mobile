@@ -15,7 +15,7 @@ class SaveRecordingUseCaseTest : FunSpec({
     val stopRecordingUseCase = mockk<StopRecordingUseCase>(relaxUnitFun = true)
     val syncUseCase = mockk<LaunchSynchronizationUseCase>(relaxUnitFun = true)
     val repository = mockk<ActivityRecordingRepository>(relaxed = true)
-    val saveRecordingUseCase = SaveRecordingUseCaseImpl(
+    val saveRecordingUseCase = SaveActivityUseCaseImpl(
         launchSynchronizationUseCase = syncUseCase,
         activityRecordingRepository = repository,
         stopRecordingUseCase = stopRecordingUseCase
