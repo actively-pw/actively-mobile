@@ -56,7 +56,7 @@ class AuthorizedKtorClientImpl(private val authRepository: AuthRepository) : Aut
             bearer {
                 loadTokens { authRepository.getBearerTokens() }
                 refreshTokens {
-                    oldTokens?.let { oldBearerTokens ->
+                    authRepository.getBearerTokens()?.let { oldBearerTokens ->
                         client.getFreshBearerTokens(oldBearerTokens)
                             ?.also { authRepository.setBearerTokens(it) }
                     }
@@ -80,7 +80,7 @@ class AuthorizedKtorClientImpl(private val authRepository: AuthRepository) : Aut
     }
 
     private suspend fun HttpClient.getFreshBearerTokens(oldBearerTokens: BearerTokens) = try {
-        post(KtorClient.BASE_URL + "/Users/refreshTokens") {
+        post(KtorClient.BASE_URL + "/Users/refreshToken") {
             contentType(ContentType.Application.Json)
             setBody(oldBearerTokens.toDto())
         }.body<TokensDto>().toBearerTokens()
