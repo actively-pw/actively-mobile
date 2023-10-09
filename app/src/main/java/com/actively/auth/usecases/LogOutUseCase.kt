@@ -1,9 +1,7 @@
 package com.actively.auth.usecases
 
-import android.content.Context
-import android.content.Intent
 import com.actively.http.client.AuthorizedKtorClient
-import com.actively.recorder.RecordActivityService
+import com.actively.recorder.usecase.StopRecordingUseCase
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.AuthRepository
 
@@ -13,17 +11,14 @@ interface LogOutUseCase {
 }
 
 class LogOutUseCaseImpl(
+    private val stopRecordingUseCase: StopRecordingUseCase,
     private val activityRecordingRepository: ActivityRecordingRepository,
     private val authRepository: AuthRepository,
     private val client: AuthorizedKtorClient,
-    private val context: Context,
 ) : LogOutUseCase {
 
     override suspend fun invoke() {
-        val stopRecordingIntent = Intent(context, RecordActivityService::class.java).apply {
-            action = RecordActivityService.STOP_ACTION
-        }
-        context.startForegroundService(stopRecordingIntent)
+        stopRecordingUseCase()
         activityRecordingRepository.clear()
         authRepository.logout()
         client.clearCachedTokens()
