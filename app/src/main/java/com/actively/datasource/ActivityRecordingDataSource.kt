@@ -60,6 +60,8 @@ interface ActivityRecordingDataSource {
     suspend fun removeRecordingActivity()
 
     suspend fun updateRecordingActivityTitle(title: String)
+
+    suspend fun clearDatabase()
 }
 
 class ActivityRecordingDataSourceImpl(
@@ -203,6 +205,10 @@ class ActivityRecordingDataSourceImpl(
 
     override suspend fun updateRecordingActivityTitle(title: String) {
         query.updateRecordingActivityTitle(title)
+    }
+
+    override suspend fun clearDatabase() {
+        query.clearDatabase()
     }
 
     private fun List<RouteQuery>.toRouteSlices() = groupBy { it.start }
