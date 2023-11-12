@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -30,20 +34,30 @@ import com.actively.recorder.ui.LabeledValue
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
     composable("activity_details_screen") {
         ActivelyTheme {
             BaseScaffoldScreen(
                 navController = navController,
-                topBar = {
-                    TopAppBar(title = { Text(text = "Ride") })
-                }
+                topBar = { AppBar(title = "Ride", onBackClick = { navController.popBackStack() }) }
             ) {
                 ActivityDetailsScreen()
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AppBar(title: String, onBackClick: () -> Unit) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            }
+        }
+    )
 }
 
 @Composable
