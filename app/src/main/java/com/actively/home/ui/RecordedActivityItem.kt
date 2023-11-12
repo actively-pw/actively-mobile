@@ -1,8 +1,6 @@
 package com.actively.home.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.actively.R
 import com.actively.activity.Activity
 import com.actively.activity.RecordedActivity
@@ -41,11 +40,10 @@ fun RecordedActivityItem(
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
-                .background(color = MaterialTheme.colorScheme.primary)
+        AsyncImage(
+            modifier = Modifier.fillMaxWidth(),
+            model = recordedActivity.mapUrl,
+            contentDescription = null
         )
     }
 }
@@ -111,7 +109,8 @@ fun RecordedActivityItemPreview() {
                     totalTime = 1.5.hours,
                     averageSpeed = 15.0,
                 ),
-                routeUrl = "url://actively.webservice.net"
+                routeUrl = "url://actively.webservice.net",
+                mapUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1OPqbJf7_yYS3uYolCHNavStsb0p-5xA8JgTBp-3eFA&s"
             )
         )
     }
