@@ -55,6 +55,8 @@ fun ActivityDetailsScreen() {
                     .fillMaxWidth()
                     .height(400.dp)
             )
+            Spacer(Modifier.height(4.dp))
+            DetailsItem()
         }
     }
 }
