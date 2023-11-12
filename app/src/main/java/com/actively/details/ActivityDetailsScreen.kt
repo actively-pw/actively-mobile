@@ -126,11 +126,18 @@ private fun DetailsItem(modifier: Modifier = Modifier) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ActivityDetailsScreenPreview() {
+    ActivelyTheme {
+        ActivityDetailsScreen()
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun DetailsPreview() {
-    MaterialTheme {
+    ActivelyTheme {
         DetailsItem(modifier = Modifier.fillMaxWidth())
     }
 }
