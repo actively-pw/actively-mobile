@@ -193,7 +193,7 @@ private fun StatsSection(stats: StatisticsState, modifier: Modifier = Modifier) 
 }
 
 @Composable
-private fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier) {
+fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label.uppercase(), style = MaterialTheme.typography.titleSmall)
         Text(text = value.uppercase(), style = MaterialTheme.typography.headlineLarge)
