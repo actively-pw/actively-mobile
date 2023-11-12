@@ -13,13 +13,15 @@ fun stubRecordedActivity(
     title: String = "Morning activity",
     sport: Int = 0,
     stats: Activity.Stats = stubActivityStats(),
-    routeUrl: String = "route://activity.net/$id"
+    routeUrl: String = "route://activity.net/$id",
+    mapUrl: String = "image://activity.net/$id",
 ) = RecordedActivity(
     id = RecordedActivity.Id(id),
     title = title,
     sport = sport.toString(),
     stats = stats,
     routeUrl = routeUrl,
+    mapUrl = mapUrl
 )
 
 fun stubRecordedActivityDto(
@@ -28,14 +30,16 @@ fun stubRecordedActivityDto(
     sport: Int = 0,
     start: Instant = Instant.fromEpochMilliseconds(0),
     stats: StatsDto = stubStatsDto(),
-    routeUrl: String = "route://activity.net/$id"
+    routeUrl: String = "route://activity.net/$id",
+    mapUrl: String = "image://activity.net/$id",
 ) = RecordedActivityDto(
     id = id,
     title = title,
     sport = sport,
     start = start,
     stats = stats,
-    routeUrl = routeUrl
+    routeUrl = routeUrl,
+    staticMapUrl = mapUrl,
 )
 
 fun stubStatsDto(
