@@ -132,4 +132,5 @@ dependencies {
     testImplementation(libs.turbine)
     implementation(libs.pullrefresh)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.coil.compose)
 }
