@@ -12,6 +12,7 @@ data class RecordedActivityDto(
     val start: Instant,
     val stats: StatsDto,
     val routeUrl: String,
+    val staticMapUrl: String,
 ) {
 
     fun toRecordedActivity() = RecordedActivity(
@@ -19,7 +20,8 @@ data class RecordedActivityDto(
         title = title,
         sport = "",
         stats = stats.toActivityStats(),
-        routeUrl = routeUrl
+        routeUrl = routeUrl,
+        mapUrl = staticMapUrl,
     )
 }
 

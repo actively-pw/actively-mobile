@@ -4,6 +4,7 @@ import com.actively.activity.RecordedActivity
 import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.dtos.RecordedActivityDto
 import io.ktor.client.call.body
+import io.ktor.client.request.headers
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
@@ -29,6 +30,9 @@ class RecordedActivitiesDataSourceImpl(
             url {
                 parameters.append("Page", "$pageNumber")
                 parameters.append("ItemsPerPage", pageSize.toString())
+            }
+            headers {
+                append("staticMapType", "mobileLight")
             }
         }
         return RecordedActivitiesPage(

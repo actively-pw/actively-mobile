@@ -21,7 +21,8 @@ class RecordedActivityDtoTest : FunSpec({
                 averageSpeed = 20.0,
                 distance = 100.kilometers
             ),
-            routeUrl = "route://activity.net/1"
+            routeUrl = "route://activity.net/1",
+            mapUrl = "image://activity.net/1"
         )
         dto.toRecordedActivity() shouldBe recordedActivity
     }

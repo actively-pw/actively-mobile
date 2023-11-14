@@ -6,6 +6,7 @@ data class RecordedActivity(
     val sport: String,
     val stats: Activity.Stats,
     val routeUrl: String,
+    val mapUrl: String,
 ) {
 
     data class Id(val value: String)

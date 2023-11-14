@@ -2,7 +2,7 @@ package com.actively.datasource
 
 
 import com.actively.activity.Activity
-import com.actively.http.client.KtorClient
+import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.dtos.toDto
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -14,7 +14,9 @@ interface SyncActivitiesDataSource {
     suspend fun syncActivity(activity: Activity)
 }
 
-class SyncActivitiesDataSourceImpl(private val client: KtorClient) : SyncActivitiesDataSource {
+class SyncActivitiesDataSourceImpl(
+    private val client: AuthorizedKtorClient
+) : SyncActivitiesDataSource {
 
     override suspend fun syncActivity(activity: Activity) {
         client.request("/Activities") {
