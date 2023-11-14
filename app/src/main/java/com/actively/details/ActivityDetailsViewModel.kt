@@ -16,6 +16,7 @@ class ActivityDetailsViewModel : ViewModel() {
         viewModelScope.launch {
             delay(300)
             _state.value = DetailsScreenState.Loaded(
+                title = "Lunch ride",
                 imageUrl = "",
                 typeOfActivity = "Ride",
                 showConfirmDeleteDialog = false,

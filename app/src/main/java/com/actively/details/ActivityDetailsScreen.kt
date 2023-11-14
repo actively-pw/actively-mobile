@@ -21,6 +21,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -96,7 +98,7 @@ fun ActivityDetailsScreen(state: DetailsScreenState) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         when (state) {
             DetailsScreenState.Loading -> loadingItem()
-            is DetailsScreenState.Loaded -> loadedDetailsItem(state.imageUrl, state.details)
+            is DetailsScreenState.Loaded -> loadedDetailsItem(state)
             DetailsScreenState.Error -> errorItem()
         }
     }
@@ -112,14 +114,20 @@ private fun LazyListScope.loadingItem() = item {
     }
 }
 
-private fun LazyListScope.loadedDetailsItem(imageUrl: String, details: List<DetailsRow>) = item {
+private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) = item {
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.title,
+        style = MaterialTheme.typography.titleLarge,
+        textAlign = TextAlign.Center
+    )
     AsyncImage(
         modifier = Modifier.fillMaxWidth(),
-        model = imageUrl,
+        model = state.imageUrl,
         contentDescription = null
     )
     Spacer(Modifier.height(4.dp))
-    DetailsItem(details = details)
+    DetailsItem(details = state.details)
 }
 
 private fun LazyListScope.errorItem() = item {
