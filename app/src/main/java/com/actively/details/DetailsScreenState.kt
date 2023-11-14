@@ -5,6 +5,7 @@ sealed class DetailsScreenState {
     object Loading : DetailsScreenState()
     data class Loaded(
         val imageUrl: String,
+        val typeOfActivity: String,
         val details: List<DetailsRow>
     ) : DetailsScreenState()
 
