@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +23,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,18 +33,22 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
+import com.actively.home.ui.ErrorItem
 import com.actively.recorder.ui.LabeledValue
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
+import org.koin.androidx.compose.getViewModel
 
 fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
     composable("activity_details_screen") {
+        val viewModel: ActivityDetailsViewModel = getViewModel()
+        val state by viewModel.state.collectAsState()
         ActivelyTheme {
             BaseScaffoldScreen(
                 navController = navController,
                 topBar = { AppBar(title = "Ride", onBackClick = { navController.popBackStack() }) }
             ) {
-                ActivityDetailsScreen()
+                ActivityDetailsScreen(state)
             }
         }
     }
@@ -59,20 +68,38 @@ private fun AppBar(title: String, onBackClick: () -> Unit) {
 }
 
 @Composable
-fun ActivityDetailsScreen() {
+fun ActivityDetailsScreen(state: DetailsScreenState) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            AsyncImage(modifier = Modifier.fillMaxWidth(), model = "", contentDescription = null)
-            Spacer(Modifier.height(4.dp))
-            DetailsItem(
-                details = listOf(
-                    DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
-                    DetailsRow("Total time" to "01:20:59", "Sum of Ascent (m)" to "420"),
-                    DetailsRow("Avg speed (km/h)" to "20.59", "Sum of descent (m)" to "210"),
-                )
-            )
+        when (state) {
+            DetailsScreenState.Loading -> loadingItem()
+            is DetailsScreenState.Loaded -> loadedDetailsItem(state.imageUrl, state.details)
+            DetailsScreenState.Error -> errorItem()
         }
     }
+}
+
+private fun LazyListScope.loadingItem() = item {
+    Column(
+        modifier = Modifier.fillParentMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+private fun LazyListScope.loadedDetailsItem(imageUrl: String, details: List<DetailsRow>) = item {
+    AsyncImage(
+        modifier = Modifier.fillMaxWidth(),
+        model = imageUrl,
+        contentDescription = null
+    )
+    Spacer(Modifier.height(4.dp))
+    DetailsItem(details = details)
+}
+
+private fun LazyListScope.errorItem() = item {
+    ErrorItem(modifier = Modifier.fillParentMaxSize())
 }
 
 @Composable
