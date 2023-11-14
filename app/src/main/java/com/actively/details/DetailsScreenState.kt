@@ -1,9 +1,15 @@
 package com.actively.details
 
-data class DetailsScreenState(
-    val imageUrl: String,
-    val details: List<DetailsRow>
-)
+sealed class DetailsScreenState {
+
+    object Loading : DetailsScreenState()
+    data class Loaded(
+        val imageUrl: String,
+        val details: List<DetailsRow>
+    ) : DetailsScreenState()
+
+    object Error : DetailsScreenState()
+}
 
 data class DetailsRow(
     val left: Pair<String, String>,
