@@ -46,7 +46,7 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
         ActivelyTheme {
             BaseScaffoldScreen(
                 navController = navController,
-                topBar = { AppBar(title = "Ride", onBackClick = { navController.popBackStack() }) }
+                topBar = { AppBar(state = state, onBackClick = { navController.popBackStack() }) }
             ) {
                 ActivityDetailsScreen(state)
             }
@@ -56,9 +56,9 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppBar(title: String, onBackClick: () -> Unit) {
+private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit) {
     TopAppBar(
-        title = { Text(title) },
+        title = { Text(if (state is DetailsScreenState.Loaded) state.typeOfActivity else "") },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
