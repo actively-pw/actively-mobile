@@ -21,6 +21,7 @@ class PagedRecordedActivitiesDataSource(
             nextKey = page.nextPage
         )
     } catch (e: Exception) {
+        e.printStackTrace()
         LoadResult.Error(e)
     }
 
