@@ -15,12 +15,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -87,6 +90,9 @@ private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit, onDeleteC
 
 @Composable
 fun ActivityDetailsScreen(state: DetailsScreenState) {
+    if (state is DetailsScreenState.Loaded && state.showConfirmDeleteDialog) {
+        DeleteActivityDialog(onConfirm = {}, onDismiss = {})
+    }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         when (state) {
             DetailsScreenState.Loading -> loadingItem()
@@ -150,6 +156,25 @@ private fun DetailsRow(row: DetailsRow, modifier: Modifier = Modifier) {
             value = rValue
         )
     }
+}
+
+@Composable
+private fun DeleteActivityDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(id = R.string.delete_activity))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(id = R.string.cancel))
+            }
+        },
+        title = { Text(stringResource(id = R.string.delete_warning)) },
+        text = { Text(stringResource(id = R.string.delete_text)) }
+    )
 }
 
 @Preview(showBackground = true)

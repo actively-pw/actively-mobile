@@ -6,6 +6,7 @@ sealed class DetailsScreenState {
     data class Loaded(
         val imageUrl: String,
         val typeOfActivity: String,
+        val showConfirmDeleteDialog: Boolean,
         val details: List<DetailsRow>
     ) : DetailsScreenState()
 

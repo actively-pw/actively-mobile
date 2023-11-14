@@ -18,6 +18,7 @@ class ActivityDetailsViewModel : ViewModel() {
             _state.value = DetailsScreenState.Loaded(
                 imageUrl = "",
                 typeOfActivity = "Ride",
+                showConfirmDeleteDialog = false,
                 details = listOf(
                     DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
                     DetailsRow("Total time" to "01:20:59", "Sum of Ascent (m)" to "420"),
