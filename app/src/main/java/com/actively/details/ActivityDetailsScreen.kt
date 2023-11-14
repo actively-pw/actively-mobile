@@ -1,8 +1,6 @@
 package com.actively.details
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -20,7 +18,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -30,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import coil.compose.AsyncImage
 import com.actively.recorder.ui.LabeledValue
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
@@ -64,20 +62,10 @@ private fun AppBar(title: String, onBackClick: () -> Unit) {
 fun ActivityDetailsScreen() {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            MapItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-            )
+            AsyncImage(modifier = Modifier.fillMaxWidth(), model = "", contentDescription = null)
             Spacer(Modifier.height(4.dp))
             DetailsItem()
         }
-    }
-}
-
-@Composable
-private fun MapItem(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.background(color = MaterialTheme.colorScheme.primary)) {
     }
 }
 
@@ -141,14 +129,6 @@ private fun DetailsItem(modifier: Modifier = Modifier) {
             )
         }
         Divider(Modifier.padding(vertical = 4.dp))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ActivityDetailsScreenPreview() {
-    ActivelyTheme {
-        ActivityDetailsScreen()
     }
 }
 
