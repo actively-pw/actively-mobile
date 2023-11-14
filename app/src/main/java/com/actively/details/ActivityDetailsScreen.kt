@@ -27,12 +27,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
+import com.actively.R
 import com.actively.home.ui.ErrorItem
 import com.actively.recorder.ui.LabeledValue
 import com.actively.ui.theme.ActivelyTheme
@@ -46,7 +48,13 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
         ActivelyTheme {
             BaseScaffoldScreen(
                 navController = navController,
-                topBar = { AppBar(state = state, onBackClick = { navController.popBackStack() }) }
+                topBar = {
+                    AppBar(
+                        state = state,
+                        onBackClick = { navController.popBackStack() },
+                        onDeleteClick = {}
+                    )
+                }
             ) {
                 ActivityDetailsScreen(state)
             }
@@ -56,12 +64,22 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit) {
+private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit, onDeleteClick: () -> Unit) {
     TopAppBar(
         title = { Text(if (state is DetailsScreenState.Loaded) state.typeOfActivity else "") },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
+            }
+        },
+        actions = {
+            if (state is DetailsScreenState.Loaded) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.delete),
+                        contentDescription = null
+                    )
+                }
             }
         }
     )
