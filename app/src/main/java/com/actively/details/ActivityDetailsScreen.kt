@@ -64,71 +64,46 @@ fun ActivityDetailsScreen() {
         item {
             AsyncImage(modifier = Modifier.fillMaxWidth(), model = "", contentDescription = null)
             Spacer(Modifier.height(4.dp))
-            DetailsItem()
+            DetailsItem(
+                details = listOf(
+                    DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
+                    DetailsRow("Total time" to "01:20:59", "Sum of Ascent (m)" to "420"),
+                    DetailsRow("Avg speed (km/h)" to "20.59", "Sum of descent (m)" to "210"),
+                )
+            )
         }
     }
 }
 
 @Composable
-private fun DetailsItem(modifier: Modifier = Modifier) {
+private fun DetailsItem(details: List<DetailsRow>, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            LabeledValue(modifier = Modifier.weight(1f), label = "Distance (km)", value = "10.03")
-            Divider(
-                Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
-            LabeledValue(
-                modifier = Modifier.weight(1f),
-                label = "Max speed (km/h)",
-                value = "30.41"
-            )
+        details.forEach {
+            DetailsRow(modifier = Modifier.fillMaxWidth(), row = it)
+            Divider(Modifier.padding(4.dp))
         }
-        Divider(Modifier.padding(vertical = 4.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            LabeledValue(modifier = Modifier.weight(1f), label = "Total time", value = "01:20:59")
-            Divider(
-                Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
-            LabeledValue(modifier = Modifier.weight(1f), label = "Sum of ascent (m)", value = "420")
-        }
-        Divider(Modifier.padding(vertical = 4.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            LabeledValue(
-                modifier = Modifier.weight(1f),
-                label = "Avg speed (km/h)",
-                value = "20.59"
-            )
-            Divider(
-                Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
-            LabeledValue(
-                modifier = Modifier.weight(1f),
-                label = "Sum of descent (m)",
-                value = "210"
-            )
-        }
-        Divider(Modifier.padding(vertical = 4.dp))
+    }
+}
+
+@Composable
+private fun DetailsRow(row: DetailsRow, modifier: Modifier = Modifier) {
+    val (lLabel, lValue) = row.left
+    val (rLabel, rValue) = row.right
+    Row(
+        modifier = modifier.height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        LabeledValue(modifier = Modifier.weight(1f), label = lLabel, value = lValue)
+        Divider(
+            Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+        )
+        LabeledValue(
+            modifier = Modifier.weight(1f),
+            label = rLabel,
+            value = rValue
+        )
     }
 }
 
@@ -136,6 +111,24 @@ private fun DetailsItem(modifier: Modifier = Modifier) {
 @Composable
 fun DetailsPreview() {
     ActivelyTheme {
-        DetailsItem(modifier = Modifier.fillMaxWidth())
+        DetailsItem(
+            modifier = Modifier.fillMaxWidth(),
+            details = listOf(
+                DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
+                DetailsRow("Total time" to "01:20:59", "Sum of Ascent (m)" to "420"),
+                DetailsRow("Avg speed (km/h)" to "20.59", "Sum of descent (m)" to "210"),
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DetailsRowPreview() {
+    ActivelyTheme {
+        DetailsRow(
+            modifier = Modifier.fillMaxWidth(),
+            row = DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41")
+        )
     }
 }
