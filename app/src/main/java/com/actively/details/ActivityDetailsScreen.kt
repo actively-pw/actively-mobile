@@ -114,21 +114,23 @@ private fun LazyListScope.loadingItem() = item {
     }
 }
 
-private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) = item {
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = state.title,
-        style = MaterialTheme.typography.titleLarge,
-        textAlign = TextAlign.Center
-    )
-    AsyncImage(
-        modifier = Modifier.fillMaxWidth(),
-        model = state.imageUrl,
-        contentDescription = null
-    )
-    Spacer(Modifier.height(4.dp))
-    DetailsItem(details = state.details)
-}
+private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
+    item {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            text = state.title,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        AsyncImage(
+            modifier = Modifier.fillMaxWidth(),
+            model = state.imageUrl,
+            contentDescription = null
+        )
+        Spacer(Modifier.height(4.dp))
+        DetailsItem(details = state.details)
+    }
 
 private fun LazyListScope.errorItem() = item {
     ErrorItem(modifier = Modifier.fillParentMaxSize())
