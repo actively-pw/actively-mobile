@@ -40,7 +40,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 4, monthNumber = 1, year = 2023, hour = 12, minute = 30)
-        val expected = "1 January 2023 at 10:53"
+        val expected = "01.01.2023 at 10:53"
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
