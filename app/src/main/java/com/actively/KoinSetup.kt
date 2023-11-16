@@ -25,6 +25,7 @@ import com.actively.datasource.SyncActivitiesDataSourceImpl
 import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
+import com.actively.details.ActivityDetailsViewModel
 import com.actively.home.ui.HomeViewModel
 import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.client.AuthorizedKtorClientImpl
@@ -100,6 +101,7 @@ object KoinSetup {
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }
         viewModel { StatisticsViewModel(get(), get()) }
+        viewModel { ActivityDetailsViewModel() }
     }
 
     private val useCasesModule = module {
