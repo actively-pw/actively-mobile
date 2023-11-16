@@ -177,6 +177,14 @@ private fun DetailsRow(row: DetailsRow, modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun LabeledValue(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label.uppercase(), style = MaterialTheme.typography.labelMedium)
+        Text(text = value.uppercase(), style = MaterialTheme.typography.headlineMedium)
+    }
+}
+
+@Composable
 private fun DeleteActivityDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
