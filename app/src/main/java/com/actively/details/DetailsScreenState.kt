@@ -7,6 +7,7 @@ sealed class DetailsScreenState {
         val title: String,
         val imageUrl: String,
         val typeOfActivity: String,
+        val time: String,
         val showConfirmDeleteDialog: Boolean,
         val details: List<DetailsRow>
     ) : DetailsScreenState()

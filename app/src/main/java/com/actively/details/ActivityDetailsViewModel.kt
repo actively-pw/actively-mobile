@@ -19,6 +19,7 @@ class ActivityDetailsViewModel : ViewModel() {
                 title = "Lunch ride",
                 imageUrl = "",
                 typeOfActivity = "Ride",
+                time = "Yesterday at 10:53",
                 showConfirmDeleteDialog = false,
                 details = listOf(
                     DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
