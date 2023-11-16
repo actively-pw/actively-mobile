@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,12 +30,14 @@ import com.actively.distance.Distance.Companion.kilometers
 import com.actively.ui.theme.ActivelyTheme
 import kotlin.time.Duration.Companion.hours
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordedActivityItem(
     recordedActivity: RecordedActivityUi,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier) {
+    Card(modifier = modifier, onClick = onClick) {
         Column(modifier = Modifier.padding(12.dp)) {
             RecordedTimeText(recordedActivity.time)
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
@@ -121,6 +124,7 @@ fun LabeledStat(label: String, value: String, modifier: Modifier = Modifier) {
 fun RecordedActivityItemPreview() {
     ActivelyTheme {
         RecordedActivityItem(
+            onClick = {},
             recordedActivity = RecordedActivityUi(
                 id = RecordedActivity.Id("1"),
                 title = "Morning activity",
