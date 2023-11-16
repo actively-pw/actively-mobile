@@ -29,7 +29,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.actively.R
-import com.actively.activity.RecordedActivity
 import com.actively.synchronizer.WorkState
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
@@ -42,7 +41,7 @@ import org.koin.androidx.compose.getViewModel
 fun NavGraphBuilder.homeScreen(navController: NavController) {
     composable("home_screen") {
         val viewModel: HomeViewModel = getViewModel()
-        val activities = viewModel.activitiesPager.flow.collectAsLazyPagingItems()
+        val activities = viewModel.activitiesPager.collectAsLazyPagingItems()
         val syncState by viewModel.syncState.collectAsState()
         ActivelyTheme {
             BaseScaffoldScreen(
@@ -75,7 +74,7 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    activities: LazyPagingItems<RecordedActivity>,
+    activities: LazyPagingItems<RecordedActivityUi>,
     syncState: WorkState?,
     onNavigateToRecorder: () -> Unit,
 ) {
@@ -136,7 +135,7 @@ fun LazyListScope.emptyListItem(onNavigateToRecorder: () -> Unit) = item {
     )
 }
 
-fun LazyListScope.activitiesItems(activities: LazyPagingItems<RecordedActivity>) =
+fun LazyListScope.activitiesItems(activities: LazyPagingItems<RecordedActivityUi>) =
     items(count = activities.itemCount) { index ->
         activities[index]?.let {
             RecordedActivityItem(recordedActivity = it)
