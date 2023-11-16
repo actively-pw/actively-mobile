@@ -10,6 +10,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.actively.auth.ui.login.loginScreen
 import com.actively.auth.ui.register.registerScreen
+import com.actively.details.activityDetailsScreen
 import com.actively.home.ui.homeScreen
 import com.actively.recorder.ui.recorderScreen
 import com.actively.recorder.ui.saveRecordingScreen
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     homeScreen(navController)
                     recorderScreen(navController)
                     saveRecordingScreen(navController)
+                    activityDetailsScreen(navController)
                     statisticsScreen(navController)
                 }
             }
