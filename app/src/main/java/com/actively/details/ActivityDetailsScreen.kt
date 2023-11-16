@@ -129,7 +129,7 @@ private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
                 .padding(horizontal = 10.dp)
                 .padding(bottom = 4.dp),
             text = state.title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineMedium,
         )
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
