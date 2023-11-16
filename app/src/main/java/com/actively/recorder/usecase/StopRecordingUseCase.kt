@@ -15,6 +15,6 @@ class StopRecordingUseCaseImpl(private val context: Context) : StopRecordingUseC
         val stopRecordingIntent = Intent(context, RecordActivityService::class.java).apply {
             action = RecordActivityService.STOP_ACTION
         }
-        context.startForegroundService(stopRecordingIntent)
+        context.startService(stopRecordingIntent)
     }
 }
