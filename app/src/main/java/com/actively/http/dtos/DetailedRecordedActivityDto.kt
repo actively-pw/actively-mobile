@@ -21,12 +21,12 @@ data class DetailedRecordedActivityDto(
 
     @Serializable
     data class StatsDto(
-        val distance: Double, //kilometers
-        val duration: Double, //milliseconds
-        val averageSpeed: Double, //kmph
-        val maxSpeed: Double,  //kmph
-        val sumOfAscent: Int, //meters
-        val sumOfDescent: Int, //meters
+        val distance: Double,
+        val duration: Double,
+        val averageSpeed: Double,
+        val maxSpeed: Double,
+        val sumOfAscent: Int,
+        val sumOfDescent: Int,
     ) {
 
         fun toStats() = DetailedRecordedActivity.Stats(
