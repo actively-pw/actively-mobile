@@ -1,7 +1,9 @@
 package com.actively.datasource
 
+import com.actively.activity.DetailedRecordedActivity
 import com.actively.activity.RecordedActivity
 import com.actively.http.client.AuthorizedKtorClient
+import com.actively.http.dtos.DetailedRecordedActivityDto
 import com.actively.http.dtos.RecordedActivityDto
 import io.ktor.client.call.body
 import io.ktor.client.request.headers
@@ -18,7 +20,7 @@ interface RecordedActivitiesDataSource {
 
     suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
 
-    suspend fun get(id: RecordedActivity.Id): RecordedActivity
+    suspend fun get(id: RecordedActivity.Id): DetailedRecordedActivity
 }
 
 class RecordedActivitiesDataSourceImpl(
@@ -44,7 +46,7 @@ class RecordedActivitiesDataSourceImpl(
         )
     }
 
-    override suspend fun get(id: RecordedActivity.Id): RecordedActivity {
+    override suspend fun get(id: RecordedActivity.Id): DetailedRecordedActivity {
         val response = client.request("/Activities/${id.value}") {
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)
@@ -52,7 +54,7 @@ class RecordedActivitiesDataSourceImpl(
                 append("staticMapType", "mobileLight")
             }
         }
-        return response.body<RecordedActivityDto>().toRecordedActivity()
+        return response.body<DetailedRecordedActivityDto>().toDetailedRecordedActivity()
     }
 
     private companion object {
