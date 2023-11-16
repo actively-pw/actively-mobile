@@ -17,6 +17,8 @@ data class RecordedActivitiesPage(
 interface RecordedActivitiesDataSource {
 
     suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
+
+    suspend fun get(id: RecordedActivity.Id): RecordedActivity
 }
 
 class RecordedActivitiesDataSourceImpl(
@@ -40,6 +42,17 @@ class RecordedActivitiesDataSourceImpl(
                 .map(RecordedActivityDto::toRecordedActivity),
             nextPage = response.headers[NEXT_PAGE_HEADER]?.toInt()?.takeIf { it >= 1 }
         )
+    }
+
+    override suspend fun get(id: RecordedActivity.Id): RecordedActivity {
+        val response = client.request("/Activities/${id.value}") {
+            method = HttpMethod.Get
+            contentType(ContentType.Application.Json)
+            headers {
+                append("staticMapType", "mobileLight")
+            }
+        }
+        return response.body<RecordedActivityDto>().toRecordedActivity()
     }
 
     private companion object {
