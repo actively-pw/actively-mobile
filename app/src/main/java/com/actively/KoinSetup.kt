@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.WorkManager
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.actively.activity.RecordedActivity
 import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
 import com.actively.auth.ui.login.LoginViewModel
@@ -27,6 +28,8 @@ import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.details.ActivityDetailsViewModel
 import com.actively.home.ui.HomeViewModel
+import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
+import com.actively.home.usecase.GetDetailedRecordedActivityUseCaseImpl
 import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.client.AuthorizedKtorClientImpl
 import com.actively.http.client.KtorClient
@@ -101,7 +104,13 @@ object KoinSetup {
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }
         viewModel { StatisticsViewModel(get(), get()) }
-        viewModel { ActivityDetailsViewModel() }
+        viewModel { parameters ->
+            ActivityDetailsViewModel(
+                id = RecordedActivity.Id(parameters.get()),
+                getDetailedRecordedActivityUseCase = get(),
+                timeProvider = get()
+            )
+        }
     }
 
     private val useCasesModule = module {
@@ -127,6 +136,7 @@ object KoinSetup {
         factory<LogInUseCase> { LogInUseCaseImpl(get()) }
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
         factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
+        factory<GetDetailedRecordedActivityUseCase> { GetDetailedRecordedActivityUseCaseImpl(get()) }
         factory { GetStatisticsUseCaseImpl(get()) }
     }
 

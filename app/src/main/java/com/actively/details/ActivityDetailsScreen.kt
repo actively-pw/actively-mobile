@@ -41,14 +41,16 @@ import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import com.actively.R
 import com.actively.home.ui.ErrorItem
-import com.actively.recorder.ui.LabeledValue
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
-    composable("activity_details_screen") {
-        val viewModel: ActivityDetailsViewModel = getViewModel()
+    composable("activity_details_screen/{activityId}") {
+        val viewModel: ActivityDetailsViewModel = getViewModel {
+            parametersOf(it.arguments?.getString("activityId")!!)
+        }
         val state by viewModel.state.collectAsState()
         ActivelyTheme {
             BaseScaffoldScreen(

@@ -29,6 +29,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.actively.R
+import com.actively.activity.RecordedActivity
 import com.actively.synchronizer.WorkState
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
@@ -63,7 +64,8 @@ fun NavGraphBuilder.homeScreen(navController: NavController) {
                 HomeScreen(
                     activities = activities,
                     syncState = syncState,
-                    onNavigateToRecorder = { navController.navigate("recording_screen") }
+                    onNavigateToRecorder = { navController.navigate("recording_screen") },
+                    onNavigateToDetails = { navController.navigate("activity_details_screen/${it.value}") }
                 )
             }
         }
@@ -77,6 +79,7 @@ fun HomeScreen(
     activities: LazyPagingItems<RecordedActivityUi>,
     syncState: WorkState?,
     onNavigateToRecorder: () -> Unit,
+    onNavigateToDetails: (RecordedActivity.Id) -> Unit
 ) {
     val refreshState = rememberPullRefreshState(
         refreshing = activities.loadState.refresh == LoadState.Loading,
@@ -99,7 +102,7 @@ fun HomeScreen(
                     emptyListItem(onNavigateToRecorder = onNavigateToRecorder)
                 }
 
-                else -> activitiesItems(activities)
+                else -> activitiesItems(activities, onNavigateToDetails = onNavigateToDetails)
             }
             if (activities.loadState.append == LoadState.Loading) {
                 appendItemsProgressIndicator()
@@ -135,15 +138,17 @@ fun LazyListScope.emptyListItem(onNavigateToRecorder: () -> Unit) = item {
     )
 }
 
-fun LazyListScope.activitiesItems(activities: LazyPagingItems<RecordedActivityUi>) =
-    items(count = activities.itemCount) { index ->
-        activities[index]?.let {
-            RecordedActivityItem(recordedActivity = it)
-            if (index != activities.itemCount - 1) {
-                Spacer(Modifier.height(6.dp))
-            }
+fun LazyListScope.activitiesItems(
+    activities: LazyPagingItems<RecordedActivityUi>,
+    onNavigateToDetails: (RecordedActivity.Id) -> Unit
+) = items(count = activities.itemCount) { index ->
+    activities[index]?.let {
+        RecordedActivityItem(recordedActivity = it, onClick = { onNavigateToDetails(it.id) })
+        if (index != activities.itemCount - 1) {
+            Spacer(Modifier.height(6.dp))
         }
     }
+}
 
 fun LazyListScope.appendItemsProgressIndicator() = item {
     Column(
