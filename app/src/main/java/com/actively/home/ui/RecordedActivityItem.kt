@@ -31,11 +31,12 @@ import kotlin.time.Duration.Companion.hours
 
 @Composable
 fun RecordedActivityItem(
-    recordedActivity: RecordedActivity,
+    recordedActivity: RecordedActivityUi,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
+            Text(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
@@ -100,16 +101,15 @@ fun LabeledStat(label: String, value: String, modifier: Modifier = Modifier) {
 fun RecordedActivityItemPreview() {
     ActivelyTheme {
         RecordedActivityItem(
-            recordedActivity = RecordedActivity(
+            recordedActivity = RecordedActivityUi(
                 id = RecordedActivity.Id("1"),
                 title = "Morning activity",
-                sport = "Cycling",
+                time = "13 November 2023 at 10:15",
                 stats = Activity.Stats(
                     distance = 21.5.kilometers,
                     totalTime = 1.5.hours,
                     averageSpeed = 15.0,
                 ),
-                routeUrl = "url://actively.webservice.net",
                 mapUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1OPqbJf7_yYS3uYolCHNavStsb0p-5xA8JgTBp-3eFA&s"
             )
         )

@@ -12,6 +12,6 @@ class StopRecordingUseCaseTest : FunSpec({
 
     test("Should start foreground service") {
         stopRecordingUseCase()
-        verify(exactly = 1) { context.startForegroundService(any()) }
+        verify(exactly = 1) { context.startService(any()) }
     }
 })

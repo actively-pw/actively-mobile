@@ -19,6 +19,7 @@ data class RecordedActivityDto(
         id = RecordedActivity.Id(id),
         title = title,
         sport = "",
+        start = start,
         stats = stats.toActivityStats(),
         routeUrl = routeUrl,
         mapUrl = staticMapUrl,

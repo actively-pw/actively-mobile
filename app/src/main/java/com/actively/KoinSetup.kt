@@ -91,7 +91,7 @@ object KoinSetup {
     private val viewModelModule = module {
         viewModel { RecorderViewModel(get(), get(), get()) }
         viewModel { SaveActivityViewModel(get(), get(), get()) }
-        viewModel { HomeViewModel(get(), get(), get()) }
+        viewModel { HomeViewModel(get(), get(), get(), get()) }
         viewModel { LoginViewModel(get()) }
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }

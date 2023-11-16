@@ -7,6 +7,7 @@ import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
 import com.actively.home.ui.HomeViewModel
 import com.actively.synchronizer.WorkState
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
+import com.actively.util.TimeProvider
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -26,6 +27,7 @@ class HomeViewModelTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
     coroutineTestScope = true
+    val timeProvider = mockk<TimeProvider>()
     val recordedActivitiesDataSourceFactory = mockk<RecordedActivitiesDataSourceFactory>()
     val pagedRecordedActivitiesDataSource = mockk<PagedRecordedActivitiesDataSource>(relaxed = true)
     every { recordedActivitiesDataSourceFactory.create() } returns pagedRecordedActivitiesDataSource
@@ -36,6 +38,7 @@ class HomeViewModelTest : FunSpec({
         every { getSyncStateUseCase() } returns flowOf(WorkState.Enqueued, WorkState.Running)
         val viewModel = HomeViewModel(
             getSyncStateUseCase,
+            timeProvider,
             recordedActivitiesDataSourceFactory,
             logoutUseCase
         )
@@ -48,6 +51,7 @@ class HomeViewModelTest : FunSpec({
         every { getSyncStateUseCase() } returns flowOf()
         val viewModel = HomeViewModel(
             getSyncStateUseCase,
+            timeProvider,
             recordedActivitiesDataSourceFactory,
             logoutUseCase
         )
@@ -59,6 +63,7 @@ class HomeViewModelTest : FunSpec({
         every { getSyncStateUseCase() } returns flowOf()
         val viewModel = HomeViewModel(
             getSyncStateUseCase,
+            timeProvider,
             recordedActivitiesDataSourceFactory,
             logoutUseCase
         )
