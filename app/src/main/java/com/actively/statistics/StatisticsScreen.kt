@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -60,11 +62,9 @@ fun StatisticsScreen() {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        AvgWeeklyStats(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-        )
+        AvgWeeklyStats(modifier = Modifier.padding(4.dp))
+        Spacer(Modifier.height(6.dp))
+        YearToDateStats(modifier = Modifier.padding(4.dp))
     }
 }
 
@@ -74,6 +74,16 @@ fun AvgWeeklyStats(modifier: Modifier = Modifier) {
         StatsRow(label = "Rides", value = "0")
         StatsRow(label = "Time", value = "0 h")
         StatsRow(label = "Distance", value = "0 km")
+    }
+}
+
+@Composable
+fun YearToDateStats(modifier: Modifier = Modifier) {
+    StatisticsContainer(modifier = modifier, title = "Year-to-date") {
+        StatsRow(label = "Rides", value = "0")
+        StatsRow(label = "Time", value = "0 h")
+        StatsRow(label = "Distance", value = "0 km")
+        StatsRow(label = "Elevation gain", value = "0 m")
     }
 }
 
@@ -127,6 +137,14 @@ fun StatisticsScreenPreview() {
 fun AvgWeekStatsPreview() {
     ActivelyTheme {
         AvgWeeklyStats()
+    }
+}
+
+@Preview
+@Composable
+fun YearToDateStatsPreview() {
+    ActivelyTheme {
+        YearToDateStats()
     }
 }
 
