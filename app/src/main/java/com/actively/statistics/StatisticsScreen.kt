@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -62,9 +60,14 @@ fun StatisticsScreen() {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        AvgWeeklyStats(modifier = Modifier.padding(4.dp))
-        Spacer(Modifier.height(6.dp))
-        YearToDateStats(modifier = Modifier.padding(4.dp))
+        Column(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            AvgWeeklyStats()
+            YearToDateStats()
+            AllTimeStats()
+        }
     }
 }
 
@@ -84,6 +87,15 @@ fun YearToDateStats(modifier: Modifier = Modifier) {
         StatsRow(label = "Time", value = "0 h")
         StatsRow(label = "Distance", value = "0 km")
         StatsRow(label = "Elevation gain", value = "0 m")
+    }
+}
+
+@Composable
+fun AllTimeStats(modifier: Modifier = Modifier) {
+    StatisticsContainer(modifier = modifier, title = "All time") {
+        StatsRow(label = "Rides", value = "0")
+        StatsRow(label = "Distance", value = "0 km")
+        StatsRow(label = "Longest ride", value = "0 km")
     }
 }
 
@@ -148,3 +160,10 @@ fun YearToDateStatsPreview() {
     }
 }
 
+@Preview
+@Composable
+fun AllTimeStatsPreview() {
+    ActivelyTheme {
+        AllTimeStats()
+    }
+}
