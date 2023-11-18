@@ -64,32 +64,34 @@ fun NavGraphBuilder.statisticsScreen(navController: NavController) {
 
 @Composable
 fun StatisticsScreen() {
-    val tabs = remember { listOf("Cycling", "Running", "Swimming", "Nordic walking") }
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    ScrollableTabRow(selectedTabIndex = selectedTabIndex) {
-        tabs.forEachIndexed { index, tab ->
-            Tab(
-                selected = index == selectedTabIndex,
-                onClick = { selectedTabIndex = index },
-                text = { Text(text = tab) }
-            )
+    Column {
+        val tabs = remember { listOf("Cycling", "Running", "Swimming", "Nordic walking") }
+        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        ScrollableTabRow(selectedTabIndex = selectedTabIndex) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = index == selectedTabIndex,
+                    onClick = { selectedTabIndex = index },
+                    text = { Text(text = tab) }
+                )
+            }
         }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Spacer(Modifier.height(8.dp))
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            AvgWeeklyStats()
-            YearToDateStats()
-            AllTimeStats()
+            Spacer(Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AvgWeeklyStats()
+                YearToDateStats()
+                AllTimeStats()
+            }
+            Spacer(Modifier.height(8.dp))
         }
-        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -131,14 +133,9 @@ fun StatisticsContainer(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-//                .background(
-//                    shape = MaterialTheme.shapes.medium,
-//                    color = MaterialTheme.colorScheme.primary
-//                )
                 .padding(horizontal = 10.dp),
             text = title,
             style = MaterialTheme.typography.headlineSmall,
-//            color = MaterialTheme.colorScheme.onPrimary
         )
         Divider(Modifier)
         Column(
