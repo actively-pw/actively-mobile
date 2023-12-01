@@ -40,4 +40,6 @@
     <string name="cycling">Cycling</string>
     <string name="running">Running</string>
     <string name="nordic_waling">Nordic walking</string>
+    <string name="avg_weekly_activity">Avg weekly activity</string>
+    <string name="rides">Rides</string>
 </resources>

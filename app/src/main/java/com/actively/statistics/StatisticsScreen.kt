@@ -95,6 +95,7 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
             }
         }
         HorizontalPager(state = pagerState) {
+            val page = state.tabs[it]
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -102,7 +103,7 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AvgWeeklyStats()
+                AvgWeeklyStats(page.avgWeekly)
                 YearToDateStats()
                 AllTimeStats()
             }
@@ -111,11 +112,14 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
 }
 
 @Composable
-fun AvgWeeklyStats(modifier: Modifier = Modifier) {
-    StatisticsContainer(modifier = modifier, title = "Avg weekly activity") {
-        StatsRow(label = "Rides", value = "0")
-        StatsRow(label = "Time", value = "0 h")
-        StatsRow(label = "Distance", value = "0 km")
+fun AvgWeeklyStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
+    StatisticsContainer(
+        modifier = modifier,
+        title = stringResource(id = R.string.avg_weekly_activity)
+    ) {
+        stats.forEach {
+            StatsRow(label = stringResource(it.label), value = it.value)
+        }
     }
 }
 
@@ -187,7 +191,23 @@ fun StatisticsScreenPreview() {
         StatisticsScreen(
             state = StatisticsState(
                 tabs = listOf(
-                    StatTab(sport = R.string.cycling),
+                    StatTab(
+                        sport = R.string.cycling,
+                        avgWeekly = listOf(
+                            LabeledValue(
+                                label = R.string.rides,
+                                value = "0",
+                            ),
+                            LabeledValue(
+                                label = R.string.time,
+                                value = "0 h",
+                            ),
+                            LabeledValue(
+                                label = R.string.distance,
+                                value = "0 km",
+                            )
+                        )
+                    ),
                     StatTab(sport = R.string.running),
                     StatTab(sport = R.string.nordic_waling),
                 ),
@@ -201,7 +221,22 @@ fun StatisticsScreenPreview() {
 @Composable
 fun AvgWeekStatsPreview() {
     ActivelyTheme {
-        AvgWeeklyStats()
+        AvgWeeklyStats(
+            listOf(
+                LabeledValue(
+                    label = R.string.rides,
+                    value = "0",
+                ),
+                LabeledValue(
+                    label = R.string.time,
+                    value = "0 h",
+                ),
+                LabeledValue(
+                    label = R.string.distance,
+                    value = "0 km",
+                )
+            )
+        )
     }
 }
 
