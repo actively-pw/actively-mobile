@@ -104,7 +104,7 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 AvgWeeklyStats(page.avgWeekly)
-                YearToDateStats()
+                YearToDateStats(page.yearToDate)
                 AllTimeStats()
             }
         }
@@ -124,12 +124,14 @@ fun AvgWeeklyStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun YearToDateStats(modifier: Modifier = Modifier) {
-    StatisticsContainer(modifier = modifier, title = "Year-to-date") {
-        StatsRow(label = "Rides", value = "0")
-        StatsRow(label = "Time", value = "0 h")
-        StatsRow(label = "Distance", value = "0 km")
-        StatsRow(label = "Elevation gain", value = "0 m")
+fun YearToDateStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
+    StatisticsContainer(
+        modifier = modifier,
+        title = stringResource(id = R.string.year_to_date)
+    ) {
+        stats.forEach {
+            StatsRow(label = stringResource(it.label), value = it.value)
+        }
     }
 }
 
@@ -206,6 +208,24 @@ fun StatisticsScreenPreview() {
                                 label = R.string.distance,
                                 value = "0 km",
                             )
+                        ),
+                        yearToDate = listOf(
+                            LabeledValue(
+                                label = R.string.rides,
+                                value = "0",
+                            ),
+                            LabeledValue(
+                                label = R.string.time,
+                                value = "0 h",
+                            ),
+                            LabeledValue(
+                                label = R.string.distance,
+                                value = "0 km",
+                            ),
+                            LabeledValue(
+                                label = R.string.elevation_gain,
+                                value = "0 km",
+                            )
                         )
                     ),
                     StatTab(sport = R.string.running),
@@ -244,7 +264,26 @@ fun AvgWeekStatsPreview() {
 @Composable
 fun YearToDateStatsPreview() {
     ActivelyTheme {
-        YearToDateStats()
+        YearToDateStats(
+            listOf(
+                LabeledValue(
+                    label = R.string.rides,
+                    value = "0",
+                ),
+                LabeledValue(
+                    label = R.string.time,
+                    value = "0 h",
+                ),
+                LabeledValue(
+                    label = R.string.distance,
+                    value = "0 km",
+                ),
+                LabeledValue(
+                    label = R.string.elevation_gain,
+                    value = "0 km",
+                )
+            )
+        )
     }
 }
 

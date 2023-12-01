@@ -42,4 +42,6 @@
     <string name="nordic_waling">Nordic walking</string>
     <string name="avg_weekly_activity">Avg weekly activity</string>
     <string name="rides">Rides</string>
+    <string name="year_to_date">Year-to-date</string>
+    <string name="elevation_gain">Elevation gain</string>
 </resources>
