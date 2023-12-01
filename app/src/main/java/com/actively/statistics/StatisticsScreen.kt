@@ -1,14 +1,15 @@
 package com.actively.statistics
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,24 +25,31 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.actively.R
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.statisticsScreen(navController: NavController) {
     composable("statistics_screen") {
+        val viewModel = getViewModel<StatisticsViewModel>()
+        val state by viewModel.state.collectAsState()
         ActivelyTheme {
             BaseScaffoldScreen(
                 navController = navController,
@@ -56,41 +64,48 @@ fun NavGraphBuilder.statisticsScreen(navController: NavController) {
                     )
                 }
             ) {
-                StatisticsScreen()
+                StatisticsScreen(state, viewModel::onSelectTab)
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StatisticsScreen() {
+fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
     Column {
-        val tabs = remember { listOf("Cycling", "Running", "Swimming", "Nordic walking") }
-        var selectedTabIndex by remember { mutableIntStateOf(0) }
-        ScrollableTabRow(selectedTabIndex = selectedTabIndex) {
-            tabs.forEachIndexed { index, tab ->
+        val pagerState = rememberPagerState(pageCount = state.tabs::size)
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                onSelectTab(page)
+            }
+        }
+        ScrollableTabRow(selectedTabIndex = state.selectedTab) {
+            state.tabs.forEachIndexed { index, tab ->
                 Tab(
-                    selected = index == selectedTabIndex,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text(text = tab) }
+                    selected = index == state.selectedTab,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(page = index)
+                        }
+                    },
+                    text = { Text(text = stringResource(id = tab.sport)) }
                 )
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Spacer(Modifier.height(8.dp))
+        HorizontalPager(state = pagerState) {
             Column(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 AvgWeeklyStats()
                 YearToDateStats()
                 AllTimeStats()
             }
-            Spacer(Modifier.height(8.dp))
         }
     }
 }
@@ -169,7 +184,16 @@ fun StatsRow(label: String, value: String, modifier: Modifier = Modifier) {
 @Composable
 fun StatisticsScreenPreview() {
     ActivelyTheme {
-        StatisticsScreen()
+        StatisticsScreen(
+            state = StatisticsState(
+                tabs = listOf(
+                    StatTab(sport = R.string.cycling),
+                    StatTab(sport = R.string.running),
+                    StatTab(sport = R.string.nordic_waling),
+                ),
+            ),
+            {}
+        )
     }
 }
 
