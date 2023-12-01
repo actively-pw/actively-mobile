@@ -60,6 +60,7 @@ import com.actively.repository.ActivityRecordingRepositoryImpl
 import com.actively.repository.AuthRepository
 import com.actively.repository.AuthRepositoryImpl
 import com.actively.splash.SplashScreenViewModel
+import com.actively.statistics.StatisticsViewModel
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import com.actively.synchronizer.usecases.GetSyncStateUseCaseImpl
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
@@ -95,6 +96,7 @@ object KoinSetup {
         viewModel { LoginViewModel(get()) }
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }
+        viewModel { StatisticsViewModel() }
     }
 
     private val useCasesModule = module {
