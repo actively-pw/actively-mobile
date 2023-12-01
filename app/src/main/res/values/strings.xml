@@ -37,4 +37,7 @@
     <string name="name">Name</string>
     <string name="surname">Surname</string>
     <string name="statistics">Statistics</string>
+    <string name="cycling">Cycling</string>
+    <string name="running">Running</string>
+    <string name="nordic_waling">Nordic walking</string>
 </resources>
