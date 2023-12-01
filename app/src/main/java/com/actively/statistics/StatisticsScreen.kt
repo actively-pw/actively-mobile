@@ -3,7 +3,6 @@ package com.actively.statistics
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -103,46 +102,19 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AvgWeeklyStats(page.avgWeekly)
-                YearToDateStats(page.yearToDate)
-                AllTimeStats(page.allTime)
+                StatisticsContainer(
+                    title = stringResource(id = R.string.avg_weekly_activity),
+                    stats = page.avgWeekly
+                )
+                StatisticsContainer(
+                    title = stringResource(id = R.string.year_to_date),
+                    stats = page.yearToDate
+                )
+                StatisticsContainer(
+                    title = stringResource(id = R.string.all_time),
+                    stats = page.allTime
+                )
             }
-        }
-    }
-}
-
-@Composable
-fun AvgWeeklyStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
-    StatisticsContainer(
-        modifier = modifier,
-        title = stringResource(id = R.string.avg_weekly_activity)
-    ) {
-        stats.forEach {
-            StatsRow(label = stringResource(it.label), value = it.value)
-        }
-    }
-}
-
-@Composable
-fun YearToDateStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
-    StatisticsContainer(
-        modifier = modifier,
-        title = stringResource(id = R.string.year_to_date)
-    ) {
-        stats.forEach {
-            StatsRow(label = stringResource(it.label), value = it.value)
-        }
-    }
-}
-
-@Composable
-fun AllTimeStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
-    StatisticsContainer(
-        modifier = modifier,
-        title = stringResource(id = R.string.all_time)
-    ) {
-        stats.forEach {
-            StatsRow(label = stringResource(it.label), value = it.value)
         }
     }
 }
@@ -150,8 +122,8 @@ fun AllTimeStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
 @Composable
 fun StatisticsContainer(
     title: String,
+    stats: List<LabeledValue>,
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
 ) {
     Card(modifier = modifier) {
         Text(
@@ -166,7 +138,9 @@ fun StatisticsContainer(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            content()
+            stats.forEach {
+                StatsRow(label = stringResource(it.label), value = it.value)
+            }
         }
     }
 }
@@ -226,42 +200,14 @@ fun StatisticsScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun AvgWeekStatsPreview() {
+fun StatisticsContainerPreview() {
     ActivelyTheme {
-        AvgWeeklyStats(
-            listOf(
+        StatisticsContainer(
+            title = stringResource(id = R.string.avg_weekly_activity),
+            stats = listOf(
                 LabeledValue(label = R.string.rides, value = "0"),
                 LabeledValue(label = R.string.time, value = "0 h"),
                 LabeledValue(label = R.string.distance, value = "0 km")
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun YearToDateStatsPreview() {
-    ActivelyTheme {
-        YearToDateStats(
-            listOf(
-                LabeledValue(label = R.string.rides, value = "0"),
-                LabeledValue(label = R.string.time, value = "0 h"),
-                LabeledValue(label = R.string.distance, value = "0 km"),
-                LabeledValue(label = R.string.elevation_gain, value = "0 km")
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun AllTimeStatsPreview() {
-    ActivelyTheme {
-        AllTimeStats(
-            listOf(
-                LabeledValue(label = R.string.rides, value = "0"),
-                LabeledValue(label = R.string.time, value = "0 h"),
-                LabeledValue(label = R.string.longest_ride, value = "0 km")
             )
         )
     }
