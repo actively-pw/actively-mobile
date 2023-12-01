@@ -199,36 +199,15 @@ fun StatisticsScreenPreview() {
                     StatTab(
                         sport = R.string.cycling,
                         avgWeekly = listOf(
-                            LabeledValue(
-                                label = R.string.rides,
-                                value = "0",
-                            ),
-                            LabeledValue(
-                                label = R.string.time,
-                                value = "0 h",
-                            ),
-                            LabeledValue(
-                                label = R.string.distance,
-                                value = "0 km",
-                            )
+                            LabeledValue(label = R.string.rides, value = "0"),
+                            LabeledValue(label = R.string.time, value = "0 h"),
+                            LabeledValue(label = R.string.distance, value = "0 km")
                         ),
                         yearToDate = listOf(
-                            LabeledValue(
-                                label = R.string.rides,
-                                value = "0",
-                            ),
-                            LabeledValue(
-                                label = R.string.time,
-                                value = "0 h",
-                            ),
-                            LabeledValue(
-                                label = R.string.distance,
-                                value = "0 km",
-                            ),
-                            LabeledValue(
-                                label = R.string.elevation_gain,
-                                value = "0 km",
-                            )
+                            LabeledValue(label = R.string.rides, value = "0"),
+                            LabeledValue(label = R.string.time, value = "0 h"),
+                            LabeledValue(label = R.string.distance, value = "0 km"),
+                            LabeledValue(label = R.string.elevation_gain, value = "0 km")
                         ),
                         allTime = listOf(
                             LabeledValue(label = R.string.rides, value = "0"),
@@ -251,18 +230,9 @@ fun AvgWeekStatsPreview() {
     ActivelyTheme {
         AvgWeeklyStats(
             listOf(
-                LabeledValue(
-                    label = R.string.rides,
-                    value = "0",
-                ),
-                LabeledValue(
-                    label = R.string.time,
-                    value = "0 h",
-                ),
-                LabeledValue(
-                    label = R.string.distance,
-                    value = "0 km",
-                )
+                LabeledValue(label = R.string.rides, value = "0"),
+                LabeledValue(label = R.string.time, value = "0 h"),
+                LabeledValue(label = R.string.distance, value = "0 km")
             )
         )
     }
@@ -274,22 +244,10 @@ fun YearToDateStatsPreview() {
     ActivelyTheme {
         YearToDateStats(
             listOf(
-                LabeledValue(
-                    label = R.string.rides,
-                    value = "0",
-                ),
-                LabeledValue(
-                    label = R.string.time,
-                    value = "0 h",
-                ),
-                LabeledValue(
-                    label = R.string.distance,
-                    value = "0 km",
-                ),
-                LabeledValue(
-                    label = R.string.elevation_gain,
-                    value = "0 km",
-                )
+                LabeledValue(label = R.string.rides, value = "0"),
+                LabeledValue(label = R.string.time, value = "0 h"),
+                LabeledValue(label = R.string.distance, value = "0 km"),
+                LabeledValue(label = R.string.elevation_gain, value = "0 km")
             )
         )
     }
