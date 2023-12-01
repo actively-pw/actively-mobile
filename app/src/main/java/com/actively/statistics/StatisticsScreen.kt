@@ -105,7 +105,7 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
             ) {
                 AvgWeeklyStats(page.avgWeekly)
                 YearToDateStats(page.yearToDate)
-                AllTimeStats()
+                AllTimeStats(page.allTime)
             }
         }
     }
@@ -136,11 +136,14 @@ fun YearToDateStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AllTimeStats(modifier: Modifier = Modifier) {
-    StatisticsContainer(modifier = modifier, title = "All time") {
-        StatsRow(label = "Rides", value = "0")
-        StatsRow(label = "Distance", value = "0 km")
-        StatsRow(label = "Longest ride", value = "0 km")
+fun AllTimeStats(stats: List<LabeledValue>, modifier: Modifier = Modifier) {
+    StatisticsContainer(
+        modifier = modifier,
+        title = stringResource(id = R.string.all_time)
+    ) {
+        stats.forEach {
+            StatsRow(label = stringResource(it.label), value = it.value)
+        }
     }
 }
 
@@ -226,13 +229,18 @@ fun StatisticsScreenPreview() {
                                 label = R.string.elevation_gain,
                                 value = "0 km",
                             )
+                        ),
+                        allTime = listOf(
+                            LabeledValue(label = R.string.rides, value = "0"),
+                            LabeledValue(label = R.string.time, value = "0 h"),
+                            LabeledValue(label = R.string.longest_ride, value = "0 km")
                         )
                     ),
                     StatTab(sport = R.string.running),
                     StatTab(sport = R.string.nordic_waling),
                 ),
             ),
-            {}
+            onSelectTab = {}
         )
     }
 }
@@ -291,6 +299,12 @@ fun YearToDateStatsPreview() {
 @Composable
 fun AllTimeStatsPreview() {
     ActivelyTheme {
-        AllTimeStats()
+        AllTimeStats(
+            listOf(
+                LabeledValue(label = R.string.rides, value = "0"),
+                LabeledValue(label = R.string.time, value = "0 h"),
+                LabeledValue(label = R.string.longest_ride, value = "0 km")
+            )
+        )
     }
 }
