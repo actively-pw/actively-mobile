@@ -87,7 +87,7 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
                     selected = index == state.selectedTab,
                     onClick = {
                         scope.launch {
-                            pagerState.animateScrollToPage(page = index)
+                            pagerState.scrollToPage(page = index)
                         }
                     },
                     text = { Text(text = stringResource(id = tab.sport)) }
