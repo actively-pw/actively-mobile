@@ -6,6 +6,7 @@ data class StatisticsState(
     val tabs: List<StatTab> = emptyList(),
     val selectedTab: Int = 0,
     val isLoading: Boolean = false,
+    val isError: Boolean = false,
 )
 
 data class StatTab(
