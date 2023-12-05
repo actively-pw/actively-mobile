@@ -36,7 +36,7 @@ fun RecordedActivityItem(
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
+            RecordedTimeText(recordedActivity.time)
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
@@ -47,6 +47,26 @@ fun RecordedActivityItem(
             contentDescription = null
         )
     }
+}
+
+@Composable
+fun RecordedTimeText(recordedActivityTime: RecordedActivityTime) {
+    Text(
+        text = when (recordedActivityTime.prefix) {
+            is TimePrefix.Today -> stringResource(R.string.today_at, recordedActivityTime.time)
+            is TimePrefix.Yesterday -> stringResource(
+                R.string.yesterday_at,
+                recordedActivityTime.time
+            )
+
+            is TimePrefix.Date -> stringResource(
+                R.string.recorded_date_at,
+                recordedActivityTime.prefix.value,
+                recordedActivityTime.time
+            )
+        },
+        style = MaterialTheme.typography.bodySmall
+    )
 }
 
 @Composable
@@ -104,7 +124,10 @@ fun RecordedActivityItemPreview() {
             recordedActivity = RecordedActivityUi(
                 id = RecordedActivity.Id("1"),
                 title = "Morning activity",
-                time = "13 November 2023 at 10:15",
+                time = RecordedActivityTime(
+                    time = "10:15",
+                    prefix = TimePrefix.Date("13 November 2023")
+                ),
                 stats = Activity.Stats(
                     distance = 21.5.kilometers,
                     totalTime = 1.5.hours,
