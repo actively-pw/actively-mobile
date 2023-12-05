@@ -129,11 +129,12 @@ class ActivityRecordingDataSourceImpl(
         .map { it.toRouteSlices() }
 
     override suspend fun getLatestLocationFromLastRouteSlice() = withContext(coroutineContext) {
-        query.getLatestLocationFromLastRouteSlice { _, timestamp, latitude, longitude ->
+        query.getLatestLocationFromLastRouteSlice { _, timestamp, latitude, longitude, altitude ->
             Location(
                 timestamp = Instant.fromEpochMilliseconds(timestamp),
                 latitude = latitude,
-                longitude = longitude
+                longitude = longitude,
+                altitude = altitude
             )
         }.executeAsOneOrNull()
     }
@@ -162,7 +163,8 @@ class ActivityRecordingDataSourceImpl(
             query.insertLocationToLatestRouteSlice(
                 latitude = location.latitude,
                 longitude = location.longitude,
-                timestamp = location.timestamp.toEpochMilliseconds()
+                timestamp = location.timestamp.toEpochMilliseconds(),
+                altitude = location.altitude
             )
         }
     }
@@ -209,12 +211,13 @@ class ActivityRecordingDataSourceImpl(
             RouteSlice(
                 start = Instant.fromEpochMilliseconds(start),
                 locations = getRouteQuery.mapNotNull {
-                    if (it.timestamp == null || it.latitude == null || it.longitude == null)
+                    if (it.timestamp == null || it.latitude == null || it.longitude == null || it.altitude == null)
                         return@mapNotNull null
                     Location(
                         timestamp = Instant.fromEpochMilliseconds(it.timestamp),
                         latitude = it.latitude,
-                        longitude = it.longitude
+                        longitude = it.longitude,
+                        altitude = it.altitude,
                     )
                 }
             )

@@ -5,5 +5,6 @@ data class RouteQuery(
     val start: Long,
     val timestamp: Long?,
     val latitude: Double?,
-    val longitude: Double?
+    val longitude: Double?,
+    val altitude: Double?,
 )
