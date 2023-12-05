@@ -201,7 +201,7 @@ fun StatisticsScreenPreview() {
                         )
                     ),
                     StatTab(sport = R.string.running),
-                    StatTab(sport = R.string.nordic_waling),
+                    StatTab(sport = R.string.nordic_walking),
                 ),
             ),
             onSelectTab = {}
