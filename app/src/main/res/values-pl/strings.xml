@@ -4,8 +4,8 @@
     <string name="finish_button">Koniec</string>
     <string name="resume_button">Wznów</string>
     <string name="save_activity_top_bar_title">Zapisz aktywność</string>
-    <string name="save_button">Zapis</string>
-    <string name="title_label">Zatytułuj swoją aktywność</string>
+    <string name="save_button">Zapisz</string>
+    <string name="title_label">Nazwij swoją aktywność</string>
     <string name="discard_activity">Odrzuć aktywność</string>
     <string name="discard">Odrzuć</string>
     <string name="cancel">Anuluj</string>
@@ -51,4 +51,7 @@
     <string name="walks">Spacerów</string>
     <string name="longest_run">Najdłuższy bieg</string>
     <string name="longest_walk">Najdłuższy spacer</string>
+    <string name="time_in_seconds">Czas (s)</string>
+    <string name="distance_km">Dystans (km)</string>
+    <string name="avg_speed_km_h">Śr. prędkość (km/h)</string>
 </resources>

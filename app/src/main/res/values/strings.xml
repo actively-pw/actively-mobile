@@ -51,4 +51,7 @@
     <string name="longest_run">Longest run</string>
     <string name="longest_walk">Longest walk</string>
     <string name="statistics_error">Ops, something went wrong! Please, check your internet connection.</string>
+    <string name="time_in_seconds">Time (s)</string>
+    <string name="distance_km">Distance (km)</string>
+    <string name="avg_speed_km_h">Avg speed (km/h)</string>
 </resources>
