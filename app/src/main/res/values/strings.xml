@@ -46,4 +46,8 @@
     <string name="elevation_gain">Elevation gain</string>
     <string name="all_time">All time</string>
     <string name="longest_ride">Longest ride</string>
+    <string name="runs">Runs</string>
+    <string name="walks">Walks</string>
+    <string name="longest_run">Longest run</string>
+    <string name="longest_walk">Longest walk</string>
 </resources>
