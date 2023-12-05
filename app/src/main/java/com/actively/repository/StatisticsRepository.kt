@@ -1,8 +1,8 @@
 package com.actively.repository
 
-import com.actively.statistics.StatTab
+import com.actively.statistics.StatPage
 
 interface StatisticsRepository {
 
-    suspend fun getAllStatistics(): List<StatTab>
+    suspend fun getAllStatistics(): List<StatPage>
 }
