@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -93,27 +94,37 @@ fun StatisticsScreen(state: StatisticsState, onSelectTab: (Int) -> Unit) {
                 )
             }
         }
-        HorizontalPager(state = pagerState) {
-            val page = state.tabs[it]
+        if (state.isLoading) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                StatisticsContainer(
-                    title = stringResource(id = R.string.avg_weekly_activity),
-                    stats = page.avgWeekly
-                )
-                StatisticsContainer(
-                    title = stringResource(id = R.string.year_to_date),
-                    stats = page.yearToDate
-                )
-                StatisticsContainer(
-                    title = stringResource(id = R.string.all_time),
-                    stats = page.allTime
-                )
+                CircularProgressIndicator()
+            }
+        } else {
+            HorizontalPager(state = pagerState) {
+                val page = state.tabs[it]
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatisticsContainer(
+                        title = stringResource(id = R.string.avg_weekly_activity),
+                        stats = page.avgWeekly
+                    )
+                    StatisticsContainer(
+                        title = stringResource(id = R.string.year_to_date),
+                        stats = page.yearToDate
+                    )
+                    StatisticsContainer(
+                        title = stringResource(id = R.string.all_time),
+                        stats = page.allTime
+                    )
+                }
             }
         }
     }
