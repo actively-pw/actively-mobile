@@ -22,7 +22,7 @@ sealed class StatsPeriod {
         val time: Duration,
         val distance: Distance,
         val activitiesNumber: Int,
-        val elevationGain: Int,
+        val elevationGain: Distance,
     ) : StatsPeriod()
 
     data class AllTime(
