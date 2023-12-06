@@ -59,8 +59,11 @@ import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.ActivityRecordingRepositoryImpl
 import com.actively.repository.AuthRepository
 import com.actively.repository.AuthRepositoryImpl
+import com.actively.repository.StatisticsRepositoryImpl
 import com.actively.splash.SplashScreenViewModel
+import com.actively.statistics.StatTabFactory
 import com.actively.statistics.StatisticsViewModel
+import com.actively.statistics.usecase.GetStatisticsUseCaseImpl
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import com.actively.synchronizer.usecases.GetSyncStateUseCaseImpl
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
@@ -96,7 +99,7 @@ object KoinSetup {
         viewModel { LoginViewModel(get()) }
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }
-        viewModel { StatisticsViewModel() }
+        viewModel { StatisticsViewModel(get(), get()) }
     }
 
     private val useCasesModule = module {
@@ -122,6 +125,7 @@ object KoinSetup {
         factory<LogInUseCase> { LogInUseCaseImpl(get()) }
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
         factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
+        factory { GetStatisticsUseCaseImpl(get()) }
     }
 
     private val dataModule = module {
@@ -150,5 +154,7 @@ object KoinSetup {
         single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+        single { StatisticsRepositoryImpl(get()) }
+        factory { StatTabFactory() }
     }
 }
