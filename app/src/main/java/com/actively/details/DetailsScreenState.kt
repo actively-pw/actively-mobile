@@ -1,5 +1,7 @@
 package com.actively.details
 
+import com.actively.home.ui.RecordedActivityTime
+
 sealed class DetailsScreenState {
 
     object Loading : DetailsScreenState()
@@ -7,7 +9,7 @@ sealed class DetailsScreenState {
         val title: String,
         val imageUrl: String,
         val typeOfActivity: String,
-        val time: String,
+        val time: RecordedActivityTime,
         val showConfirmDeleteDialog: Boolean,
         val details: List<DetailsRow>
     ) : DetailsScreenState()
