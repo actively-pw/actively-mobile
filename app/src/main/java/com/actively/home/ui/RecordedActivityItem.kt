@@ -28,6 +28,7 @@ import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.ui.theme.ActivelyTheme
+import com.actively.util.RecordedTimeText
 import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +40,7 @@ fun RecordedActivityItem(
 ) {
     Card(modifier = modifier, onClick = onClick) {
         Column(modifier = Modifier.padding(12.dp)) {
-            RecordedTimeText(recordedActivity.time)
+            RecordedTimeText(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
@@ -50,26 +51,6 @@ fun RecordedActivityItem(
             contentDescription = null
         )
     }
-}
-
-@Composable
-fun RecordedTimeText(recordedActivityTime: RecordedActivityTime) {
-    Text(
-        text = when (recordedActivityTime.prefix) {
-            is TimePrefix.Today -> stringResource(R.string.today_at, recordedActivityTime.time)
-            is TimePrefix.Yesterday -> stringResource(
-                R.string.yesterday_at,
-                recordedActivityTime.time
-            )
-
-            is TimePrefix.Date -> stringResource(
-                R.string.recorded_date_at,
-                recordedActivityTime.prefix.value,
-                recordedActivityTime.time
-            )
-        },
-        style = MaterialTheme.typography.bodySmall
-    )
 }
 
 @Composable

@@ -43,6 +43,7 @@ import com.actively.R
 import com.actively.home.ui.ErrorItem
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
+import com.actively.util.RecordedTimeText
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -118,11 +119,11 @@ private fun LazyListScope.loadingItem() = item {
 
 private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
     item {
-        Text(
+        RecordedTimeText(
+            state.time,
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(top = 4.dp),
-            text = state.time,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Light)
         )
         Text(
