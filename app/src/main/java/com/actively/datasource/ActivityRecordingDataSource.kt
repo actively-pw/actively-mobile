@@ -134,7 +134,7 @@ class ActivityRecordingDataSourceImpl(
                 timestamp = Instant.fromEpochMilliseconds(timestamp),
                 latitude = latitude,
                 longitude = longitude,
-                altitude = altitude
+                altitude = altitude.meters
             )
         }.executeAsOneOrNull()
     }
@@ -164,7 +164,7 @@ class ActivityRecordingDataSourceImpl(
                 latitude = location.latitude,
                 longitude = location.longitude,
                 timestamp = location.timestamp.toEpochMilliseconds(),
-                altitude = location.altitude
+                altitude = location.altitude.inMeters
             )
         }
     }
@@ -217,7 +217,7 @@ class ActivityRecordingDataSourceImpl(
                         timestamp = Instant.fromEpochMilliseconds(it.timestamp),
                         latitude = it.latitude,
                         longitude = it.longitude,
-                        altitude = it.altitude,
+                        altitude = it.altitude.meters,
                     )
                 }
             )
