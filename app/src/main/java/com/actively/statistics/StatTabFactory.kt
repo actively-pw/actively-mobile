@@ -12,7 +12,7 @@ class StatTabFactory {
         "cycling" -> cyclingTab(page)
         "running" -> runningTab(page)
         "nordic_walking" -> nordicWalingTab(page)
-        else -> cyclingTab(page)
+        else -> error("Unsupported sport ${page.sport}")
     }
 
     private fun cyclingTab(page: StatPage) = StatTab(
