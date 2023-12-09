@@ -28,6 +28,11 @@ fun BaseScaffoldScreen(
             val items = listOf(
                 BottomBarItem(R.string.home, R.drawable.home, route = "home_screen"),
                 BottomBarItem(R.string.recorder, R.drawable.record, route = "recording_screen"),
+                BottomBarItem(
+                    R.string.statistics,
+                    R.drawable.statistics,
+                    route = "statistics_screen"
+                )
             )
             var selectedItem by remember {
                 mutableStateOf(items.first())

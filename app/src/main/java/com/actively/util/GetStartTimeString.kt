@@ -17,5 +17,6 @@ fun getActivityTimeString(start: Instant, now: Instant): String {
         1 -> "Yesterday"
         else -> startDate.toJavaLocalDateTime().format(dateTimeFormatter)
     }
-    return "$timePrefix at ${startDate.hour}:${startDate.minute}"
+    val minutes = String.format("%02d", startDate.minute)
+    return "$timePrefix at ${startDate.hour}:${minutes}"
 }

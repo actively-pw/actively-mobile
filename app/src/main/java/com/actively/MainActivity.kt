@@ -14,6 +14,7 @@ import com.actively.home.ui.homeScreen
 import com.actively.recorder.ui.recorderScreen
 import com.actively.recorder.ui.saveRecordingScreen
 import com.actively.splash.splashScreen
+import com.actively.statistics.statisticsScreen
 import com.actively.welcome.ui.welcomeScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
                     homeScreen(navController)
                     recorderScreen(navController)
                     saveRecordingScreen(navController)
+                    statisticsScreen(navController)
                 }
             }
         }

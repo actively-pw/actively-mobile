@@ -36,4 +36,19 @@
     <string name="logout">Logout</string>
     <string name="name">Name</string>
     <string name="surname">Surname</string>
+    <string name="statistics">Statistics</string>
+    <string name="cycling">Cycling</string>
+    <string name="running">Running</string>
+    <string name="nordic_walking">Nordic walking</string>
+    <string name="avg_weekly_activity">Avg weekly activity</string>
+    <string name="rides">Rides</string>
+    <string name="year_to_date">Year-to-date</string>
+    <string name="elevation_gain">Elevation gain</string>
+    <string name="all_time">All time</string>
+    <string name="longest_ride">Longest ride</string>
+    <string name="runs">Runs</string>
+    <string name="walks">Walks</string>
+    <string name="longest_run">Longest run</string>
+    <string name="longest_walk">Longest walk</string>
+    <string name="statistics_error">Ops, something went wrong! Please, check your internet connection.</string>
 </resources>
