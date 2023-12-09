@@ -57,4 +57,5 @@
     <string name="today_at">Dziś o %s</string>
     <string name="yesterday_at">Wczoraj o %s</string>
     <string name="recorded_date_at">%s o %s</string>
+    <string name="statistics_error">Ups, coś poszło nie tak! Sprawdź swoje połączenie z internetem.</string>
 </resources>
