@@ -1,5 +1,7 @@
 package com.actively.util
 
+import com.actively.home.ui.RecordedActivityTime
+import com.actively.home.ui.TimePrefix
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.LocalDateTime
@@ -13,7 +15,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2023, hour = 12, minute = 30)
-        val expected = "Today at 10:53"
+        val expected = RecordedActivityTime(time = "10:53", prefix = TimePrefix.Today)
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
@@ -27,7 +29,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 2, monthNumber = 1, year = 2023, hour = 12, minute = 30)
-        val expected = "Yesterday at 10:53"
+        val expected = RecordedActivityTime(time = "10:53", prefix = TimePrefix.Yesterday)
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
@@ -40,7 +42,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 4, monthNumber = 1, year = 2023, hour = 12, minute = 30)
-        val expected = "01.01.2023 at 10:53"
+        val expected = RecordedActivityTime(time = "10:53", prefix = TimePrefix.Date("01.01.2023"))
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
@@ -53,7 +55,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 31, monthNumber = 10, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 1, monthNumber = 11, year = 2023, hour = 12, minute = 30)
-        val expected = "Yesterday at 10:53"
+        val expected = RecordedActivityTime(time = "10:53", prefix = TimePrefix.Yesterday)
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
@@ -66,7 +68,7 @@ class GetActivityTimeStringTest : FunSpec({
             LocalDateTime(dayOfMonth = 31, monthNumber = 12, year = 2023, hour = 10, minute = 53)
         val now =
             LocalDateTime(dayOfMonth = 1, monthNumber = 1, year = 2024, hour = 12, minute = 30)
-        val expected = "Yesterday at 10:53"
+        val expected = RecordedActivityTime(time = "10:53", prefix = TimePrefix.Yesterday)
         val actual = getActivityTimeString(
             start = start.toInstant(TimeZone.currentSystemDefault()),
             now = now.toInstant(TimeZone.currentSystemDefault())
