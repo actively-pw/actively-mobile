@@ -162,7 +162,7 @@ private fun StatsSection(stats: StatisticsState, modifier: Modifier = Modifier) 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(4.dp))
         LabeledValue(
-            label = "Time (s)",
+            label = stringResource(id = R.string.time_in_seconds),
             value = stats.totalTime
         )
         Divider(modifier = Modifier.padding(vertical = 4.dp))
@@ -174,7 +174,7 @@ private fun StatsSection(stats: StatisticsState, modifier: Modifier = Modifier) 
         ) {
             LabeledValue(
                 modifier = Modifier.weight(1f),
-                label = "Distance (km)",
+                label = stringResource(R.string.distance_km),
                 value = stats.distance
             )
             Divider(
@@ -184,7 +184,7 @@ private fun StatsSection(stats: StatisticsState, modifier: Modifier = Modifier) 
             )
             LabeledValue(
                 modifier = Modifier.weight(1f),
-                label = "Avg speed (km/h)",
+                label = stringResource(R.string.avg_speed_km_h),
                 value = stats.averageSpeed
             )
         }
