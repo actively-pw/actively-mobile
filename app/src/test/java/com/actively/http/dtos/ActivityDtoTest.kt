@@ -16,12 +16,14 @@ class ActivityDtoTest : FunSpec({
         val expectedDto = LocationDto(
             longitude = 1.234,
             latitude = 4.512,
-            timestamp = Instant.fromEpochMilliseconds(1234)
+            timestamp = Instant.fromEpochMilliseconds(1234),
+            altitude = 10.0
         )
         val location = Location(
             longitude = 1.234,
             latitude = 4.512,
-            timestamp = Instant.fromEpochMilliseconds(1234)
+            timestamp = Instant.fromEpochMilliseconds(1234),
+            altitude = 10.0.meters
         )
         location.toDto() shouldBe expectedDto
     }
@@ -30,17 +32,17 @@ class ActivityDtoTest : FunSpec({
         val expectedRouteSliceDto = RouteSliceDto(
             start = Instant.fromEpochMilliseconds(1500),
             locations = listOf(
-                LocationDto(Instant.fromEpochMilliseconds(100), 1.0, 2.0),
-                LocationDto(Instant.fromEpochMilliseconds(200), 3.0, 5.4),
-                LocationDto(Instant.fromEpochMilliseconds(400), 1.5, 6.7),
+                LocationDto(Instant.fromEpochMilliseconds(100), 1.0, 2.0, 10.0),
+                LocationDto(Instant.fromEpochMilliseconds(200), 3.0, 5.4, 12.0),
+                LocationDto(Instant.fromEpochMilliseconds(400), 1.5, 6.7, 50.0),
             )
         )
         val routeSlice = RouteSlice(
             start = Instant.fromEpochMilliseconds(1500),
             locations = listOf(
-                Location(Instant.fromEpochMilliseconds(100), 1.0, 2.0),
-                Location(Instant.fromEpochMilliseconds(200), 3.0, 5.4),
-                Location(Instant.fromEpochMilliseconds(400), 1.5, 6.7),
+                Location(Instant.fromEpochMilliseconds(100), 1.0, 2.0, 10.meters),
+                Location(Instant.fromEpochMilliseconds(200), 3.0, 5.4, 12.meters),
+                Location(Instant.fromEpochMilliseconds(400), 1.5, 6.7, 50.meters),
             )
         )
         routeSlice.toDto() shouldBe expectedRouteSliceDto
@@ -74,17 +76,17 @@ class ActivityDtoTest : FunSpec({
                 RouteSliceDto(
                     start = Instant.fromEpochMilliseconds(500),
                     locations = listOf(
-                        LocationDto(Instant.fromEpochMilliseconds(100), 1.0, 2.0),
-                        LocationDto(Instant.fromEpochMilliseconds(200), 3.0, 5.4),
-                        LocationDto(Instant.fromEpochMilliseconds(400), 1.5, 6.7),
+                        LocationDto(Instant.fromEpochMilliseconds(100), 1.0, 2.0, 10.0),
+                        LocationDto(Instant.fromEpochMilliseconds(200), 3.0, 5.4, 12.0),
+                        LocationDto(Instant.fromEpochMilliseconds(400), 1.5, 6.7, 50.0),
                     )
                 ),
                 RouteSliceDto(
                     start = Instant.fromEpochMilliseconds(1500),
                     locations = listOf(
-                        LocationDto(Instant.fromEpochMilliseconds(600), 1.1, 2.1),
-                        LocationDto(Instant.fromEpochMilliseconds(700), 3.5, 5.3),
-                        LocationDto(Instant.fromEpochMilliseconds(800), 1.2, 6.8),
+                        LocationDto(Instant.fromEpochMilliseconds(600), 1.1, 2.1, 59.0),
+                        LocationDto(Instant.fromEpochMilliseconds(700), 3.5, 5.3, 30.0),
+                        LocationDto(Instant.fromEpochMilliseconds(800), 1.2, 6.8, 25.0),
                     )
                 )
             )
@@ -98,17 +100,17 @@ class ActivityDtoTest : FunSpec({
                 RouteSlice(
                     start = Instant.fromEpochMilliseconds(500),
                     locations = listOf(
-                        Location(Instant.fromEpochMilliseconds(100), 1.0, 2.0),
-                        Location(Instant.fromEpochMilliseconds(200), 3.0, 5.4),
-                        Location(Instant.fromEpochMilliseconds(400), 1.5, 6.7),
+                        Location(Instant.fromEpochMilliseconds(100), 1.0, 2.0, 10.meters),
+                        Location(Instant.fromEpochMilliseconds(200), 3.0, 5.4, 12.meters),
+                        Location(Instant.fromEpochMilliseconds(400), 1.5, 6.7, 50.meters),
                     )
                 ),
                 RouteSlice(
                     start = Instant.fromEpochMilliseconds(1500),
                     locations = listOf(
-                        Location(Instant.fromEpochMilliseconds(600), 1.1, 2.1),
-                        Location(Instant.fromEpochMilliseconds(700), 3.5, 5.3),
-                        Location(Instant.fromEpochMilliseconds(800), 1.2, 6.8),
+                        Location(Instant.fromEpochMilliseconds(600), 1.1, 2.1, 59.meters),
+                        Location(Instant.fromEpochMilliseconds(700), 3.5, 5.3, 30.meters),
+                        Location(Instant.fromEpochMilliseconds(800), 1.2, 6.8, 25.meters),
                     )
                 )
             )
