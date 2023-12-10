@@ -25,6 +25,7 @@ import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.details.ActivityDetailsViewModel
+import com.actively.details.usecase.DeleteActivityUseCaseImpl
 import com.actively.home.ui.HomeViewModel
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCaseImpl
@@ -108,7 +109,8 @@ object KoinSetup {
             ActivityDetailsViewModel(
                 id = RecordedActivity.Id(parameters.get()),
                 getDetailedRecordedActivityUseCase = get(),
-                timeProvider = get()
+                timeProvider = get(),
+                deleteActivityUseCase = get<DeleteActivityUseCaseImpl>()
             )
         }
     }
@@ -138,6 +140,7 @@ object KoinSetup {
         factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
         factory<GetDetailedRecordedActivityUseCase> { GetDetailedRecordedActivityUseCaseImpl(get()) }
         factory { GetStatisticsUseCaseImpl(get()) }
+        factory { DeleteActivityUseCaseImpl(get()) }
     }
 
     private val dataModule = module {
