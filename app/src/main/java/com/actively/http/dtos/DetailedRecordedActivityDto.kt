@@ -5,6 +5,7 @@ import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import kotlinx.datetime.Instant
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -16,13 +17,13 @@ data class DetailedRecordedActivityDto(
     val start: Instant,
     val stats: StatsDto,
     val routeUrl: String,
-    val mapUrl: String,
+    @SerialName("staticMapUrl") val mapUrl: String,
 ) {
 
     @Serializable
     data class StatsDto(
         val distance: Double,
-        val duration: Double,
+        @SerialName("totalTime") val duration: Double,
         val averageSpeed: Double,
         val maxSpeed: Double,
         val sumOfAscent: Int,
