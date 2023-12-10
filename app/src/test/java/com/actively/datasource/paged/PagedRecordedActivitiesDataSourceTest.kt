@@ -18,7 +18,12 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
     val recordedActivitiesRepository = mockk<RecordedActivitiesRepository>()
-    coEvery { recordedActivitiesRepository.get(pageSize = 5, pageNumber = 1) }.returns(
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 1
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (1..5).map {
                 stubRecordedActivity(id = it.toString())
@@ -26,7 +31,12 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
             nextPage = 2
         )
     )
-    coEvery { recordedActivitiesRepository.get(pageSize = 5, pageNumber = 2) }.returns(
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 2
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (6..10).map {
                 stubRecordedActivity(id = it.toString())
@@ -34,7 +44,12 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
             nextPage = 3
         )
     )
-    coEvery { recordedActivitiesRepository.get(pageSize = 5, pageNumber = 3) }.returns(
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 3
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (11..15).map {
                 stubRecordedActivity(id = it.toString())

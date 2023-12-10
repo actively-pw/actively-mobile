@@ -14,7 +14,7 @@ class GetDetailedRecordedActivityUseCaseImpl(
 ) : GetDetailedRecordedActivityUseCase {
 
     override suspend fun invoke(id: RecordedActivity.Id) = try {
-        Result.success(dataSource.get(id))
+        Result.success(dataSource.getDetailedActivity(id))
     } catch (e: Exception) {
         e.printStackTrace()
         Result.failure(e)

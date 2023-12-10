@@ -18,16 +18,16 @@ data class RecordedActivitiesPage(
 
 interface RecordedActivitiesRepository {
 
-    suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
+    suspend fun getActivitiesPage(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
 
-    suspend fun get(id: RecordedActivity.Id): DetailedRecordedActivity
+    suspend fun getDetailedActivity(id: RecordedActivity.Id): DetailedRecordedActivity
 }
 
 class RecordedActivitiesRepositoryImpl(
     private val client: AuthorizedKtorClient
 ) : RecordedActivitiesRepository {
 
-    override suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
+    override suspend fun getActivitiesPage(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
         val response = client.request("/Activities") {
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)
@@ -46,7 +46,7 @@ class RecordedActivitiesRepositoryImpl(
         )
     }
 
-    override suspend fun get(id: RecordedActivity.Id): DetailedRecordedActivity {
+    override suspend fun getDetailedActivity(id: RecordedActivity.Id): DetailedRecordedActivity {
         val response = client.request("/Activities/${id.value}") {
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)

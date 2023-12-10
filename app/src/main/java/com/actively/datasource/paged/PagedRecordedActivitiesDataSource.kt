@@ -11,7 +11,7 @@ class PagedRecordedActivitiesDataSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordedActivity> = try {
         val nextPageNumber = params.key ?: 1
-        val page = recordedActivitiesRepository.get(
+        val page = recordedActivitiesRepository.getActivitiesPage(
             pageNumber = nextPageNumber,
             pageSize = PAGE_SIZE
         )
