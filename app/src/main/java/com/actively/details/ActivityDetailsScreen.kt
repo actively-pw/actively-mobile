@@ -59,11 +59,16 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
                     AppBar(
                         state = state,
                         onBackClick = { navController.popBackStack() },
-                        onDeleteClick = {}
+                        onDeleteClick = viewModel::onDeleteClick
                     )
                 }
             ) {
-                ActivityDetailsScreen(state)
+                ActivityDetailsScreen(
+                    state = state,
+                    onConfirmDelete = viewModel::onConfirmDelete,
+                    onDiscard = viewModel::onDiscardDialogue,
+                    navigateBack = navController::popBackStack
+                )
             }
         }
     }
@@ -93,9 +98,20 @@ private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit, onDeleteC
 }
 
 @Composable
-fun ActivityDetailsScreen(state: DetailsScreenState) {
+fun ActivityDetailsScreen(
+    state: DetailsScreenState,
+    onConfirmDelete: () -> Unit,
+    onDiscard: () -> Unit,
+    navigateBack: () -> Unit
+) {
     if (state is DetailsScreenState.Loaded && state.showConfirmDeleteDialog) {
-        DeleteActivityDialog(onConfirm = {}, onDismiss = {})
+        DeleteActivityDialog(
+            onConfirm = {
+                onConfirmDelete()
+                navigateBack()
+            },
+            onDismiss = onDiscard
+        )
     }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -196,7 +212,7 @@ private fun DeleteActivityDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
             }
         },
         dismissButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = onDismiss) {
                 Text(stringResource(id = R.string.cancel))
             }
         },
