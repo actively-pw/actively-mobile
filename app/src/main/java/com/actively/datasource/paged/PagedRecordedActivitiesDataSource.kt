@@ -3,15 +3,15 @@ package com.actively.datasource.paged
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.actively.activity.RecordedActivity
-import com.actively.datasource.RecordedActivitiesDataSource
+import com.actively.repository.RecordedActivitiesRepository
 
 class PagedRecordedActivitiesDataSource(
-    private val recordedActivitiesDataSource: RecordedActivitiesDataSource
+    private val recordedActivitiesRepository: RecordedActivitiesRepository
 ) : PagingSource<Int, RecordedActivity>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecordedActivity> = try {
         val nextPageNumber = params.key ?: 1
-        val page = recordedActivitiesDataSource.get(
+        val page = recordedActivitiesRepository.get(
             pageNumber = nextPageNumber,
             pageSize = PAGE_SIZE
         )

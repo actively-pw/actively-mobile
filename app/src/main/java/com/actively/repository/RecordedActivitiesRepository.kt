@@ -1,4 +1,4 @@
-package com.actively.datasource
+package com.actively.repository
 
 import com.actively.activity.DetailedRecordedActivity
 import com.actively.activity.RecordedActivity
@@ -16,16 +16,16 @@ data class RecordedActivitiesPage(
     val nextPage: Int?
 )
 
-interface RecordedActivitiesDataSource {
+interface RecordedActivitiesRepository {
 
     suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
 
     suspend fun get(id: RecordedActivity.Id): DetailedRecordedActivity
 }
 
-class RecordedActivitiesDataSourceImpl(
+class RecordedActivitiesRepositoryImpl(
     private val client: AuthorizedKtorClient
-) : RecordedActivitiesDataSource {
+) : RecordedActivitiesRepository {
 
     override suspend fun get(pageNumber: Int, pageSize: Int): RecordedActivitiesPage {
         val response = client.request("/Activities") {

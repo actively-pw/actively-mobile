@@ -2,7 +2,7 @@ package com.actively.home.usecase
 
 import com.actively.activity.DetailedRecordedActivity
 import com.actively.activity.RecordedActivity
-import com.actively.datasource.RecordedActivitiesDataSource
+import com.actively.repository.RecordedActivitiesRepository
 
 interface GetDetailedRecordedActivityUseCase {
 
@@ -10,7 +10,7 @@ interface GetDetailedRecordedActivityUseCase {
 }
 
 class GetDetailedRecordedActivityUseCaseImpl(
-    private val dataSource: RecordedActivitiesDataSource
+    private val dataSource: RecordedActivitiesRepository
 ) : GetDetailedRecordedActivityUseCase {
 
     override suspend fun invoke(id: RecordedActivity.Id) = try {

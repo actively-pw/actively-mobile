@@ -19,8 +19,6 @@ import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
 import com.actively.datasource.AuthTokensDataSource
 import com.actively.datasource.AuthTokensDataSourceImpl
-import com.actively.datasource.RecordedActivitiesDataSource
-import com.actively.datasource.RecordedActivitiesDataSourceImpl
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
 import com.actively.datasource.datastore
@@ -63,6 +61,8 @@ import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.ActivityRecordingRepositoryImpl
 import com.actively.repository.AuthRepository
 import com.actively.repository.AuthRepositoryImpl
+import com.actively.repository.RecordedActivitiesRepository
+import com.actively.repository.RecordedActivitiesRepositoryImpl
 import com.actively.repository.StatisticsRepositoryImpl
 import com.actively.splash.SplashScreenViewModel
 import com.actively.statistics.StatTabFactory
@@ -156,7 +156,7 @@ object KoinSetup {
         single<ActivityDatabase> { ActivityDatabase(get()) }
         single<ActivityRecordingDataSource> { ActivityRecordingDataSourceImpl(get()) }
         single<SyncActivitiesDataSource> { SyncActivitiesDataSourceImpl(get()) }
-        single<RecordedActivitiesDataSource> { RecordedActivitiesDataSourceImpl(get()) }
+        single<RecordedActivitiesRepository> { RecordedActivitiesRepositoryImpl(get()) }
         single<ActivityRecordingRepository> { ActivityRecordingRepositoryImpl(get(), get()) }
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
