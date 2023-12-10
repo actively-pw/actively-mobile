@@ -21,6 +21,8 @@ interface RecordedActivitiesRepository {
     suspend fun getActivitiesPage(pageNumber: Int, pageSize: Int): RecordedActivitiesPage
 
     suspend fun getDetailedActivity(id: RecordedActivity.Id): DetailedRecordedActivity
+
+    suspend fun deleteActivity(id: RecordedActivity.Id)
 }
 
 class RecordedActivitiesRepositoryImpl(
@@ -55,6 +57,12 @@ class RecordedActivitiesRepositoryImpl(
             }
         }
         return response.body<DetailedRecordedActivityDto>().toDetailedRecordedActivity()
+    }
+
+    override suspend fun deleteActivity(id: RecordedActivity.Id) {
+        client.request("/Activities/${id.value}") {
+            method = HttpMethod.Delete
+        }
     }
 
     private companion object {
