@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -124,7 +123,7 @@ private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(top = 4.dp),
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Light)
+            style = MaterialTheme.typography.bodySmall
         )
         Text(
             modifier = Modifier
