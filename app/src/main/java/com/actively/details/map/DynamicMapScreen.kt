@@ -24,7 +24,7 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.dynamicMapScreen(navController: NavController) {
-    composable("activity_details_screen/{activityId}/map") {
+    composable("activity_details_map/{activityId}") {
         val viewModel: DynamicMapViewModel = getViewModel {
             parametersOf(it.arguments?.getString("activityId")!!)
         }

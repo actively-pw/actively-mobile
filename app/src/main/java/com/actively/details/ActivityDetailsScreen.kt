@@ -1,5 +1,6 @@
 package com.actively.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -48,8 +49,9 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
     composable("activity_details_screen/{activityId}") {
+        val activityId = it.arguments?.getString("activityId")!!
         val viewModel: ActivityDetailsViewModel = getViewModel {
-            parametersOf(it.arguments?.getString("activityId")!!)
+            parametersOf(activityId)
         }
         val state by viewModel.state.collectAsState()
         ActivelyTheme {
@@ -67,7 +69,8 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
                     state = state,
                     onConfirmDelete = viewModel::onConfirmDelete,
                     onDiscard = viewModel::onDiscardDialogue,
-                    navigateBack = navController::popBackStack
+                    navigateBack = navController::popBackStack,
+                    onNavigateToDynamicMap = { navController.navigate("activity_details_map/${activityId}") }
                 )
             }
         }
@@ -102,7 +105,8 @@ fun ActivityDetailsScreen(
     state: DetailsScreenState,
     onConfirmDelete: () -> Unit,
     onDiscard: () -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    onNavigateToDynamicMap: () -> Unit
 ) {
     if (state is DetailsScreenState.Loaded && state.showConfirmDeleteDialog) {
         DeleteActivityDialog(
@@ -116,7 +120,7 @@ fun ActivityDetailsScreen(
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         when (state) {
             DetailsScreenState.Loading -> loadingItem()
-            is DetailsScreenState.Loaded -> loadedDetailsItem(state)
+            is DetailsScreenState.Loaded -> loadedDetailsItem(state, onNavigateToDynamicMap)
             DetailsScreenState.Error -> errorItem()
         }
     }
@@ -132,32 +136,36 @@ private fun LazyListScope.loadingItem() = item {
     }
 }
 
-private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
-    item {
-        RecordedTimeText(
-            state.time,
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .padding(top = 4.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .padding(bottom = 4.dp),
-            text = state.title,
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth(),
-            model = state.imageUrl,
-            contentDescription = null,
-            error = painterResource(id = R.drawable.placeholder_image)
-        )
-        Spacer(Modifier.height(4.dp))
-        DetailsItem(details = state.details)
-    }
+private fun LazyListScope.loadedDetailsItem(
+    state: DetailsScreenState.Loaded,
+    onNavigateToDynamicMap: () -> Unit
+) = item {
+    RecordedTimeText(
+        state.time,
+        modifier = Modifier
+            .padding(horizontal = 10.dp)
+            .padding(top = 4.dp),
+        style = MaterialTheme.typography.bodySmall
+    )
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .padding(bottom = 4.dp),
+        text = state.title,
+        style = MaterialTheme.typography.headlineMedium,
+    )
+    AsyncImage(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onNavigateToDynamicMap),
+        model = state.imageUrl,
+        contentDescription = null,
+        error = painterResource(id = R.drawable.placeholder_image)
+    )
+    Spacer(Modifier.height(4.dp))
+    DetailsItem(details = state.details)
+}
 
 private fun LazyListScope.errorItem() = item {
     ErrorItem(modifier = Modifier.fillParentMaxSize())
