@@ -42,7 +42,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.BuildConfig
 import com.actively.R
-import com.actively.map.RecorderMap
+import com.actively.map.RouteMap
 import com.actively.permissions.requestPermissionsIfNotGranted
 import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
@@ -97,7 +97,7 @@ private fun RecorderScreen(
                     .fillMaxSize()
                     .padding(it)
             ) {
-                RecorderMap(
+                RouteMap(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f), routeGeoJson = route

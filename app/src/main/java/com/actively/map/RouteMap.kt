@@ -21,7 +21,7 @@ private const val SOURCE_ID = "source-id"
 private const val LINE_LAYER_ID = "line-layer-id"
 
 @Composable
-fun RecorderMap(
+fun RouteMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
 ) {
