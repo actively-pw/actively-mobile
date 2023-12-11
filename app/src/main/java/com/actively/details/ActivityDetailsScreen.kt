@@ -152,7 +152,8 @@ private fun LazyListScope.loadedDetailsItem(state: DetailsScreenState.Loaded) =
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
             model = state.imageUrl,
-            contentDescription = null
+            contentDescription = null,
+            error = painterResource(id = R.drawable.placeholder_image)
         )
         Spacer(Modifier.height(4.dp))
         DetailsItem(details = state.details)

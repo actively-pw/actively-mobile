@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +49,8 @@ fun RecordedActivityItem(
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
             model = recordedActivity.mapUrl,
-            contentDescription = null
+            contentDescription = null,
+            error = painterResource(id = R.drawable.placeholder_image)
         )
     }
 }
