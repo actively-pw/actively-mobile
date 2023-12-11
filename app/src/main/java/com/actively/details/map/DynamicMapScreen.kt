@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.R
+import com.actively.home.ui.ErrorItem
 import com.actively.map.RouteMap
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
@@ -55,5 +56,10 @@ private fun AppBar(onBackClick: () -> Unit) {
 
 @Composable
 fun DynamicMapScreen(state: DynamicMapState) {
-    RouteMap(modifier = Modifier.fillMaxSize(), routeGeoJson = state.routeUrl)
+    if (state.isError) {
+        ErrorItem(modifier = Modifier.fillMaxSize())
+    } else {
+        RouteMap(modifier = Modifier.fillMaxSize(), routeGeoJson = state.routeUrl)
+    }
 }
+
