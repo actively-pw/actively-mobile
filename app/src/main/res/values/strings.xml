@@ -63,4 +63,5 @@
     <string name="max_speed_kmph">Max speed (km/h)</string>
     <string name="sum_ascent_meters">Sum of ascent (m)</string>
     <string name="sum_descent_meters">Sum of descent (m)</string>
+    <string name="route">Recorded route</string>
 </resources>

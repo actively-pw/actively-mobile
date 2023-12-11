@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.actively.R
 import com.actively.map.RouteMap
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.BaseScaffoldScreen
@@ -42,7 +44,7 @@ fun NavGraphBuilder.dynamicMapScreen(navController: NavController) {
 @Composable
 private fun AppBar(onBackClick: () -> Unit) {
     TopAppBar(
-        title = { Text("Route") },
+        title = { Text(stringResource(R.string.route)) },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)

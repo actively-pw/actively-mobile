@@ -64,4 +64,5 @@
     <string name="max_speed_kmph">Max prędkość (km/h)</string>
     <string name="sum_ascent_meters">Suma wzniesień (m)</string>
     <string name="sum_descent_meters">Suma spadów (m)</string>
+    <string name="route">Ślad GPS</string>
 </resources>
