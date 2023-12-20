@@ -2,6 +2,7 @@ package com.actively.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.actively.R
 import com.actively.activity.RecordedActivity
 import com.actively.details.usecase.DeleteActivityUseCase
 import com.actively.distance.Distance.Companion.inKilometers
@@ -38,16 +39,16 @@ class ActivityDetailsViewModel(
                     showConfirmDeleteDialog = false,
                     details = listOf(
                         DetailsRow(
-                            "Distance (km)" to stats.distance.inKilometers.trim(),
-                            "Max speed (km/h)" to stats.maxSpeed.trim()
+                            R.string.distance_km to stats.distance.inKilometers.trim(),
+                            R.string.max_speed_kmph to stats.maxSpeed.trim()
                         ),
                         DetailsRow(
-                            "Total time" to stats.totalTime.format(),
-                            "Sum of Ascent (m)" to stats.sumOfAscent.inWholeMeters.toString()
+                            R.string.time to stats.totalTime.format(),
+                            R.string.sum_ascent_meters to stats.sumOfAscent.inWholeMeters.toString()
                         ),
                         DetailsRow(
-                            "Avg speed (km/h)" to stats.averageSpeed.trim(),
-                            "Sum of descent (m)" to stats.sumOfDescent.inWholeMeters.toString()
+                            R.string.avg_speed_km_h to stats.averageSpeed.trim(),
+                            R.string.sum_descent_meters to stats.sumOfDescent.inWholeMeters.toString()
                         ),
                     )
                 )

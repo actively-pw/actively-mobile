@@ -18,7 +18,6 @@ sealed class DetailsScreenState {
 }
 
 data class DetailsRow(
-    val left: Pair<String, String>,
-    val right: Pair<String, String>
+    val left: Pair<Int, String>,
+    val right: Pair<Int, String>
 )
-

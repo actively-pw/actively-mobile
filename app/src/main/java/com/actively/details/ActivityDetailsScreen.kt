@@ -181,17 +181,13 @@ private fun DetailsRow(row: DetailsRow, modifier: Modifier = Modifier) {
         modifier = modifier.height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        LabeledValue(modifier = Modifier.weight(1f), label = lLabel, value = lValue)
+        LabeledValue(modifier = Modifier.weight(1f), label = stringResource(lLabel), value = lValue)
         Divider(
             Modifier
                 .width(1.dp)
                 .fillMaxHeight()
         )
-        LabeledValue(
-            modifier = Modifier.weight(1f),
-            label = rLabel,
-            value = rValue
-        )
+        LabeledValue(modifier = Modifier.weight(1f), label = stringResource(rLabel), value = rValue)
     }
 }
 
@@ -229,9 +225,12 @@ fun DetailsPreview() {
         DetailsItem(
             modifier = Modifier.fillMaxWidth(),
             details = listOf(
-                DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41"),
-                DetailsRow("Total time" to "01:20:59", "Sum of Ascent (m)" to "420"),
-                DetailsRow("Avg speed (km/h)" to "20.59", "Sum of descent (m)" to "210"),
+                DetailsRow(R.string.distance_km to "10.03", R.string.max_speed_kmph to "30.41"),
+                DetailsRow(R.string.time to "01:20:59", R.string.sum_ascent_meters to "420"),
+                DetailsRow(
+                    R.string.avg_speed_km_h to "20.59",
+                    R.string.sum_descent_meters to "210"
+                ),
             )
         )
     }
@@ -243,7 +242,7 @@ fun DetailsRowPreview() {
     ActivelyTheme {
         DetailsRow(
             modifier = Modifier.fillMaxWidth(),
-            row = DetailsRow("Distance (km)" to "10.03", "Max speed (km/h)" to "30.41")
+            row = DetailsRow(R.string.distance_km to "10.03", R.string.max_speed_kmph to "30.41")
         )
     }
 }

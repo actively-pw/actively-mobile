@@ -60,4 +60,7 @@
     <string name="delete_activity">Delete</string>
     <string name="delete_text">Activity will be permanently lost</string>
     <string name="delete_warning">Are you sure?</string>
+    <string name="max_speed_kmph">Max speed (km/h)</string>
+    <string name="sum_ascent_meters">Sum of ascent (m)</string>
+    <string name="sum_descent_meters">Sum of descent (m)</string>
 </resources>

@@ -58,4 +58,10 @@
     <string name="yesterday_at">Wczoraj o %s</string>
     <string name="recorded_date_at">%s o %s</string>
     <string name="statistics_error">Ups, coś poszło nie tak! Sprawdź swoje połączenie z internetem.</string>
+    <string name="delete_activity">Usuń</string>
+    <string name="delete_text">Aktywność przepadnie na zawsze</string>
+    <string name="delete_warning">Uwaga</string>
+    <string name="max_speed_kmph">Max prędkość (km/h)</string>
+    <string name="sum_ascent_meters">Suma wzniesień (m)</string>
+    <string name="sum_descent_meters">Suma spadów (m)</string>
 </resources>
