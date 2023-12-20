@@ -3,8 +3,8 @@ package com.actively.datasource.paged
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.testing.TestPager
-import com.actively.datasource.RecordedActivitiesDataSource
-import com.actively.datasource.RecordedActivitiesPage
+import com.actively.repository.RecordedActivitiesPage
+import com.actively.repository.RecordedActivitiesRepository
 import com.actively.stubs.stubRecordedActivity
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
@@ -17,8 +17,13 @@ import io.mockk.mockk
 class PagedRecordedActivitiesDataSourceTest : FunSpec({
 
     isolationMode = IsolationMode.InstancePerTest
-    val recordedActivitiesDataSource = mockk<RecordedActivitiesDataSource>()
-    coEvery { recordedActivitiesDataSource.get(pageSize = 5, pageNumber = 1) }.returns(
+    val recordedActivitiesRepository = mockk<RecordedActivitiesRepository>()
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 1
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (1..5).map {
                 stubRecordedActivity(id = it.toString())
@@ -26,7 +31,12 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
             nextPage = 2
         )
     )
-    coEvery { recordedActivitiesDataSource.get(pageSize = 5, pageNumber = 2) }.returns(
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 2
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (6..10).map {
                 stubRecordedActivity(id = it.toString())
@@ -34,7 +44,12 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
             nextPage = 3
         )
     )
-    coEvery { recordedActivitiesDataSource.get(pageSize = 5, pageNumber = 3) }.returns(
+    coEvery {
+        recordedActivitiesRepository.getActivitiesPage(
+            pageSize = 5,
+            pageNumber = 3
+        )
+    }.returns(
         RecordedActivitiesPage(
             data = (11..15).map {
                 stubRecordedActivity(id = it.toString())
@@ -43,7 +58,7 @@ class PagedRecordedActivitiesDataSourceTest : FunSpec({
         )
     )
     val pagedRecordedActivitiesDataSource =
-        PagedRecordedActivitiesDataSource(recordedActivitiesDataSource)
+        PagedRecordedActivitiesDataSource(recordedActivitiesRepository)
 
     test("Returns proper page on initial load") {
         val pager = TestPager(

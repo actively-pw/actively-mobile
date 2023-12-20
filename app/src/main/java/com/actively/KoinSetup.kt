@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.WorkManager
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.actively.activity.RecordedActivity
 import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.activity.usecase.CreateActivityUseCaseImpl
 import com.actively.auth.ui.login.LoginViewModel
@@ -18,14 +19,17 @@ import com.actively.datasource.ActivityRecordingDataSource
 import com.actively.datasource.ActivityRecordingDataSourceImpl
 import com.actively.datasource.AuthTokensDataSource
 import com.actively.datasource.AuthTokensDataSourceImpl
-import com.actively.datasource.RecordedActivitiesDataSource
-import com.actively.datasource.RecordedActivitiesDataSourceImpl
 import com.actively.datasource.SyncActivitiesDataSource
 import com.actively.datasource.SyncActivitiesDataSourceImpl
 import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
+import com.actively.details.ActivityDetailsViewModel
+import com.actively.details.usecase.DeleteActivityUseCase
+import com.actively.details.usecase.DeleteActivityUseCaseImpl
 import com.actively.home.ui.HomeViewModel
+import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
+import com.actively.home.usecase.GetDetailedRecordedActivityUseCaseImpl
 import com.actively.http.client.AuthorizedKtorClient
 import com.actively.http.client.AuthorizedKtorClientImpl
 import com.actively.http.client.KtorClient
@@ -59,10 +63,14 @@ import com.actively.repository.ActivityRecordingRepository
 import com.actively.repository.ActivityRecordingRepositoryImpl
 import com.actively.repository.AuthRepository
 import com.actively.repository.AuthRepositoryImpl
+import com.actively.repository.RecordedActivitiesRepository
+import com.actively.repository.RecordedActivitiesRepositoryImpl
+import com.actively.repository.StatisticsRepository
 import com.actively.repository.StatisticsRepositoryImpl
 import com.actively.splash.SplashScreenViewModel
 import com.actively.statistics.StatTabFactory
 import com.actively.statistics.StatisticsViewModel
+import com.actively.statistics.usecase.GetStatisticsUseCase
 import com.actively.statistics.usecase.GetStatisticsUseCaseImpl
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import com.actively.synchronizer.usecases.GetSyncStateUseCaseImpl
@@ -100,6 +108,14 @@ object KoinSetup {
         viewModel { RegisterViewModel(get()) }
         viewModel { SplashScreenViewModel(get()) }
         viewModel { StatisticsViewModel(get(), get()) }
+        viewModel { parameters ->
+            ActivityDetailsViewModel(
+                id = RecordedActivity.Id(parameters.get()),
+                getDetailedRecordedActivityUseCase = get(),
+                timeProvider = get(),
+                deleteActivityUseCase = get()
+            )
+        }
     }
 
     private val useCasesModule = module {
@@ -125,7 +141,9 @@ object KoinSetup {
         factory<LogInUseCase> { LogInUseCaseImpl(get()) }
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
         factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
-        factory { GetStatisticsUseCaseImpl(get()) }
+        factory<GetDetailedRecordedActivityUseCase> { GetDetailedRecordedActivityUseCaseImpl(get()) }
+        factory<GetStatisticsUseCase> { GetStatisticsUseCaseImpl(get()) }
+        factory<DeleteActivityUseCase> { DeleteActivityUseCaseImpl(get()) }
     }
 
     private val dataModule = module {
@@ -144,7 +162,7 @@ object KoinSetup {
         single<ActivityDatabase> { ActivityDatabase(get()) }
         single<ActivityRecordingDataSource> { ActivityRecordingDataSourceImpl(get()) }
         single<SyncActivitiesDataSource> { SyncActivitiesDataSourceImpl(get()) }
-        single<RecordedActivitiesDataSource> { RecordedActivitiesDataSourceImpl(get()) }
+        single<RecordedActivitiesRepository> { RecordedActivitiesRepositoryImpl(get()) }
         single<ActivityRecordingRepository> { ActivityRecordingRepositoryImpl(get(), get()) }
         single<TimeProvider> { TimeProvider(Clock.System::now) }
         single<UUIDProvider> { UUIDProviderImpl() }
@@ -154,7 +172,7 @@ object KoinSetup {
         single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
-        single { StatisticsRepositoryImpl(get()) }
+        single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
         factory { StatTabFactory() }
     }
 }

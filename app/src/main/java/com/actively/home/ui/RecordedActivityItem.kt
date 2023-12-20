@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,16 +29,19 @@ import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.ui.theme.ActivelyTheme
+import com.actively.util.RecordedTimeText
 import kotlin.time.Duration.Companion.hours
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordedActivityItem(
     recordedActivity: RecordedActivityUi,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier) {
+    Card(modifier = modifier, onClick = onClick) {
         Column(modifier = Modifier.padding(12.dp)) {
-            RecordedTimeText(recordedActivity.time)
+            RecordedTimeText(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
@@ -44,29 +49,10 @@ fun RecordedActivityItem(
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
             model = recordedActivity.mapUrl,
-            contentDescription = null
+            contentDescription = null,
+            error = painterResource(id = R.drawable.placeholder_image)
         )
     }
-}
-
-@Composable
-fun RecordedTimeText(recordedActivityTime: RecordedActivityTime) {
-    Text(
-        text = when (recordedActivityTime.prefix) {
-            is TimePrefix.Today -> stringResource(R.string.today_at, recordedActivityTime.time)
-            is TimePrefix.Yesterday -> stringResource(
-                R.string.yesterday_at,
-                recordedActivityTime.time
-            )
-
-            is TimePrefix.Date -> stringResource(
-                R.string.recorded_date_at,
-                recordedActivityTime.prefix.value,
-                recordedActivityTime.time
-            )
-        },
-        style = MaterialTheme.typography.bodySmall
-    )
 }
 
 @Composable
@@ -121,6 +107,7 @@ fun LabeledStat(label: String, value: String, modifier: Modifier = Modifier) {
 fun RecordedActivityItemPreview() {
     ActivelyTheme {
         RecordedActivityItem(
+            onClick = {},
             recordedActivity = RecordedActivityUi(
                 id = RecordedActivity.Id("1"),
                 title = "Morning activity",

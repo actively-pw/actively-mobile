@@ -23,7 +23,7 @@ class StatisticsViewModel(
             val tabs = response.getOrNull()
             _state.update {
                 it.copy(
-                    tabs = tabs?.map(statTabFactory::create) ?: emptyList(),
+                    tabs = tabs?.map(statTabFactory::create) ?: it.tabs,
                     isLoading = false,
                     isError = tabs == null
                 )

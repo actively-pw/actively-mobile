@@ -1,7 +1,7 @@
 package com.actively.datasource.factory
 
-import com.actively.datasource.RecordedActivitiesDataSource
 import com.actively.datasource.paged.PagedRecordedActivitiesDataSource
+import com.actively.repository.RecordedActivitiesRepository
 
 interface RecordedActivitiesDataSourceFactory {
 
@@ -9,7 +9,7 @@ interface RecordedActivitiesDataSourceFactory {
 }
 
 class RecordedActivitiesDataSourceFactoryImpl(
-    private val dataSource: RecordedActivitiesDataSource
+    private val dataSource: RecordedActivitiesRepository
 ) : RecordedActivitiesDataSourceFactory {
 
     override fun create() = PagedRecordedActivitiesDataSource(dataSource)

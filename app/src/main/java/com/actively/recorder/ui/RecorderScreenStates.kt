@@ -22,7 +22,7 @@ fun Activity.Stats.toState() = StatisticsState(
     totalTime = totalTime.format()
 )
 
-private fun Duration.format() = String.format(
+fun Duration.format() = String.format(
     "%02d:%02d:%02d",
     inWholeHours,
     inWholeMinutes.mod(60),
