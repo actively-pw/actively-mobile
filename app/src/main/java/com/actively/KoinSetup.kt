@@ -25,8 +25,11 @@ import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.details.ActivityDetailsViewModel
+import com.actively.details.map.DynamicMapViewModel
 import com.actively.details.usecase.DeleteActivityUseCase
 import com.actively.details.usecase.DeleteActivityUseCaseImpl
+import com.actively.details.usecase.GetDynamicMapDataUseCase
+import com.actively.details.usecase.GetDynamicMapDataUseCaseImpl
 import com.actively.home.ui.HomeViewModel
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCaseImpl
@@ -116,6 +119,12 @@ object KoinSetup {
                 deleteActivityUseCase = get()
             )
         }
+        viewModel { parameters ->
+            DynamicMapViewModel(
+                id = RecordedActivity.Id(parameters.get()),
+                getDynamicMapDataUseCase = get()
+            )
+        }
     }
 
     private val useCasesModule = module {
@@ -144,6 +153,7 @@ object KoinSetup {
         factory<GetDetailedRecordedActivityUseCase> { GetDetailedRecordedActivityUseCaseImpl(get()) }
         factory<GetStatisticsUseCase> { GetStatisticsUseCaseImpl(get()) }
         factory<DeleteActivityUseCase> { DeleteActivityUseCaseImpl(get()) }
+        factory<GetDynamicMapDataUseCase> { GetDynamicMapDataUseCaseImpl(get()) }
     }
 
     private val dataModule = module {

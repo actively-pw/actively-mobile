@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.actively.auth.ui.login.loginScreen
 import com.actively.auth.ui.register.registerScreen
 import com.actively.details.activityDetailsScreen
+import com.actively.details.map.dynamicMapScreen
 import com.actively.home.ui.homeScreen
 import com.actively.recorder.ui.recorderScreen
 import com.actively.recorder.ui.saveRecordingScreen
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     recorderScreen(navController)
                     saveRecordingScreen(navController)
                     activityDetailsScreen(navController)
+                    dynamicMapScreen(navController)
                     statisticsScreen(navController)
                 }
             }

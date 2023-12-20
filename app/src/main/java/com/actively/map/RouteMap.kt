@@ -21,7 +21,7 @@ private const val SOURCE_ID = "source-id"
 private const val LINE_LAYER_ID = "line-layer-id"
 
 @Composable
-fun RecorderMap(
+fun RouteMap(
     routeGeoJson: String?,
     modifier: Modifier = Modifier,
 ) {
@@ -49,9 +49,9 @@ fun RecorderMap(
             },
             update = { mapView ->
                 routeGeoJson?.let { geoJson ->
-                    mapView.getMapboxMap().getStyle()
-                        ?.getSourceAs<GeoJsonSource>(SOURCE_ID)
-                        ?.data(geoJson)
+                    mapView.getMapboxMap().getStyle {
+                        it.getSourceAs<GeoJsonSource>(SOURCE_ID)?.data(geoJson)
+                    }
                 }
             }
         )
