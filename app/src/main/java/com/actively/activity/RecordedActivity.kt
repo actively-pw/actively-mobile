@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 data class RecordedActivity(
     val id: Id,
     val title: String,
-    val sport: String,
+    val sport: Discipline,
     val start: Instant,
     val stats: Activity.Stats,
     val routeUrl: String,

@@ -7,7 +7,7 @@ import kotlin.time.Duration
 data class DetailedRecordedActivity(
     val id: RecordedActivity.Id,
     val title: String,
-    val sport: String,
+    val sport: Discipline,
     val start: Instant,
     val stats: Stats,
     val routeUrl: String,

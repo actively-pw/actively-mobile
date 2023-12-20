@@ -2,6 +2,7 @@ package com.actively.http.dtos
 
 import com.actively.activity.DetailedRecordedActivity
 import com.actively.activity.RecordedActivity
+import com.actively.activity.toDiscipline
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import kotlinx.datetime.Instant
@@ -13,7 +14,7 @@ import kotlin.time.Duration.Companion.milliseconds
 data class DetailedRecordedActivityDto(
     val id: String,
     val title: String,
-    val sport: Int,
+    val sport: String,
     val start: Instant,
     val stats: StatsDto,
     val routeUrl: String,
@@ -43,7 +44,7 @@ data class DetailedRecordedActivityDto(
     fun toDetailedRecordedActivity() = DetailedRecordedActivity(
         id = RecordedActivity.Id(id),
         title = title,
-        sport = "",
+        sport = sport.toDiscipline(),
         start = start,
         stats = stats.toStats(),
         routeUrl = routeUrl,
