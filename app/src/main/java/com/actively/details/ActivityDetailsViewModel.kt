@@ -39,15 +39,15 @@ class ActivityDetailsViewModel(
                     showConfirmDeleteDialog = false,
                     details = listOf(
                         DetailsRow(
-                            R.string.distance_km to stats.distance.inKilometers.trim(),
-                            R.string.max_speed_kmph to stats.maxSpeed.trim()
+                            R.string.distance_km to stats.distance.inKilometers.trimToTwoDecimalPlaces(),
+                            R.string.max_speed_kmph to stats.maxSpeed.trimToTwoDecimalPlaces()
                         ),
                         DetailsRow(
                             R.string.time to stats.totalTime.format(),
                             R.string.sum_ascent_meters to stats.sumOfAscent.inWholeMeters.toString()
                         ),
                         DetailsRow(
-                            R.string.avg_speed_km_h to stats.averageSpeed.trim(),
+                            R.string.avg_speed_km_h to stats.averageSpeed.trimToTwoDecimalPlaces(),
                             R.string.sum_descent_meters to stats.sumOfDescent.inWholeMeters.toString()
                         ),
                     )
@@ -69,5 +69,5 @@ class ActivityDetailsViewModel(
         (it as DetailsScreenState.Loaded).copy(showConfirmDeleteDialog = false)
     }
 
-    private fun Double.trim() = String.format("%.2f", this)
+    private fun Double.trimToTwoDecimalPlaces() = String.format("%.2f", this)
 }
