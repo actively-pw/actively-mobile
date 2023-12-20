@@ -49,9 +49,9 @@ fun RouteMap(
             },
             update = { mapView ->
                 routeGeoJson?.let { geoJson ->
-                    mapView.getMapboxMap().getStyle()
-                        ?.getSourceAs<GeoJsonSource>(SOURCE_ID)
-                        ?.data(geoJson)
+                    mapView.getMapboxMap().getStyle {
+                        it.getSourceAs<GeoJsonSource>(SOURCE_ID)?.data(geoJson)
+                    }
                 }
             }
         )
