@@ -25,6 +25,7 @@ import com.actively.datasource.datastore
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactory
 import com.actively.datasource.factory.RecordedActivitiesDataSourceFactoryImpl
 import com.actively.details.ActivityDetailsViewModel
+import com.actively.details.usecase.DeleteActivityUseCase
 import com.actively.details.usecase.DeleteActivityUseCaseImpl
 import com.actively.home.ui.HomeViewModel
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
@@ -64,10 +65,12 @@ import com.actively.repository.AuthRepository
 import com.actively.repository.AuthRepositoryImpl
 import com.actively.repository.RecordedActivitiesRepository
 import com.actively.repository.RecordedActivitiesRepositoryImpl
+import com.actively.repository.StatisticsRepository
 import com.actively.repository.StatisticsRepositoryImpl
 import com.actively.splash.SplashScreenViewModel
 import com.actively.statistics.StatTabFactory
 import com.actively.statistics.StatisticsViewModel
+import com.actively.statistics.usecase.GetStatisticsUseCase
 import com.actively.statistics.usecase.GetStatisticsUseCaseImpl
 import com.actively.synchronizer.usecases.GetSyncStateUseCase
 import com.actively.synchronizer.usecases.GetSyncStateUseCaseImpl
@@ -110,7 +113,7 @@ object KoinSetup {
                 id = RecordedActivity.Id(parameters.get()),
                 getDetailedRecordedActivityUseCase = get(),
                 timeProvider = get(),
-                deleteActivityUseCase = get<DeleteActivityUseCaseImpl>()
+                deleteActivityUseCase = get()
             )
         }
     }
@@ -139,8 +142,8 @@ object KoinSetup {
         factory<RegisterUseCase> { RegisterUseCaseImpl(get()) }
         factory<LogOutUseCase> { LogOutUseCaseImpl(get(), get(), get(), get()) }
         factory<GetDetailedRecordedActivityUseCase> { GetDetailedRecordedActivityUseCaseImpl(get()) }
-        factory { GetStatisticsUseCaseImpl(get()) }
-        factory { DeleteActivityUseCaseImpl(get()) }
+        factory<GetStatisticsUseCase> { GetStatisticsUseCaseImpl(get()) }
+        factory<DeleteActivityUseCase> { DeleteActivityUseCaseImpl(get()) }
     }
 
     private val dataModule = module {
@@ -169,7 +172,7 @@ object KoinSetup {
         single { androidContext().datastore }
         single<AuthTokensDataSource> { AuthTokensDataSourceImpl(get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
-        single { StatisticsRepositoryImpl(get()) }
+        single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
         factory { StatTabFactory() }
     }
 }
