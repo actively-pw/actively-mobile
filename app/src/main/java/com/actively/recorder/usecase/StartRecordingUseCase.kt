@@ -2,6 +2,7 @@ package com.actively.recorder.usecase
 
 import android.content.Context
 import android.content.Intent
+import com.actively.activity.Discipline
 import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.recorder.RecordActivityService
 import com.actively.repository.ActivityRecordingRepository
@@ -9,7 +10,7 @@ import kotlinx.datetime.Instant
 
 interface StartRecordingUseCase {
 
-    suspend operator fun invoke(sport: String, startedAt: Instant)
+    suspend operator fun invoke(sport: Discipline, startedAt: Instant)
 }
 
 class StartRecordingUseCaseImpl(
@@ -18,7 +19,7 @@ class StartRecordingUseCaseImpl(
     private val context: Context,
 ) : StartRecordingUseCase {
 
-    override suspend fun invoke(sport: String, startedAt: Instant) {
+    override suspend fun invoke(sport: Discipline, startedAt: Instant) {
         val activity = createActivityUseCase(sport = sport)
         activityRecordingRepository.insertRoutelessActivity(activity)
         activityRecordingRepository.insertEmptyRouteSlice(startedAt)

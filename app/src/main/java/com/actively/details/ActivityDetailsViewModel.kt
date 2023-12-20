@@ -34,7 +34,7 @@ class ActivityDetailsViewModel(
                 DetailsScreenState.Loaded(
                     title = it.title,
                     imageUrl = it.mapUrl,
-                    typeOfActivity = it.sport,
+                    sport = it.sport,
                     time = getActivityTimeString(start = it.start, now = timeProvider()),
                     showConfirmDeleteDialog = false,
                     details = listOf(

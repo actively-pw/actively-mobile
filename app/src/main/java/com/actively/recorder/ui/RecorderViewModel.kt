@@ -2,6 +2,7 @@ package com.actively.recorder.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.recorder.RecorderState
@@ -69,7 +70,7 @@ class RecorderViewModel(
     }
 
     fun startRecording() = viewModelScope.launch {
-        recordingControlUseCases.startRecording("Cycling", timeProvider())
+        recordingControlUseCases.startRecording(Discipline.Cycling, timeProvider())
         statsUpdates = launchStatsUpdates()
     }
 
