@@ -56,7 +56,7 @@ private fun AppBar(onBackClick: () -> Unit) {
 
 @Composable
 fun DynamicMapScreen(state: DynamicMapState) {
-    if (state.isError && state.routeUrl.isEmpty()) {
+    if (state.isError && state.routeUrl == null) {
         ErrorItem(modifier = Modifier.fillMaxSize())
     } else {
         RouteMap(modifier = Modifier.fillMaxSize(), routeGeoJson = state.routeUrl)
