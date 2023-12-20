@@ -28,6 +28,7 @@ import com.actively.details.ActivityDetailsViewModel
 import com.actively.details.map.DynamicMapViewModel
 import com.actively.details.usecase.DeleteActivityUseCase
 import com.actively.details.usecase.DeleteActivityUseCaseImpl
+import com.actively.details.usecase.GetDynamicMapDataUseCase
 import com.actively.details.usecase.GetDynamicMapDataUseCaseImpl
 import com.actively.home.ui.HomeViewModel
 import com.actively.home.usecase.GetDetailedRecordedActivityUseCase
