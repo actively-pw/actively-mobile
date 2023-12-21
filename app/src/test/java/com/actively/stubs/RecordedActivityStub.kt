@@ -1,7 +1,9 @@
 package com.actively.stubs
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.RecordedActivity
+import com.actively.activity.asString
 import com.actively.http.dtos.RecordedActivityDto
 import com.actively.http.dtos.StatsDto
 import kotlinx.datetime.Instant
@@ -11,7 +13,7 @@ import kotlin.time.Duration.Companion.hours
 fun stubRecordedActivity(
     id: String = "1",
     title: String = "Morning activity",
-    sport: Int = 0,
+    sport: Discipline = Discipline.Cycling,
     start: Instant = Instant.fromEpochMilliseconds(0),
     stats: Activity.Stats = stubActivityStats(),
     routeUrl: String = "route://activity.net/$id",
@@ -20,7 +22,7 @@ fun stubRecordedActivity(
     id = RecordedActivity.Id(id),
     title = title,
     start = start,
-    sport = sport.toString(),
+    sport = sport,
     stats = stats,
     routeUrl = routeUrl,
     mapUrl = mapUrl
@@ -29,7 +31,7 @@ fun stubRecordedActivity(
 fun stubRecordedActivityDto(
     id: String = "1",
     title: String = "Morning activity",
-    sport: Int = 0,
+    sport: Discipline = Discipline.Cycling,
     start: Instant = Instant.fromEpochMilliseconds(0),
     stats: StatsDto = stubStatsDto(),
     routeUrl: String = "route://activity.net/$id",
@@ -37,7 +39,7 @@ fun stubRecordedActivityDto(
 ) = RecordedActivityDto(
     id = id,
     title = title,
-    sport = sport,
+    sport = sport.asString(),
     start = start,
     stats = stats,
     routeUrl = routeUrl,

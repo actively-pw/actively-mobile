@@ -1,6 +1,7 @@
 package com.actively.http.dtos
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.stubs.stubRecordedActivityDto
@@ -16,7 +17,7 @@ class RecordedActivityDtoTest : FunSpec({
         val recordedActivity = RecordedActivity(
             id = RecordedActivity.Id("1"),
             title = "Morning activity",
-            sport = "",
+            sport = Discipline.Cycling,
             stats = Activity.Stats(
                 totalTime = 5.hours,
                 averageSpeed = 20.0,

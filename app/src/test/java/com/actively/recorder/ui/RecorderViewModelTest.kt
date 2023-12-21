@@ -1,5 +1,6 @@
 package com.actively.recorder.ui
 
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.recorder.RecorderState
@@ -121,7 +122,7 @@ class RecorderViewModelTest : FunSpec({
         test("Start recording calls StartRecordingUseCase") {
             viewModel.startRecording()
             coVerify(exactly = 1) {
-                useCases.startRecording("Cycling", Instant.fromEpochMilliseconds(0))
+                useCases.startRecording(Discipline.Cycling, Instant.fromEpochMilliseconds(0))
             }
         }
 

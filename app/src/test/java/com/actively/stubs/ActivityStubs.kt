@@ -1,6 +1,7 @@
 package com.actively.stubs
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance
@@ -12,7 +13,7 @@ import kotlin.time.Duration.Companion.hours
 fun stubActivity(
     id: String = "1",
     title: String? = "Morning activity",
-    sport: String = "Cycling",
+    sport: Discipline = Discipline.Cycling,
     stats: Activity.Stats = stubActivityStats(),
     route: List<RouteSlice> = stubRoute()
 ) = Activity(
