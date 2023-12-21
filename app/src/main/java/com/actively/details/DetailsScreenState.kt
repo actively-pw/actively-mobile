@@ -1,6 +1,6 @@
 package com.actively.details
 
-import com.actively.activity.Discipline
+import androidx.annotation.StringRes
 import com.actively.home.ui.RecordedActivityTime
 
 sealed class DetailsScreenState {
@@ -9,7 +9,7 @@ sealed class DetailsScreenState {
     data class Loaded(
         val title: String,
         val imageUrl: String,
-        val sport: Discipline,
+        @StringRes val sport: Int,
         val time: RecordedActivityTime,
         val showConfirmDeleteDialog: Boolean,
         val details: List<DetailsRow>

@@ -81,7 +81,7 @@ fun NavGraphBuilder.activityDetailsScreen(navController: NavController) {
 @Composable
 private fun AppBar(state: DetailsScreenState, onBackClick: () -> Unit, onDeleteClick: () -> Unit) {
     TopAppBar(
-        title = { Text(if (state is DetailsScreenState.Loaded) state.typeOfActivity else "") },
+        title = { Text(if (state is DetailsScreenState.Loaded) stringResource(state.sport) else "") },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
