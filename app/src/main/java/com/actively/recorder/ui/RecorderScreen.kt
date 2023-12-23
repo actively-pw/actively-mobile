@@ -199,9 +199,9 @@ private fun RecorderScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppBar(discipline: Discipline, onBackClick: () -> Unit) {
+private fun AppBar(discipline: Discipline?, onBackClick: () -> Unit) {
     TopAppBar(
-        title = { Text(stringResourceFor(discipline)) },
+        title = { Text(discipline?.let { stringResourceFor(it) } ?: "") },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
