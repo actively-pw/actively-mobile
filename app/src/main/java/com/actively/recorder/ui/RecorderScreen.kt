@@ -149,13 +149,16 @@ private fun RecorderScreen(
                     stats = stats
                 )
                 AnimatedVisibility(visible = disciplineState.showSelectSportButton) {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        onClick = onShowBottomSheet
-                    ) {
-                        Text(text = stringResource(id = R.string.choose_sport_discipline))
+                    Column {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            onClick = onShowBottomSheet
+                        ) {
+                            Text(text = stringResource(id = R.string.choose_sport_discipline))
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
