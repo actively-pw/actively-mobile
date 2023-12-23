@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +44,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.actively.BuildConfig
 import com.actively.R
+import com.actively.activity.Discipline
 import com.actively.map.RouteMap
 import com.actively.permissions.requestPermissionsIfNotGranted
 import com.actively.recorder.RecorderState
@@ -70,6 +73,7 @@ fun NavGraphBuilder.recorderScreen(navController: NavController) {
             onStopRecordingClick = { navController.navigate("save_screen") },
             onShowPermissionRequestDialog = viewModel::showRequestPermissionDialog,
             onDismissPermissionDialog = viewModel::dismissRequestPermissionDialog,
+            onSelectDiscipline = viewModel::selectDiscipline,
             onBackClick = { navController.popBackStack() }
         )
     }
@@ -88,6 +92,7 @@ private fun RecorderScreen(
     onStopRecordingClick: () -> Unit,
     onShowPermissionRequestDialog: () -> Unit,
     onDismissPermissionDialog: () -> Unit,
+    onSelectDiscipline: (Discipline) -> Unit,
     onBackClick: () -> Unit,
 ) {
     ActivelyTheme {
@@ -108,6 +113,16 @@ private fun RecorderScreen(
                         .align(Alignment.End),
                     stats = stats
                 )
+                AnimatedVisibility(visible = controlsState.current == RecorderState.Idle) {
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        onClick = { onSelectDiscipline(Discipline.Cycling) }
+                    ) {
+                        Text(text = stringResource(id = R.string.choose_sport_discipline))
+                    }
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 val locationPermissions = rememberMultiplePermissionsState(
                     listOf(
