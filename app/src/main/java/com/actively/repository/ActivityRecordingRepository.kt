@@ -1,6 +1,7 @@
 package com.actively.repository
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.datasource.ActivityRecordingDataSource
@@ -42,6 +43,8 @@ interface ActivityRecordingRepository {
     suspend fun removeRecordingActivity()
 
     suspend fun updateRecordingActivityTitle(title: String)
+
+    suspend fun getDiscipline(): Discipline?
 
     suspend fun clear()
 }
@@ -97,6 +100,8 @@ class ActivityRecordingRepositoryImpl(
     override suspend fun updateRecordingActivityTitle(title: String) {
         activityRecordingDataSource.updateRecordingActivityTitle(title)
     }
+
+    override suspend fun getDiscipline() = activityRecordingDataSource.getDiscipline()
 
     override suspend fun clear() {
         activityRecordingDataSource.clearDatabase()

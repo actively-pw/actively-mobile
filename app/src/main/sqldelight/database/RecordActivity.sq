@@ -72,6 +72,9 @@ WHERE activityId = (
     SELECT uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE LIMIT 1
 ) ORDER BY start ASC;
 
+getDiscipline:
+SELECT ActivityEntity.sport FROM ActivityEntity WHERE isBeingRecorded = TRUE LIMIT 1;
+
 getLatestLocationFromLastRouteSlice:
 SELECT * FROM LocationEntity
 WHERE routeSliceId IN (

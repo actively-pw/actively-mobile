@@ -58,6 +58,8 @@ interface ActivityRecordingDataSource {
 
     suspend fun removeRecordingActivity()
 
+    suspend fun getDiscipline(): Discipline?
+
     suspend fun updateRecordingActivityTitle(title: String)
 
     suspend fun clearDatabase()
@@ -188,6 +190,10 @@ class ActivityRecordingDataSourceImpl(
 
     override suspend fun removeRecordingActivity() = withContext(coroutineContext) {
         query.removeActivityThatIsBeingRecorded()
+    }
+
+    override suspend fun getDiscipline() = withContext(coroutineContext) {
+        query.getDiscipline().executeAsOneOrNull()?.toDiscipline()
     }
 
     override suspend fun updateRecordingActivityTitle(title: String) {
