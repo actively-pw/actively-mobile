@@ -113,7 +113,12 @@ private fun RecorderScreen(
     onBackClick: () -> Unit,
 ) {
     ActivelyTheme {
-        Scaffold(topBar = { AppBar(onBackClick = onBackClick) }) {
+        Scaffold(topBar = {
+            AppBar(
+                discipline = disciplineState.selectedDiscipline,
+                onBackClick = onBackClick
+            )
+        }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -191,9 +196,9 @@ private fun RecorderScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppBar(onBackClick: () -> Unit) {
+private fun AppBar(discipline: Discipline, onBackClick: () -> Unit) {
     TopAppBar(
-        title = { Text(stringResource(R.string.ride)) },
+        title = { Text(stringResourceFor(discipline)) },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
