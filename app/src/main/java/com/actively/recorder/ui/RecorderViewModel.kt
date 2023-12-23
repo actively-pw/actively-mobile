@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -70,9 +71,18 @@ class RecorderViewModel(
                 ControlsState(current = newState, previous = currentState.current)
             }
         }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            activityRecordingRepository.getState().firstOrNull()?.let { recorderState ->
+                if (recorderState is RecorderState.Idle) {
+                    _disciplineState.update { it.copy(showSelectSportButton = true) }
+                }
+            }
+        }
     }
 
     fun startRecording() = viewModelScope.launch {
+        _disciplineState.update { it.copy(showSelectSportButton = false) }
         recordingControlUseCases.startRecording(
             _disciplineState.value.selectedDiscipline,
             timeProvider()

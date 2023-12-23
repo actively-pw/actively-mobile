@@ -148,7 +148,7 @@ private fun RecorderScreen(
                         .align(Alignment.End),
                     stats = stats
                 )
-                AnimatedVisibility(visible = controlsState.current == RecorderState.Idle) {
+                AnimatedVisibility(visible = disciplineState.showSelectSportButton) {
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()

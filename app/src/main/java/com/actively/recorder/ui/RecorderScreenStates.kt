@@ -20,6 +20,7 @@ data class StatisticsState(
 data class DisciplineState(
     val disciplines: List<Discipline> = Discipline.values,
     val selectedDiscipline: Discipline = Discipline.values.first(),
+    val showSelectSportButton: Boolean = false,
     val showBottomSheet: Boolean = false
 )
 
