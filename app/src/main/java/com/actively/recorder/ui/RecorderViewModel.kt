@@ -30,8 +30,8 @@ class RecorderViewModel(
     private val activityRecordingRepository: ActivityRecordingRepository,
 ) : ViewModel() {
 
-    private val _discipline = MutableStateFlow<Discipline>(Discipline.Cycling)
-    val discipline = _discipline.asStateFlow()
+    private val _disciplineState = MutableStateFlow(DisciplineState())
+    val disciplineState = _disciplineState.asStateFlow()
 
     private val _stats = MutableStateFlow(StatisticsState())
     val stats = _stats.asStateFlow()
@@ -73,7 +73,10 @@ class RecorderViewModel(
     }
 
     fun startRecording() = viewModelScope.launch {
-        recordingControlUseCases.startRecording(_discipline.value, timeProvider())
+        recordingControlUseCases.startRecording(
+            _disciplineState.value.selectedDiscipline,
+            timeProvider()
+        )
         statsUpdates = launchStatsUpdates()
     }
 
@@ -96,8 +99,12 @@ class RecorderViewModel(
         _showPermissionRequestDialog.emit(false)
     }
 
+    fun onShowBottomSheet() = _disciplineState.update { it.copy(showBottomSheet = true) }
+
+    fun onHideBottomSheet() = _disciplineState.update { it.copy(showBottomSheet = false) }
+
     fun selectDiscipline(discipline: Discipline) {
-        _discipline.update { discipline }
+        _disciplineState.update { it.copy(selectedDiscipline = discipline) }
     }
 
     private fun launchStatsUpdates() = activityRecordingRepository.getStats()
