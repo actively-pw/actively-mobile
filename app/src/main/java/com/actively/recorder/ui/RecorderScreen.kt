@@ -60,7 +60,6 @@ import com.actively.recorder.RecorderState
 import com.actively.ui.theme.ActivelyTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -126,61 +125,12 @@ private fun RecorderScreen(
                     scope.launch { sheetState.hide() }.invokeOnCompletion { onHideBottomSheet() }
                 }
                 if (disciplineState.showBottomSheet) {
-                    ModalBottomSheet(onDismissRequest = dismissBottomSheet) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.choose_sport_discipline),
-                            style = MaterialTheme.typography.headlineMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Divider()
-                        val scrollState = rememberScrollState()
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(scrollState)
-                                .padding(8.dp)
-                        ) {
-                            val (disciplines, selectedDiscipline) = disciplineState
-                            disciplines.forEachIndexed { index, discipline ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 6.dp)
-                                        .clickable {
-                                            onSelectDiscipline(discipline)
-                                            dismissBottomSheet()
-                                        },
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    val selectionColor =
-                                        if (selectedDiscipline == discipline) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurface
-                                        }
-                                    Text(
-                                        text = stringResourceFor(discipline),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = selectionColor
-                                    )
-                                    if (selectedDiscipline == discipline) {
-                                        Icon(
-                                            Icons.Default.Check,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                                if (index != disciplines.lastIndex) {
-                                    Divider()
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
-                        }
-                    }
+                    SelectSportBottomSheet(
+                        onSelectDiscipline = onSelectDiscipline,
+                        onDismissBottomSheet = dismissBottomSheet,
+                        disciplineState = disciplineState,
+                        sheetState = sheetState
+                    )
                 }
                 RouteMap(
                     modifier = Modifier
@@ -256,12 +206,64 @@ private fun AppBar(onBackClick: () -> Unit) {
 @Composable
 private fun SelectSportBottomSheet(
     onSelectDiscipline: (Discipline) -> Unit,
-    onHideBottomSheet: () -> Unit,
+    onDismissBottomSheet: () -> Unit,
+    disciplineState: DisciplineState,
     sheetState: SheetState,
-    scope: CoroutineScope
 ) {
-    ModalBottomSheet(onDismissRequest = onHideBottomSheet) {
-
+    ModalBottomSheet(onDismissRequest = onDismissBottomSheet, sheetState = sheetState) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.choose_sport_discipline),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Divider()
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+                .padding(8.dp)
+        ) {
+            val (disciplines, selectedDiscipline) = disciplineState
+            disciplines.forEachIndexed { index, discipline ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                        .clickable {
+                            onSelectDiscipline(discipline)
+                            onDismissBottomSheet()
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val selectionColor =
+                        if (selectedDiscipline == discipline) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                    Text(
+                        text = stringResourceFor(discipline),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = selectionColor
+                    )
+                    if (selectedDiscipline == discipline) {
+                        Icon(
+                            Icons.Default.Check,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = null
+                        )
+                    }
+                }
+                if (index != disciplines.lastIndex) {
+                    Divider()
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+        }
     }
 }
 
