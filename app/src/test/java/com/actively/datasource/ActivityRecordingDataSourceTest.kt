@@ -3,6 +3,7 @@ package com.actively.datasource
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.recorder.RecorderState
@@ -37,7 +38,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateStats { stubActivityStats() }
@@ -54,7 +55,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             val expectedActivity = Activity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = stubActivityStats(),
                 route = listOf(
                     RouteSlice(
@@ -82,7 +83,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
@@ -95,7 +96,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             val firstSliceLocations = listOf(
@@ -133,7 +134,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0))
@@ -152,7 +153,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.insertEmptyRouteSlice(start = Instant.fromEpochMilliseconds(0))
@@ -182,7 +183,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.insertEmptyRouteSlice(start = Instant.fromEpochMilliseconds(0))
@@ -224,7 +225,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             val stats = stubActivityStats()
@@ -244,7 +245,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateStats { stubActivityStats() }
@@ -261,7 +262,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateStats { stubActivityStats() }
@@ -275,7 +276,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateStats { stubActivityStats() }
@@ -293,21 +294,21 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.markActivityAsRecorded()
             activityDataSource.insertActivity(
                 id = Activity.Id("2"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.removeRecordingActivity()
             activityDataSource.getActivity(id = Activity.Id("1")) shouldBe Activity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty(),
                 route = emptyList()
             )
@@ -318,28 +319,28 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.markActivityAsRecorded()
             activityDataSource.insertActivity(
                 id = Activity.Id("2"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateRecordingActivityTitle("Morning activity")
             activityDataSource.getActivity(id = Activity.Id("1")) shouldBe Activity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty(),
                 route = emptyList()
             )
             activityDataSource.getActivity(id = Activity.Id("2")) shouldBe Activity(
                 id = Activity.Id("2"),
                 title = "Morning activity",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty(),
                 route = emptyList()
             )
@@ -349,7 +350,7 @@ class ActivityRecordingDataSourceTest : FunSpec({
             activityDataSource.insertActivity(
                 id = Activity.Id("1"),
                 title = "",
-                sport = "Cycling",
+                sport = Discipline.Cycling,
                 stats = Activity.Stats.empty()
             )
             activityDataSource.updateStats { stubActivityStats() }

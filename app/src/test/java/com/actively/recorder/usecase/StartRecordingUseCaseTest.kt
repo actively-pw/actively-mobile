@@ -1,6 +1,7 @@
 package com.actively.recorder.usecase
 
 import android.content.Context
+import com.actively.activity.Discipline
 import com.actively.activity.usecase.CreateActivityUseCase
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.stubs.stubActivity
@@ -25,26 +26,28 @@ class StartRecordingUseCaseTest : FunSpec({
     )
 
     beforeTest {
-        every { createActivityUseCase.invoke(sport = "Cycling") } returns stubActivity(route = emptyList())
+        every { createActivityUseCase.invoke(sport = Discipline.Cycling) } returns stubActivity(
+            route = emptyList()
+        )
     }
 
     test("Should create activity with provided sport") {
-        startRecordingUseCase("Cycling", Instant.fromEpochMilliseconds(0))
-        verify { createActivityUseCase.invoke(sport = "Cycling") }
+        startRecordingUseCase(Discipline.Cycling, Instant.fromEpochMilliseconds(0))
+        verify { createActivityUseCase.invoke(sport = Discipline.Cycling) }
     }
 
     test("Should insert created activity to repository") {
-        startRecordingUseCase("Cycling", Instant.fromEpochMilliseconds(0))
+        startRecordingUseCase(Discipline.Cycling, Instant.fromEpochMilliseconds(0))
         coVerify { activityRecordingRepository.insertRoutelessActivity(stubActivity(route = emptyList())) }
     }
 
     test("Should insert empty route slice to repository") {
-        startRecordingUseCase("Cycling", Instant.fromEpochMilliseconds(0))
+        startRecordingUseCase(Discipline.Cycling, Instant.fromEpochMilliseconds(0))
         coVerify { activityRecordingRepository.insertEmptyRouteSlice(Instant.fromEpochMilliseconds(0)) }
     }
 
     test("Should start foreground service") {
-        startRecordingUseCase("Cycling", Instant.fromEpochMilliseconds(0))
+        startRecordingUseCase(Discipline.Cycling, Instant.fromEpochMilliseconds(0))
         verify(exactly = 1) { context.startForegroundService(any()) }
     }
 })

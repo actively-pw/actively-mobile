@@ -16,6 +16,7 @@ class SendActivityUseCaseImpl(
         recordingRepository.syncActivity(activity)
         Result.success(Unit)
     } catch (e: Exception) {
+        e.printStackTrace()
         Result.failure(e)
     }
 }

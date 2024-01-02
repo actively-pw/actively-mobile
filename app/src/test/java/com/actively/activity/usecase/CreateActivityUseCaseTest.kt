@@ -1,6 +1,7 @@
 package com.actively.activity.usecase
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.stubs.stubActivity
 import com.actively.util.UUIDProvider
 import io.kotest.core.spec.IsolationMode
@@ -11,7 +12,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.datetime.Instant
 
 class CreateActivityUseCaseTest : FunSpec({
 
@@ -24,29 +24,34 @@ class CreateActivityUseCaseTest : FunSpec({
     }
 
     test("Creates proper activity from given parameters") {
-        val startTimestamp = Instant.fromEpochMilliseconds(0)
         forAll(
             row(
-                "Cycling",
+                Discipline.Cycling,
                 "Morning activity",
                 Activity.Id("1"),
                 stubActivity(stats = Activity.Stats.empty(), route = emptyList())
             ),
             row(
-                "Cycling",
+                Discipline.Running,
                 "Morning activity",
                 null,
-                stubActivity(id = "uuid-123", stats = Activity.Stats.empty(), route = emptyList())
+                stubActivity(
+                    id = "uuid-123",
+                    stats = Activity.Stats.empty(),
+                    route = emptyList(),
+                    sport = Discipline.Running
+                )
             ),
             row(
-                "Cycling",
+                Discipline.NordicWalking,
                 null,
                 null,
                 stubActivity(
                     id = "uuid-123",
                     title = null,
                     stats = Activity.Stats.empty(),
-                    route = emptyList()
+                    route = emptyList(),
+                    sport = Discipline.NordicWalking
                 )
             ),
         ) { sport, title, id, expected ->
@@ -55,12 +60,12 @@ class CreateActivityUseCaseTest : FunSpec({
     }
 
     test("Should not call UUIDProvider if activity id was passed in parameter") {
-        createActivityUseCase(id = Activity.Id("1"), sport = "Cycling")
+        createActivityUseCase(id = Activity.Id("1"), sport = Discipline.Cycling)
         verify(exactly = 0) { uuidProvider.invoke() }
     }
 
     test("Should call UUIDProvider if no activity id was passed in parameter") {
-        createActivityUseCase(sport = "Cycling")
+        createActivityUseCase(sport = Discipline.Cycling)
         verify(exactly = 1) { uuidProvider.invoke() }
     }
 })

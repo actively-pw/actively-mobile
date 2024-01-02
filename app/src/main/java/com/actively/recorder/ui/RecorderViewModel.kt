@@ -2,6 +2,7 @@ package com.actively.recorder.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.recorder.RecorderState
@@ -28,6 +29,9 @@ class RecorderViewModel(
     private val timeProvider: TimeProvider,
     private val activityRecordingRepository: ActivityRecordingRepository,
 ) : ViewModel() {
+
+    private val _disciplineState = MutableStateFlow(DisciplineState())
+    val disciplineState = _disciplineState.asStateFlow()
 
     private val _stats = MutableStateFlow(StatisticsState())
     val stats = _stats.asStateFlow()
@@ -66,10 +70,28 @@ class RecorderViewModel(
                 ControlsState(current = newState, previous = currentState.current)
             }
         }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            _disciplineState.update {
+                it.copy(
+                    selectedDiscipline = activityRecordingRepository.getDiscipline()
+                        ?: Discipline.Cycling
+                )
+            }
+            activityRecordingRepository.getState().first().let { recorderState ->
+                if (recorderState is RecorderState.Idle || recorderState is RecorderState.Stopped) {
+                    _disciplineState.update { it.copy(showSelectSportButton = true) }
+                }
+            }
+        }
     }
 
     fun startRecording() = viewModelScope.launch {
-        recordingControlUseCases.startRecording("Cycling", timeProvider())
+        _disciplineState.update { it.copy(showSelectSportButton = false) }
+        recordingControlUseCases.startRecording(
+            _disciplineState.value.selectedDiscipline,
+            timeProvider()
+        )
         statsUpdates = launchStatsUpdates()
     }
 
@@ -90,6 +112,14 @@ class RecorderViewModel(
 
     fun dismissRequestPermissionDialog() = viewModelScope.launch {
         _showPermissionRequestDialog.emit(false)
+    }
+
+    fun onShowBottomSheet() = _disciplineState.update { it.copy(showBottomSheet = true) }
+
+    fun onHideBottomSheet() = _disciplineState.update { it.copy(showBottomSheet = false) }
+
+    fun selectDiscipline(discipline: Discipline) {
+        _disciplineState.update { it.copy(selectedDiscipline = discipline) }
     }
 
     private fun launchStatsUpdates() = activityRecordingRepository.getStats()

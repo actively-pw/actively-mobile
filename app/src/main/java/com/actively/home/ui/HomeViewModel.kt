@@ -29,6 +29,7 @@ class HomeViewModel(
             RecordedActivityUi(
                 id = it.id,
                 title = it.title,
+                sport = it.sport,
                 time = getActivityTimeString(start = it.start, now = timeProvider()),
                 stats = it.stats,
                 mapUrl = it.mapUrl

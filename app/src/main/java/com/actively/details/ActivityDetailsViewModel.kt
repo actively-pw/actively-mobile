@@ -3,6 +3,7 @@ package com.actively.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.actively.R
+import com.actively.activity.Discipline
 import com.actively.activity.RecordedActivity
 import com.actively.details.usecase.DeleteActivityUseCase
 import com.actively.distance.Distance.Companion.inKilometers
@@ -34,7 +35,7 @@ class ActivityDetailsViewModel(
                 DetailsScreenState.Loaded(
                     title = it.title,
                     imageUrl = it.mapUrl,
-                    typeOfActivity = it.sport,
+                    sport = stringResourceFor(it.sport),
                     time = getActivityTimeString(start = it.start, now = timeProvider()),
                     showConfirmDeleteDialog = false,
                     details = listOf(
@@ -67,6 +68,12 @@ class ActivityDetailsViewModel(
 
     fun onDiscardDialogue() = _state.update {
         (it as DetailsScreenState.Loaded).copy(showConfirmDeleteDialog = false)
+    }
+
+    private fun stringResourceFor(discipline: Discipline) = when (discipline) {
+        is Discipline.Cycling -> R.string.cycling
+        is Discipline.Running -> R.string.running
+        is Discipline.NordicWalking -> R.string.nordic_walking
     }
 
     private fun Double.trimToTwoDecimalPlaces() = String.format("%.2f", this)

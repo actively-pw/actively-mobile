@@ -1,6 +1,7 @@
 package com.actively.http.dtos
 
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.distance.Distance.Companion.meters
@@ -63,7 +64,7 @@ class ActivityDtoTest : FunSpec({
         val expectedActivityDto = ActivityDto(
             id = "1",
             title = "Morning activity",
-            sport = 0,
+            sport = "bicycle ride",
             stats = StatsDto(
                 duration = 51000,
                 distance = 0.54,
@@ -91,7 +92,7 @@ class ActivityDtoTest : FunSpec({
         val activity = Activity(
             id = Activity.Id("1"),
             title = "Morning activity",
-            sport = "Cycling",
+            sport = Discipline.Cycling,
             stats = Activity.Stats(51.seconds, 540.meters, 4.1),
             route = listOf(
                 RouteSlice(

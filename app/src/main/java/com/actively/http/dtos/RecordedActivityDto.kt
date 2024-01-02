@@ -1,6 +1,7 @@
 package com.actively.http.dtos
 
 import com.actively.activity.RecordedActivity
+import com.actively.activity.toDiscipline
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class RecordedActivityDto(
     val id: String,
     val title: String,
-    val sport: Int,
+    val sport: String,
     val start: Instant,
     val stats: StatsDto,
     val routeUrl: String,
@@ -18,7 +19,7 @@ data class RecordedActivityDto(
     fun toRecordedActivity() = RecordedActivity(
         id = RecordedActivity.Id(id),
         title = title,
-        sport = "",
+        sport = sport.toDiscipline(),
         start = start,
         stats = stats.toActivityStats(),
         routeUrl = routeUrl,

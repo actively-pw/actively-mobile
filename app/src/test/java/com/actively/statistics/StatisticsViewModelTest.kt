@@ -75,7 +75,11 @@ class StatisticsViewModelTest : FunSpec({
             viewModel.state.test {
                 awaitItem()
                 awaitItem() shouldBe StatisticsState(
-                    tabs = emptyList(),
+                    tabs = listOf(
+                        StatTab(sport = R.string.cycling),
+                        StatTab(sport = R.string.running),
+                        StatTab(sport = R.string.nordic_walking),
+                    ),
                     selectedTab = 0,
                     isLoading = false,
                     isError = true

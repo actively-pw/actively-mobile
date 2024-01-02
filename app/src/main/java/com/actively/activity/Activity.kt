@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.hours
 data class Activity(
     val id: Id,
     val title: String?,
-    val sport: String,
+    val sport: Discipline,
     val stats: Stats,
     val route: List<RouteSlice>
 ) {

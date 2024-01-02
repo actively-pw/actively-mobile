@@ -3,6 +3,7 @@ package com.actively.http.dtos
 import com.actively.activity.Activity
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
+import com.actively.activity.asString
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.kilometers
 import kotlinx.datetime.Instant
@@ -13,7 +14,7 @@ import kotlin.time.Duration.Companion.milliseconds
 data class ActivityDto(
     val id: String,
     val title: String,
-    val sport: Int,
+    val sport: String,
     val stats: StatsDto,
     val route: List<RouteSliceDto>,
 )
@@ -47,7 +48,7 @@ data class LocationDto(
 fun Activity.toDto() = ActivityDto(
     id = id.value,
     title = title ?: "",
-    sport = 0,
+    sport = sport.asString(),
     stats = stats.toDto(),
     route = route.map(RouteSlice::toDto)
 )

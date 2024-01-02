@@ -5,8 +5,11 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import com.actively.ActivityDatabase
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
+import com.actively.activity.asString
+import com.actively.activity.toDiscipline
 import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.meters
 import com.actively.recorder.RecorderState
@@ -35,7 +38,7 @@ interface ActivityRecordingDataSource {
     suspend fun insertActivity(
         id: Activity.Id,
         title: String?,
-        sport: String,
+        sport: Discipline,
         stats: Activity.Stats
     )
 
@@ -54,6 +57,8 @@ interface ActivityRecordingDataSource {
     suspend fun getRecordedActivitiesId(): List<Activity.Id>
 
     suspend fun removeRecordingActivity()
+
+    suspend fun getDiscipline(): Discipline?
 
     suspend fun updateRecordingActivityTitle(title: String)
 
@@ -77,7 +82,7 @@ class ActivityRecordingDataSourceImpl(
             Activity(
                 id = Activity.Id(activityWithStatsQuery.uuid),
                 title = activityWithStatsQuery.title,
-                sport = activityWithStatsQuery.sport,
+                sport = activityWithStatsQuery.sport.toDiscipline(),
                 stats = Activity.Stats(
                     totalTime = activityWithStatsQuery.totalTime.milliseconds,
                     distance = activityWithStatsQuery.totalDistanceMeters.meters,
@@ -136,10 +141,10 @@ class ActivityRecordingDataSourceImpl(
     override suspend fun insertActivity(
         id: Activity.Id,
         title: String?,
-        sport: String,
+        sport: Discipline,
         stats: Activity.Stats
     ) = query.suspendingTransaction(coroutineContext) {
-        query.insertActivity(uuid = id.value, title = title, sport = sport)
+        query.insertActivity(uuid = id.value, title = title, sport = sport.asString())
         query.insertActivityStats(
             totalTime = stats.totalTime.inWholeMilliseconds,
             totalDistanceMeters = stats.distance.inMeters,
@@ -185,6 +190,10 @@ class ActivityRecordingDataSourceImpl(
 
     override suspend fun removeRecordingActivity() = withContext(coroutineContext) {
         query.removeActivityThatIsBeingRecorded()
+    }
+
+    override suspend fun getDiscipline() = withContext(coroutineContext) {
+        query.getDiscipline().executeAsOneOrNull()?.toDiscipline()
     }
 
     override suspend fun updateRecordingActivityTitle(title: String) {
