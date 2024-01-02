@@ -1,9 +1,11 @@
 package com.actively.http.dtos
 
+import com.actively.activity.toDiscipline
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.statistics.StatPage
 import com.actively.statistics.StatsPeriod
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -20,13 +22,13 @@ data class StatisticsSummaryDto(
 @Serializable
 data class StatPageDto(
     val sport: String,
-    val avgWeekly: AvgWeeklyStatsDto,
+    @SerialName("weekly") val avgWeekly: AvgWeeklyStatsDto,
     val yearToDate: YearToDateStatsDto,
     val allTime: AllTimeStatsDto,
 ) {
 
     fun toStatPage() = StatPage(
-        sport = sport,
+        sport = sport.toDiscipline(),
         avgWeekly = avgWeekly.toAvgWeeklyStats(),
         yearToDate = yearToDate.toYearToDateStats(),
         allTime = allTime.toAllTimeStats()
@@ -37,7 +39,7 @@ data class StatPageDto(
 data class AvgWeeklyStatsDto(
     val time: Long,
     val distance: Double,
-    val activitiesNumber: Int,
+    @SerialName("activitiesCount") val activitiesNumber: Int,
 ) {
 
     fun toAvgWeeklyStats() = StatsPeriod.AvgWeekly(
@@ -51,7 +53,7 @@ data class AvgWeeklyStatsDto(
 data class YearToDateStatsDto(
     val time: Long,
     val distance: Double,
-    val activitiesNumber: Int,
+    @SerialName("activitiesCount") val activitiesNumber: Int,
     val elevationGain: Int,
 ) {
 
@@ -65,7 +67,7 @@ data class YearToDateStatsDto(
 
 @Serializable
 data class AllTimeStatsDto(
-    val activitiesNumber: Int,
+    @SerialName("activitiesCount") val activitiesNumber: Int,
     val distance: Double,
     val longestDistance: Double,
 ) {

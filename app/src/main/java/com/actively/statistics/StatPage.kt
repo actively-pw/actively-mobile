@@ -1,10 +1,11 @@
 package com.actively.statistics
 
+import com.actively.activity.Discipline
 import com.actively.distance.Distance
 import kotlin.time.Duration
 
 data class StatPage(
-    val sport: String,
+    val sport: Discipline,
     val avgWeekly: StatsPeriod.AvgWeekly,
     val yearToDate: StatsPeriod.YearToDate,
     val allTime: StatsPeriod.AllTime,
