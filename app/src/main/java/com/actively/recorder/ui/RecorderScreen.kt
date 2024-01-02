@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -44,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -245,7 +247,6 @@ private fun SelectSportBottomSheet(
                             onDismissBottomSheet()
                         },
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     val selectionColor =
                         if (selectedDiscipline == discipline) {
@@ -253,14 +254,24 @@ private fun SelectSportBottomSheet(
                         } else {
                             MaterialTheme.colorScheme.onSurface
                         }
+                    Icon(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .size(24.dp),
+                        painter = iconResourceFor(discipline),
+                        tint = selectionColor,
+                        contentDescription = null
+                    )
                     Text(
                         text = stringResourceFor(discipline),
                         style = MaterialTheme.typography.titleLarge,
                         color = selectionColor
                     )
+                    Spacer(Modifier.weight(1f))
                     if (selectedDiscipline == discipline) {
                         Icon(
-                            Icons.Default.Check,
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.Default.Check,
                             tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null
                         )
@@ -385,6 +396,15 @@ private fun stringResourceFor(discipline: Discipline) = stringResource(
         is Discipline.Cycling -> R.string.cycling
         is Discipline.Running -> R.string.running
         is Discipline.NordicWalking -> R.string.nordic_walking
+    }
+)
+
+@Composable
+private fun iconResourceFor(discipline: Discipline) = painterResource(
+    when (discipline) {
+        is Discipline.Cycling -> R.drawable.cycling
+        is Discipline.Running -> R.drawable.running
+        is Discipline.NordicWalking -> R.drawable.nordic_walking
     }
 )
 

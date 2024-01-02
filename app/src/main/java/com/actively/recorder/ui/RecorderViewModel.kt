@@ -89,7 +89,7 @@ class RecorderViewModel(
     fun startRecording() = viewModelScope.launch {
         _disciplineState.update { it.copy(showSelectSportButton = false) }
         recordingControlUseCases.startRecording(
-            _disciplineState.value.selectedDiscipline!!,
+            _disciplineState.value.selectedDiscipline,
             timeProvider()
         )
         statsUpdates = launchStatsUpdates()
