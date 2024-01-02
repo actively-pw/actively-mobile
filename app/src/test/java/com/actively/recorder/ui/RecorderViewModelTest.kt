@@ -1,5 +1,6 @@
 package com.actively.recorder.ui
 
+import app.cash.turbine.test
 import com.actively.activity.Discipline
 import com.actively.activity.Location
 import com.actively.activity.RouteSlice
@@ -16,6 +17,7 @@ import com.mapbox.geojson.LineString
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -50,6 +52,7 @@ class RecorderViewModelTest : FunSpec({
         every { repository.getRoute() } returns flowOf(stubRoute())
         every { repository.getStats() } returns flowOf(stubActivityStats(), stubActivityStats())
         every { repository.getState() } returns flowOf(RecorderState.Idle)
+        coEvery { repository.getDiscipline() } returns Discipline.Cycling
         val recorderViewModel = RecorderViewModel(useCases, timeProvider, repository)
 
         test("Calls repository to get flow of route") {
@@ -63,7 +66,7 @@ class RecorderViewModelTest : FunSpec({
         }
 
         test("Calls repository to get flow of recording state") {
-            verify(exactly = 2) { repository.getState() }
+            verify(exactly = 3) { repository.getState() }
         }
 
         test("Properly sets recorder state") {
@@ -110,6 +113,22 @@ class RecorderViewModelTest : FunSpec({
             )
             recorderViewModel.stats.value shouldBe expectedStats
         }
+
+        test("Sets showSelectSport button to true if recorder state is Idle") {
+            every { repository.getState() } returns flowOf(RecorderState.Idle)
+            val recorderViewModel = RecorderViewModel(useCases, timeProvider, repository)
+            recorderViewModel.disciplineState.test {
+                awaitItem() shouldBe DisciplineState(showSelectSportButton = true)
+            }
+        }
+
+        test("Sets showSelectSport button to true if recorder state is Stopped") {
+            every { repository.getState() } returns flowOf(RecorderState.Stopped)
+            val recorderViewModel = RecorderViewModel(useCases, timeProvider, repository)
+            recorderViewModel.disciplineState.test {
+                awaitItem() shouldBe DisciplineState(showSelectSportButton = true)
+            }
+        }
     }
 
     context("Interactions with view model") {
@@ -117,6 +136,7 @@ class RecorderViewModelTest : FunSpec({
         every { repository.getRoute() } returns flowOf(stubRoute())
         every { repository.getStats() } returns flowOf(stubActivityStats(), stubActivityStats())
         every { repository.getState() } returns flowOf(RecorderState.Idle)
+        coEvery { repository.getDiscipline() } returns Discipline.Cycling
         val viewModel = RecorderViewModel(useCases, timeProvider, repository)
 
         test("Start recording calls StartRecordingUseCase") {
