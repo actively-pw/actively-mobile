@@ -26,12 +26,12 @@
     <string name="password">Hasło</string>
     <string name="password_textfield_supporting_text">Hasło musi zawierać co najmniej 8 znaków.</string>
     <string name="log_in_screen_header">Zaloguj się do Actively</string>
-    <string name="log_in">Zaloguj sie</string>
+    <string name="log_in">Zaloguj się</string>
     <string name="sign_up">Zarejestruj się</string>
     <string name="create_an_account">Stwórz konto</string>
     <string name="ok">OK</string>
     <string name="invalid_credentials_message">Email lub hasło są niepoprawne. Spróbuj ponownie.</string>
-    <string name="email_already_taken">Konto z podanym adresem email już istnieje.</string>
+    <string name="email_already_taken">Konto z podanym adresem email już istnieje</string>
     <string name="track_your_active_life_in_one_place">Śledź swoje aktywności sportowe w jednym miejscu</string>
     <string name="join_for_free">Dołącz za darmo</string>
     <string name="logout">Wyloguj</string>
