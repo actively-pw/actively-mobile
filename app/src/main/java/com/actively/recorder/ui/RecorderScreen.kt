@@ -258,7 +258,7 @@ private fun SelectSportBottomSheet(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .size(24.dp),
-                        painter = iconResourceFor(discipline),
+                        painter = disciplineIconResourceFor(discipline),
                         tint = selectionColor,
                         contentDescription = null
                     )
@@ -400,7 +400,7 @@ private fun stringResourceFor(discipline: Discipline) = stringResource(
 )
 
 @Composable
-private fun iconResourceFor(discipline: Discipline) = painterResource(
+fun disciplineIconResourceFor(discipline: Discipline) = painterResource(
     when (discipline) {
         is Discipline.Cycling -> R.drawable.cycling
         is Discipline.Running -> R.drawable.running

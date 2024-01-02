@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,9 +28,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.actively.R
 import com.actively.activity.Activity
+import com.actively.activity.Discipline
 import com.actively.activity.RecordedActivity
 import com.actively.distance.Distance.Companion.inKilometers
 import com.actively.distance.Distance.Companion.kilometers
+import com.actively.recorder.ui.disciplineIconResourceFor
 import com.actively.ui.theme.ActivelyTheme
 import com.actively.util.RecordedTimeText
 import kotlin.time.Duration.Companion.hours
@@ -41,7 +46,15 @@ fun RecordedActivityItem(
 ) {
     Card(modifier = modifier, onClick = onClick) {
         Column(modifier = Modifier.padding(12.dp)) {
-            RecordedTimeText(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.size(18.dp),
+                    painter = disciplineIconResourceFor(recordedActivity.sport),
+                    contentDescription = null
+                )
+                Spacer(Modifier.width(6.dp))
+                RecordedTimeText(recordedActivity.time, style = MaterialTheme.typography.bodySmall)
+            }
             Text(recordedActivity.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(6.dp))
             StatisticsRow(modifier = Modifier.fillMaxWidth(), stats = recordedActivity.stats)
@@ -111,6 +124,7 @@ fun RecordedActivityItemPreview() {
             recordedActivity = RecordedActivityUi(
                 id = RecordedActivity.Id("1"),
                 title = "Morning activity",
+                sport = Discipline.Cycling,
                 time = RecordedActivityTime(
                     time = "10:15",
                     prefix = TimePrefix.Date("13 November 2023")
