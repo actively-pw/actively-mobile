@@ -1,6 +1,7 @@
 package com.actively.details
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -159,7 +160,7 @@ private fun LazyListScope.loadedDetailsItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onNavigateToDynamicMap),
-        model = state.imageUrl,
+        model = if (isSystemInDarkTheme()) state.darkMapUrl else state.lightMapUrl,
         contentDescription = null,
         error = painterResource(id = R.drawable.placeholder_image)
     )

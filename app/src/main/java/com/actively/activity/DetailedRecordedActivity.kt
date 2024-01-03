@@ -11,7 +11,8 @@ data class DetailedRecordedActivity(
     val start: Instant,
     val stats: Stats,
     val routeUrl: String,
-    val mapUrl: String,
+    val lightMapUrl: String,
+    val darkMapUrl: String,
 ) {
 
     data class Stats(

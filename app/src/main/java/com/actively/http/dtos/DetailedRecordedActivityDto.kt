@@ -18,7 +18,8 @@ data class DetailedRecordedActivityDto(
     val start: Instant,
     val stats: StatsDto,
     val routeUrl: String,
-    @SerialName("staticMapUrl") val mapUrl: String,
+    val lightStaticMapUrl: String,
+    val darkStaticMapUrl: String,
 ) {
 
     @Serializable
@@ -48,6 +49,7 @@ data class DetailedRecordedActivityDto(
         start = start,
         stats = stats.toStats(),
         routeUrl = routeUrl,
-        mapUrl = mapUrl,
+        lightMapUrl = lightStaticMapUrl,
+        darkMapUrl = darkStaticMapUrl,
     )
 }
