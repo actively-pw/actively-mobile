@@ -42,7 +42,7 @@ class RecordedActivitiesRepositoryImpl(
                 parameters.append("ItemsPerPage", pageSize.toString())
             }
             headers {
-                append("staticMapType", "mobileLight")
+                append("staticMapType", "mobile")
             }
         }
         return RecordedActivitiesPage(
@@ -57,7 +57,7 @@ class RecordedActivitiesRepositoryImpl(
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)
             headers {
-                append("staticMapType", "mobileLight")
+                append("staticMapType", "mobile")
             }
         }
         return response.body<DetailedRecordedActivityDto>().toDetailedRecordedActivity()
@@ -68,7 +68,7 @@ class RecordedActivitiesRepositoryImpl(
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)
             headers {
-                append("staticMapType", "mobileLight")
+                append("staticMapType", "mobile")
             }
         }
         return response.body<DynamicMapDataDto>().toDynamicMapData()

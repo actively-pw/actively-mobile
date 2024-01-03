@@ -1,5 +1,6 @@
 package com.actively.http.dtos
 
+import com.actively.activity.Discipline
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
 import com.actively.statistics.StatsPeriod
@@ -56,7 +57,7 @@ class StatisticsSummaryDtoTest : FunSpec({
 
     test("Correctly maps StatPageDto to StatPage") {
         val dto = StatPageDto(
-            sport = "cycling",
+            sport = "bicycle ride",
             avgWeekly = AvgWeeklyStatsDto(
                 time = 3_600_000,
                 activitiesNumber = 1,
@@ -80,7 +81,7 @@ class StatisticsSummaryDtoTest : FunSpec({
     test("Correctly maps StatisticsSummaryDto to StatPage list") {
         val dto = StatisticsSummaryDto(
             cycling = StatPageDto(
-                sport = "cycling",
+                sport = "bicycle ride",
                 avgWeekly = AvgWeeklyStatsDto(
                     time = 3_600_000,
                     activitiesNumber = 1,
@@ -99,7 +100,7 @@ class StatisticsSummaryDtoTest : FunSpec({
                 )
             ),
             running = StatPageDto(
-                sport = "running",
+                sport = "run",
                 avgWeekly = AvgWeeklyStatsDto(
                     time = 3_600_000,
                     activitiesNumber = 1,
@@ -118,7 +119,7 @@ class StatisticsSummaryDtoTest : FunSpec({
                 )
             ),
             nordicWalking = StatPageDto(
-                sport = "nordic_walking",
+                sport = "nordic walking",
                 avgWeekly = AvgWeeklyStatsDto(
                     time = 3_600_000,
                     activitiesNumber = 1,
@@ -138,9 +139,9 @@ class StatisticsSummaryDtoTest : FunSpec({
             )
         )
         dto.toStatPageList() shouldBe listOf(
-            stubStatPage(sport = "cycling"),
-            stubStatPage(sport = "running"),
-            stubStatPage(sport = "nordic_walking")
+            stubStatPage(sport = Discipline.Cycling),
+            stubStatPage(sport = Discipline.Running),
+            stubStatPage(sport = Discipline.NordicWalking)
         )
     }
 })

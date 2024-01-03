@@ -2,6 +2,7 @@ package com.actively.statistics
 
 import app.cash.turbine.test
 import com.actively.R
+import com.actively.activity.Discipline
 import com.actively.statistics.usecase.GetStatisticsUseCase
 import com.actively.stubs.stubStatPage
 import io.kotest.core.spec.IsolationMode
@@ -28,9 +29,9 @@ class StatisticsViewModelTest : FunSpec({
         delay(500.milliseconds)
         Result.success(
             listOf(
-                stubStatPage(sport = "cycling"),
-                stubStatPage(sport = "running"),
-                stubStatPage(sport = "nordic_walking")
+                stubStatPage(sport = Discipline.Cycling),
+                stubStatPage(sport = Discipline.Running),
+                stubStatPage(sport = Discipline.NordicWalking)
             )
         )
     }

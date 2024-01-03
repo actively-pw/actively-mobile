@@ -8,7 +8,8 @@ sealed class DetailsScreenState {
     object Loading : DetailsScreenState()
     data class Loaded(
         val title: String,
-        val imageUrl: String,
+        val lightMapUrl: String,
+        val darkMapUrl: String,
         @StringRes val sport: Int,
         val time: RecordedActivityTime,
         val showConfirmDeleteDialog: Boolean,

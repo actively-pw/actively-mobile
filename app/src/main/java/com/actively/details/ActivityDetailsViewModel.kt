@@ -34,7 +34,8 @@ class ActivityDetailsViewModel(
                 val stats = it.stats
                 DetailsScreenState.Loaded(
                     title = it.title,
-                    imageUrl = it.mapUrl,
+                    lightMapUrl = it.lightMapUrl,
+                    darkMapUrl = it.darkMapUrl,
                     sport = stringResourceFor(it.sport),
                     time = getActivityTimeString(start = it.start, now = timeProvider()),
                     showConfirmDeleteDialog = false,

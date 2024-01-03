@@ -10,5 +10,6 @@ data class RecordedActivityUi(
     val sport: Discipline,
     val time: RecordedActivityTime,
     val stats: Activity.Stats,
-    val mapUrl: String,
+    val lightMapUrl: String,
+    val darkMapUrl: String,
 )

@@ -32,7 +32,8 @@ class HomeViewModel(
                 sport = it.sport,
                 time = getActivityTimeString(start = it.start, now = timeProvider()),
                 stats = it.stats,
-                mapUrl = it.mapUrl
+                lightMapUrl = it.lightMapUrl,
+                darkMapUrl = it.darkMapUrl
             )
         }
     }
