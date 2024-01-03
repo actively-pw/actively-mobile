@@ -1,5 +1,6 @@
 package com.actively.statistics.usecase
 
+import com.actively.activity.Discipline
 import com.actively.repository.StatisticsRepository
 import com.actively.stubs.stubStatPage
 import io.kotest.core.spec.IsolationMode
@@ -22,7 +23,10 @@ class GetStatisticsUseCaseTest : FunSpec({
     }
 
     test("Wraps repository's return in Result.success if no exception was thrown") {
-        val allStats = listOf(stubStatPage(sport = "cycling"), stubStatPage(sport = "running"))
+        val allStats = listOf(
+            stubStatPage(sport = Discipline.Cycling),
+            stubStatPage(sport = Discipline.Running)
+        )
         coEvery { repository.getAllStatistics() } returns allStats
         useCase() shouldBe Result.success(allStats)
     }

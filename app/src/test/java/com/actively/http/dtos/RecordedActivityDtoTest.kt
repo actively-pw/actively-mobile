@@ -24,7 +24,8 @@ class RecordedActivityDtoTest : FunSpec({
                 distance = 100.kilometers
             ),
             routeUrl = "route://activity.net/1",
-            mapUrl = "image://activity.net/1",
+            lightMapUrl = "image://activity.net/light/1",
+            darkMapUrl = "image://activity.net/dark/1",
             start = Instant.fromEpochMilliseconds(0)
         )
         dto.toRecordedActivity() shouldBe recordedActivity

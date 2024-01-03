@@ -1,5 +1,6 @@
 package com.actively.stubs
 
+import com.actively.activity.Discipline
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.kilometers
 import com.actively.distance.Distance.Companion.meters
@@ -9,7 +10,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
 fun stubStatPage(
-    sport: String = "cycling",
+    sport: Discipline = Discipline.Cycling,
     avgWeekly: StatsPeriod.AvgWeekly = stubWeeklyStats(),
     yearToDate: StatsPeriod.YearToDate = stubYearlyStats(),
     allTime: StatsPeriod.AllTime = stubAllTimeStats(),

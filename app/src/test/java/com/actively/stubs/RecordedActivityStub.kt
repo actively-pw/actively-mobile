@@ -17,7 +17,8 @@ fun stubRecordedActivity(
     start: Instant = Instant.fromEpochMilliseconds(0),
     stats: Activity.Stats = stubActivityStats(),
     routeUrl: String = "route://activity.net/$id",
-    mapUrl: String = "image://activity.net/$id",
+    lightMapUrl: String = "image://activity.net/light/$id",
+    darkMapUrl: String = "image://activity.net/dark/$id",
 ) = RecordedActivity(
     id = RecordedActivity.Id(id),
     title = title,
@@ -25,7 +26,8 @@ fun stubRecordedActivity(
     sport = sport,
     stats = stats,
     routeUrl = routeUrl,
-    mapUrl = mapUrl
+    lightMapUrl = lightMapUrl,
+    darkMapUrl = darkMapUrl
 )
 
 fun stubRecordedActivityDto(
@@ -35,7 +37,8 @@ fun stubRecordedActivityDto(
     start: Instant = Instant.fromEpochMilliseconds(0),
     stats: StatsDto = stubStatsDto(),
     routeUrl: String = "route://activity.net/$id",
-    mapUrl: String = "image://activity.net/$id",
+    lightMapUrl: String = "image://activity.net/light/$id",
+    darkMapUrl: String = "image://activity.net/dark/$id",
 ) = RecordedActivityDto(
     id = id,
     title = title,
@@ -43,7 +46,8 @@ fun stubRecordedActivityDto(
     start = start,
     stats = stats,
     routeUrl = routeUrl,
-    staticMapUrl = mapUrl,
+    lightStaticMapUrl = lightMapUrl,
+    darkStaticMapUrl = darkMapUrl,
 )
 
 fun stubStatsDto(
