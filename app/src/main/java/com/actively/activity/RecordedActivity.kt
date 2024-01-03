@@ -9,7 +9,8 @@ data class RecordedActivity(
     val start: Instant,
     val stats: Activity.Stats,
     val routeUrl: String,
-    val mapUrl: String,
+    val lightMapUrl: String,
+    val darkMapUrl: String
 ) {
 
     data class Id(val value: String)
