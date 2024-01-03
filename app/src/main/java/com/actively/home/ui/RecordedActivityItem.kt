@@ -1,5 +1,6 @@
 package com.actively.home.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -61,7 +62,7 @@ fun RecordedActivityItem(
         }
         AsyncImage(
             modifier = Modifier.fillMaxWidth(),
-            model = recordedActivity.mapUrl,
+            model = if (isSystemInDarkTheme()) recordedActivity.darkMapUrl else recordedActivity.lightMapUrl,
             contentDescription = null,
             error = painterResource(id = R.drawable.placeholder_image)
         )
@@ -134,7 +135,8 @@ fun RecordedActivityItemPreview() {
                     totalTime = 1.5.hours,
                     averageSpeed = 15.0,
                 ),
-                mapUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1OPqbJf7_yYS3uYolCHNavStsb0p-5xA8JgTBp-3eFA&s"
+                lightMapUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1OPqbJf7_yYS3uYolCHNavStsb0p-5xA8JgTBp-3eFA&s",
+                darkMapUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1OPqbJf7_yYS3uYolCHNavStsb0p-5xA8JgTBp-3eFA&s"
             )
         )
     }
