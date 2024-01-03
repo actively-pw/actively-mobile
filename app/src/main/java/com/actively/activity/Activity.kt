@@ -40,7 +40,8 @@ data class RouteSlice(
 data class Location(
     val timestamp: Instant,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val altitude: Distance,
 ) {
 
     fun toPoint(): Point = Point.fromLngLat(longitude, latitude)
@@ -55,5 +56,6 @@ data class Location(
 fun AndroidLocation.toLocation() = Location(
     latitude = latitude,
     longitude = longitude,
+    altitude = altitude.meters,
     timestamp = Instant.fromEpochMilliseconds(time)
 )

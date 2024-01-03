@@ -41,7 +41,7 @@ class RecordActivityUseCaseTest : FunSpec({
         every { timeProvider.invoke() } returns Instant.fromEpochMilliseconds(1000)
         val latestLocation = stubLocation()
         every {
-            locationProvider.userLocation(4.seconds, 2.seconds, 1.5.meters)
+            locationProvider.userLocation(6.seconds, 3.5.seconds, 6.meters)
         } returns flowOf(latestLocation)
         coEvery { activityRecordingRepository.updateStats(any()) } coAnswers { Activity.Stats.empty() }
         coEvery { activityRecordingRepository.getLatestRouteLocation() } returns null
@@ -105,7 +105,7 @@ class RecordActivityUseCaseTest : FunSpec({
         val latestLocation = stubLocation(latitude = 0.001, longitude = 0.001)
         every { timeProvider.invoke() } returns Instant.fromEpochMilliseconds(2000)
         every {
-            locationProvider.userLocation(4.seconds, 2.seconds, 1.5.meters)
+            locationProvider.userLocation(6.seconds, 3.5.seconds, 6.meters)
         } returns flowOf(latestLocation)
         coEvery { activityRecordingRepository.getLatestRouteLocation() } returns previousLocation
         coEvery { activityRecordingRepository.getStats() } returns flowOf(

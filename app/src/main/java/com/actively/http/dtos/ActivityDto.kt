@@ -5,6 +5,7 @@ import com.actively.activity.Location
 import com.actively.activity.RouteSlice
 import com.actively.activity.asString
 import com.actively.distance.Distance.Companion.inKilometers
+import com.actively.distance.Distance.Companion.inMeters
 import com.actively.distance.Distance.Companion.kilometers
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -43,6 +44,7 @@ data class LocationDto(
     val timestamp: Instant,
     val latitude: Double,
     val longitude: Double,
+    val altitude: Double
 )
 
 fun Activity.toDto() = ActivityDto(
@@ -64,7 +66,7 @@ fun RouteSlice.toDto() = RouteSliceDto(
     locations = locations.map(Location::toDto)
 )
 
-fun Location.toDto() = LocationDto(timestamp, latitude, longitude)
+fun Location.toDto() = LocationDto(timestamp, latitude, longitude, altitude.inMeters)
 
 
 

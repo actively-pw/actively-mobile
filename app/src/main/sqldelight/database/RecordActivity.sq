@@ -25,6 +25,7 @@ CREATE TABLE LocationEntity(
     timestamp INTEGER NOT NULL,
     latitude REAL NOT NULL,
     longitude REAL NOT NULL,
+    altitude REAL NOT NULL,
     PRIMARY KEY (routeSliceId, timestamp),
     FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id) ON DELETE CASCADE
 );
@@ -54,7 +55,8 @@ SELECT
     RouteSliceEntity.start,
     LocationEntity.timestamp,
     LocationEntity.latitude,
-    LocationEntity.longitude
+    LocationEntity.longitude,
+    LocationEntity.altitude
 FROM RouteSliceEntity
 LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
 WHERE activityId = :id ORDER BY start ASC;
@@ -65,7 +67,8 @@ SELECT
     RouteSliceEntity.start,
     LocationEntity.timestamp,
     LocationEntity.latitude,
-    LocationEntity.longitude
+    LocationEntity.longitude,
+    LocationEntity.altitude
 FROM RouteSliceEntity
 LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
 WHERE activityId = (
@@ -101,8 +104,8 @@ SELECT ?, uuid, ? FROM ActivityEntity WHERE isBeingRecorded = TRUE;
 
 insertLocationToLatestRouteSlice:
 INSERT OR REPLACE
-INTO LocationEntity(routeSliceId, latitude, longitude, timestamp)
-SELECT RouteSliceEntity.id, ?, ?, ? FROM RouteSliceEntity WHERE activityId = (
+INTO LocationEntity(routeSliceId, latitude, longitude, altitude, timestamp)
+SELECT RouteSliceEntity.id, ?, ?, ?, ? FROM RouteSliceEntity WHERE activityId = (
     SELECT ActivityEntity.uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE
 ) ORDER BY start DESC LIMIT 1;
 
