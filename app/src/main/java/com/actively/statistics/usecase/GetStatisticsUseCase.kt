@@ -15,6 +15,7 @@ class GetStatisticsUseCaseImpl(
     override suspend fun invoke(): Result<List<StatPage>> = try {
         Result.success(statisticsRepository.getAllStatistics())
     } catch (e: Exception) {
+        e.printStackTrace()
         Result.failure(e)
     }
 }

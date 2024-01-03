@@ -18,7 +18,7 @@ class StatisticsRepositoryImpl(
 ) : StatisticsRepository {
 
     override suspend fun getAllStatistics(): List<StatPage> {
-        val response = client.request("/Statistics") {
+        val response = client.request("/Users/summaryStatistics") {
             method = HttpMethod.Get
             contentType(ContentType.Application.Json)
         }

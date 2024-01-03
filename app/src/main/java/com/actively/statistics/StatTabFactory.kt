@@ -1,6 +1,7 @@
 package com.actively.statistics
 
 import com.actively.R
+import com.actively.activity.Discipline
 import com.actively.distance.Distance
 import com.actively.distance.Distance.Companion.inWholeKilometers
 import com.actively.distance.Distance.Companion.inWholeMeters
@@ -9,10 +10,9 @@ import kotlin.time.Duration
 class StatTabFactory {
 
     fun create(page: StatPage) = when (page.sport) {
-        "cycling" -> cyclingTab(page)
-        "running" -> runningTab(page)
-        "nordic_walking" -> nordicWalingTab(page)
-        else -> error("Unsupported sport ${page.sport}")
+        is Discipline.Cycling -> cyclingTab(page)
+        is Discipline.Running -> runningTab(page)
+        is Discipline.NordicWalking -> nordicWalingTab(page)
     }
 
     private fun cyclingTab(page: StatPage) = StatTab(

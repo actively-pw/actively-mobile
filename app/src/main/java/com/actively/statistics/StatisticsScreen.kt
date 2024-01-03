@@ -56,7 +56,7 @@ fun NavGraphBuilder.statisticsScreen(navController: NavController) {
                 navController = navController,
                 topBar = {
                     TopAppBar(
-                        title = { Text("Statistics") },
+                        title = { Text(stringResource(id = R.string.statistics)) },
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(Icons.Default.ArrowBack, contentDescription = null)
