@@ -28,5 +28,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Actively"
+rootProject.name = "My FitBook"
 include(":app")
