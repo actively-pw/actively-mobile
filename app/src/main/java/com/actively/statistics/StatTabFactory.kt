@@ -96,7 +96,7 @@ class StatTabFactory {
     private fun formatDuration(duration: Duration) = String.format(
         "%dh %dm",
         duration.inWholeHours,
-        duration.inWholeSeconds % 60
+        duration.inWholeMinutes % 60
     )
 
     private fun formatDistance(dist: Distance) = String.format("%d km", dist.inWholeKilometers)
