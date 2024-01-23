@@ -1,5 +1,23 @@
 [versions]
-agp = "8.2.0-alpha13"
+accompanist-permissions = "0.30.1"
+agp = "8.2.0-rc03"
+coil-compose = "2.5.0"
+datastore-preferences = "1.0.0"
+kotlinx-datetime = "0.4.0"
+navigation-compose = "2.7.3"
+paging-compose = "3.3.0-alpha02"
+paging-runtime-ktx = "3.3.0-alpha02"
+paging-testing = "3.2.0-alpha05"
+sqldelight = "2.0.0"
+sqldelight-plugin = "2.0.0"
+sqldelight-test-driver = "2.0.0"
+sqldelight-coroutines = "2.0.0"
+koin-android = "3.4.3"
+koin-androidx-compose = "3.4.6"
+kotest-assertions-core = "5.6.2"
+kotest-runner-junit5 = "5.6.2"
+mapbox = "10.15.0"
+mapbox-turf = "6.13.0"
 kotlin = "1.8.10"
 core-ktx = "1.9.0"
 junit = "4.13.2"
@@ -8,8 +26,33 @@ espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.1"
 activity-compose = "1.7.2"
 compose-bom = "2023.03.00"
+mockk = "1.13.5"
+play-services-location = "21.0.1"
+androidx-work = "2.9.0-beta01"
+ktor = "2.3.4"
+serialization = "1.8.10"
+turbine = "1.0.0"
+pullrefresh = "1.0.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging-runtime-ktx" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging-runtime-ktx" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging-testing" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+sqldelight = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-test-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight-test-driver" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-coroutines" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-androidx-compose" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions-core" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-runner-junit5" }
+mapbox = { module = "com.mapbox.maps:android", version.ref = "mapbox" }
+mapbox-turf = { module = "com.mapbox.mapboxsdk:mapbox-sdk-turf", version.ref = "mapbox-turf" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
@@ -17,6 +60,16 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
+androidx-work = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -24,8 +77,10 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+pullrefresh = { module = "eu.bambooapps:compose-material3-pullrefresh", version.ref = "pullrefresh" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight-plugin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }

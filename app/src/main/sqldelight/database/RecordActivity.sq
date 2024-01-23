@@ -1,0 +1,139 @@
+CREATE TABLE ActivityEntity(
+    uuid TEXT NOT NULL PRIMARY KEY,
+    title TEXT,
+    sport TEXT NOT NULL,
+    isBeingRecorded INTEGER NOT NULL
+);
+
+CREATE TABLE ActivityStatsEntity(
+    activityId TEXT UNIQUE NOT NULL PRIMARY KEY,
+    totalTime INTEGER NOT NULL,
+    totalDistanceMeters REAL NOT NULL,
+    averageSpeed REAL NOT NULL,
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE RouteSliceEntity(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    activityId TEXT NOT NULL,
+    start INTEGER NOT NULL,
+    FOREIGN KEY (activityId) REFERENCES ActivityEntity (uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE LocationEntity(
+    routeSliceId INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    altitude REAL NOT NULL,
+    PRIMARY KEY (routeSliceId, timestamp),
+    FOREIGN KEY (routeSliceId) REFERENCES RouteSliceEntity (id) ON DELETE CASCADE
+);
+
+CREATE TABLE RecorderStateEntity(
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    state TEXT NOT NULL
+);
+
+getActivity:
+SELECT * FROM ActivityEntity
+INNER JOIN ActivityStatsEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
+WHERE uuid = :id;
+
+getRecordedActivitiesId:
+SELECT uuid FROM ActivityEntity
+WHERE isBeingRecorded = FALSE;
+
+getActivityStats:
+SELECT totalTime, totalDistanceMeters, averageSpeed FROM ActivityStatsEntity
+INNER JOIN ActivityEntity ON ActivityStatsEntity.activityId = ActivityEntity.uuid
+WHERE isBeingRecorded = TRUE LIMIT 1;
+
+getRouteByActivityId:
+SELECT
+    RouteSliceEntity.id,
+    RouteSliceEntity.start,
+    LocationEntity.timestamp,
+    LocationEntity.latitude,
+    LocationEntity.longitude,
+    LocationEntity.altitude
+FROM RouteSliceEntity
+LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
+WHERE activityId = :id ORDER BY start ASC;
+
+getRecordingRoute:
+SELECT
+    RouteSliceEntity.id,
+    RouteSliceEntity.start,
+    LocationEntity.timestamp,
+    LocationEntity.latitude,
+    LocationEntity.longitude,
+    LocationEntity.altitude
+FROM RouteSliceEntity
+LEFT JOIN LocationEntity ON RouteSliceEntity.id = LocationEntity.routeSliceId
+WHERE activityId = (
+    SELECT uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE LIMIT 1
+) ORDER BY start ASC;
+
+getDiscipline:
+SELECT ActivityEntity.sport FROM ActivityEntity WHERE isBeingRecorded = TRUE LIMIT 1;
+
+getLatestLocationFromLastRouteSlice:
+SELECT * FROM LocationEntity
+WHERE routeSliceId IN (
+    SELECT id FROM RouteSliceEntity
+    INNER JOIN ActivityEntity ON RouteSliceEntity.activityId = ActivityEntity.uuid
+    WHERE isBeingRecorded = TRUE
+    ORDER BY start DESC LIMIT 1
+) ORDER BY timestamp DESC LIMIT 1;
+
+insertActivity:
+INSERT OR REPLACE
+INTO ActivityEntity(uuid, sport, title, isBeingRecorded)
+VALUES (?,?, ?, TRUE);
+
+insertActivityStats:
+INSERT OR REPLACE
+INTO ActivityStatsEntity(activityId, totalTime, totalDistanceMeters, averageSpeed)
+SELECT uuid, ?, ?, ? FROM ActivityEntity WHERE isBeingRecorded = TRUE;
+
+insertRouteSlice:
+INSERT OR REPLACE
+INTO RouteSliceEntity(id, activityId, start)
+SELECT ?, uuid, ? FROM ActivityEntity WHERE isBeingRecorded = TRUE;
+
+insertLocationToLatestRouteSlice:
+INSERT OR REPLACE
+INTO LocationEntity(routeSliceId, latitude, longitude, altitude, timestamp)
+SELECT RouteSliceEntity.id, ?, ?, ?, ? FROM RouteSliceEntity WHERE activityId = (
+    SELECT ActivityEntity.uuid FROM ActivityEntity WHERE isBeingRecorded = TRUE
+) ORDER BY start DESC LIMIT 1;
+
+getRecorderState:
+SELECT * FROM RecorderStateEntity WHERE id = 1;
+
+setRecorderState:
+INSERT OR REPLACE
+INTO RecorderStateEntity(id, state)
+VALUES (1, :state);
+
+markActivityAsRecorded:
+UPDATE ActivityEntity
+SET isBeingRecorded = FALSE
+WHERE isBeingRecorded = TRUE;
+
+removeActivity:
+DELETE FROM ActivityEntity WHERE uuid = :id;
+
+removeActivityThatIsBeingRecorded:
+DELETE FROM ActivityEntity WHERE isBeingRecorded = TRUE;
+
+updateRecordingActivityTitle:
+UPDATE ActivityEntity
+SET title = :title
+WHERE isBeingRecorded = TRUE;
+
+clearDatabase {
+    DELETE FROM ActivityEntity;
+    DELETE FROM RecorderStateEntity;
+}
