@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Actively</string>
+    <string name="app_name">My FitBook</string>
     <string name="finish_button">Finish</string>
     <string name="resume_button">Resume</string>
     <string name="save_activity_top_bar_title">Save Activity</string>
@@ -24,7 +24,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="password_textfield_supporting_text">Passwords must contain at least 8 characters.</string>
-    <string name="log_in_screen_header">Log in to Actively</string>
+    <string name="log_in_screen_header">Log in to My FitBook</string>
     <string name="log_in">Log in</string>
     <string name="sign_up">Sign Up</string>
     <string name="create_an_account">Create an Account</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Actively</string>
+    <string name="app_name">My FitBook</string>
     <string name="finish_button">Koniec</string>
     <string name="resume_button">Wznów</string>
     <string name="save_activity_top_bar_title">Zapisz aktywność</string>
@@ -21,11 +21,11 @@
     <string name="ride">Nagrywanie</string>
     <string name="no_activities_home_screen_state">Nie masz żadnych nagranych aktywności</string>
     <string name="record_your_first_activity">Nagraj swoją pierwszą aktywność!</string>
-    <string name="actively_list_error">Ups, coś poszło nie tak! Sprawdź połączenie z internetem.</string>
+    <string name="actively_list_error">Ups, coś poszło nie tak!\nSprawdź połączenie z internetem.</string>
     <string name="email">Email</string>
     <string name="password">Hasło</string>
     <string name="password_textfield_supporting_text">Hasło musi zawierać co najmniej 8 znaków.</string>
-    <string name="log_in_screen_header">Zaloguj się do Actively</string>
+    <string name="log_in_screen_header">Zaloguj się do My FitBook</string>
     <string name="log_in">Zaloguj się</string>
     <string name="sign_up">Zarejestruj się</string>
     <string name="create_an_account">Stwórz konto</string>
