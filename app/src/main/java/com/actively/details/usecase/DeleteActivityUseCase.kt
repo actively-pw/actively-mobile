@@ -3,6 +3,9 @@ package com.actively.details.usecase
 import com.actively.activity.RecordedActivity
 import com.actively.repository.RecordedActivitiesRepository
 
+/**
+ * Permanently deletes recorded activity.
+ */
 interface DeleteActivityUseCase {
 
     suspend operator fun invoke(id: RecordedActivity.Id): Result<Unit>

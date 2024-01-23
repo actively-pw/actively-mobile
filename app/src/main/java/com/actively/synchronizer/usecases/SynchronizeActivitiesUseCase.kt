@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Sends every recorded and cached activity to backend. Every successfully send activity is then deleted from local database.
+ */
 interface SynchronizeActivitiesUseCase {
 
     suspend operator fun invoke()

@@ -4,6 +4,9 @@ import com.actively.activity.Activity
 import com.actively.activity.Discipline
 import com.actively.util.UUIDProvider
 
+/**
+ * Utility usecase that creates new activity.
+ */
 interface CreateActivityUseCase {
 
     operator fun invoke(sport: Discipline, id: Activity.Id? = null, title: String? = null): Activity

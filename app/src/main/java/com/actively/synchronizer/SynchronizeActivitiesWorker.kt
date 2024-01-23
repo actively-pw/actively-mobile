@@ -7,6 +7,9 @@ import com.actively.synchronizer.usecases.SynchronizeActivitiesUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * Worker that synchronizes recorded activities with backend.
+ */
 class SynchronizeActivitiesWorker(
     context: Context,
     params: WorkerParameters

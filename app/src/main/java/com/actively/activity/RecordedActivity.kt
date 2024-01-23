@@ -2,6 +2,9 @@ package com.actively.activity
 
 import kotlinx.datetime.Instant
 
+/**
+ * Model for activity that was already recorder and processed by backend.
+ */
 data class RecordedActivity(
     val id: Id,
     val title: String,

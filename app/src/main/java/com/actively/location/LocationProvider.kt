@@ -15,8 +15,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.time.Duration
 
+/**
+ * Provides methods to subscribe to user location updates.
+ */
 interface LocationProvider {
 
+    /**
+     * Returns location updates.
+     *
+     * @param updateInterval - default interval of location updates,
+     * @param fastestUpdateInterval - minimal interval of location updates,
+     * @param displacement - minimal distance that has to be traveled to trigger next location update
+     *
+     * @return Flow of user location updates.
+     */
     fun userLocation(
         updateInterval: Duration,
         fastestUpdateInterval: Duration,

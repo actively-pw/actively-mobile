@@ -4,6 +4,9 @@ import com.actively.recorder.RecorderState
 import com.actively.repository.ActivityRecordingRepository
 import com.actively.synchronizer.usecases.LaunchSynchronizationUseCase
 
+/**
+ * Finalizes recording process and schedules upload of recorded to backend.
+ */
 interface SaveActivityUseCase {
 
     suspend operator fun invoke(activityTitle: String)

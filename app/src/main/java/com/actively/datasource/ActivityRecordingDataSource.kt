@@ -23,6 +23,9 @@ import kotlinx.datetime.Instant
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * Datasource that enables communication with local database.
+ */
 interface ActivityRecordingDataSource {
 
     suspend fun getActivity(id: Activity.Id): Activity?

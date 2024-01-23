@@ -13,6 +13,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
+/**
+ * Repository for data manipulation associated with authentication.
+ */
 interface AuthRepository {
 
     suspend fun isUserLoggedIn(): Boolean

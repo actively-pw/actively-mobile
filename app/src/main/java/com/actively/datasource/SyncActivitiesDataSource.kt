@@ -9,6 +9,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
+/**
+ * Datasource that sends activity to backend.
+ */
 interface SyncActivitiesDataSource {
 
     suspend fun syncActivity(activity: Activity)

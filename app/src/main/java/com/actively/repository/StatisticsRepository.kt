@@ -8,6 +8,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 
+/**
+ * Methods for data manipulation associated with summary statistics
+ */
 interface StatisticsRepository {
 
     suspend fun getAllStatistics(): List<StatPage>

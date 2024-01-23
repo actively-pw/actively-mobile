@@ -3,6 +3,9 @@ package com.actively.synchronizer.usecases
 import com.actively.activity.Activity
 import com.actively.repository.ActivityRecordingRepository
 
+/**
+ * Usecase responsible for sending activity to backend
+ */
 interface SendActivityUseCase {
 
     suspend operator fun invoke(activity: Activity): Result<Unit>

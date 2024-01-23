@@ -11,6 +11,9 @@ import androidx.work.WorkManager
 import com.actively.synchronizer.SynchronizeActivitiesWorker
 import java.time.Duration
 
+/**
+ * Schedules background task of uploading recorded activity to backend.
+ */
 interface LaunchSynchronizationUseCase {
 
     operator fun invoke()

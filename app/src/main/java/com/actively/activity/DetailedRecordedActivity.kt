@@ -4,6 +4,9 @@ import com.actively.distance.Distance
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
+/**
+ * Holds data for recorder and processed activity details.
+ */
 data class DetailedRecordedActivity(
     val id: RecordedActivity.Id,
     val title: String,
