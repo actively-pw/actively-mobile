@@ -19,6 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import org.koin.android.ext.android.inject
 
+/**
+ * This is the service that is the entry point for logic associated with recording activity.
+ * The service is controlled by *StartRecordingUseCase*, *PauseRecordingUseCase*, *ResumeRecordingUseCase* and
+ * *StopRecordingUseCase*. Actions defined by these the usecases will only be executed if transition from
+ * current state to target state is legal.
+ */
 class RecordActivityService : Service() {
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }

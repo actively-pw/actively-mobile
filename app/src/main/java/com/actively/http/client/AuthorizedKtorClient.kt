@@ -27,13 +27,28 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-
+/**
+ * Authorized ktor HTTP client that user JWT tokens to authenticate.
+ */
 interface AuthorizedKtorClient {
 
+    /**
+     * Generic request builder.
+     * @param endpoint - url of endpoint
+     * @param builder - request builder lambda
+     *
+     * @return response
+     */
     suspend fun request(endpoint: String, builder: HttpRequestBuilder.() -> Unit): HttpResponse
 
+    /**
+     * Closes client and ends every started request.
+     */
     fun close()
 
+    /**
+     * Clears cached jwt tokens.
+     */
     fun clearCachedTokens()
 }
 

@@ -7,6 +7,11 @@ import com.actively.synchronizer.WorkState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Get updates on state of [SynchronizeActivitiesWorker].
+ *
+ * @return work state updates
+ */
 interface GetSyncStateUseCase {
 
     operator fun invoke(): Flow<WorkState?>

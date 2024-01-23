@@ -6,6 +6,9 @@ import com.actively.recorder.RecordActivityService
 import com.actively.repository.ActivityRecordingRepository
 import kotlinx.datetime.Instant
 
+/**
+ * Usecase to resume activity recording. Sends Intent to [RecordActivityService].
+ */
 interface ResumeRecordingUseCase {
 
     suspend operator fun invoke(resumedAt: Instant)

@@ -4,6 +4,9 @@ import com.actively.activity.DynamicMapData
 import com.actively.activity.RecordedActivity
 import com.actively.repository.RecordedActivitiesRepository
 
+/**
+ * Gets dynamic map data associated with already recorded activity.
+ */
 interface GetDynamicMapDataUseCase {
 
     suspend operator fun invoke(id: RecordedActivity.Id): Result<DynamicMapData>

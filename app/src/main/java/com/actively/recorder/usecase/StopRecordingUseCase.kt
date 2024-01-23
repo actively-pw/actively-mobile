@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.Intent
 import com.actively.recorder.RecordActivityService
 
+/**
+ * Usecase that sends stop recording intent to [RecordActivityService]
+ */
 interface StopRecordingUseCase {
 
     operator fun invoke()

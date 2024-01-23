@@ -2,6 +2,24 @@ package com.actively.distance
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Class that represents distance. It removes the risk of common unit conversions. Internally it
+ * holds distance in meters and converts from meters to target unit on demand.
+ *
+ * To create desired distance with unit use extension function on numeric types. e.g of use
+ * ```
+ * val distance: Distance = 2.52.kilometers // creates distance of 2.52 kilometers
+ * val inMeters: Double = distance.inMeters // gets double value of meters
+ * val inWholeMeters: Int = distance.inWholeMeters // gets distance value rounded to whole meters
+ *
+ * val dist1 = 2.5.kilometers
+ * val dist2 = 2000.meters
+ * val sum = dist1 + dist2 // equivalent of 4.5 km
+ * sum.inMeters // 4500.0
+ * sum.inKilometers // 4.5
+ * ```
+ *
+ */
 @Serializable
 @JvmInline
 value class Distance private constructor(private val rawValue: Double) {

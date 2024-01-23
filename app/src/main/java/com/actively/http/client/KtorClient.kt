@@ -13,11 +13,23 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-
+/**
+ * Default unauthorized ktor client.
+ */
 interface KtorClient {
 
+    /**
+     * Generic request builder.
+     * @param endpoint - url of endpoint
+     * @param builder - request builder lambda
+     *
+     * @return response
+     */
     suspend fun request(endpoint: String, builder: HttpRequestBuilder.() -> Unit): HttpResponse
 
+    /**
+     * Closes client and ends every started request.
+     */
     fun close()
 
     companion object {

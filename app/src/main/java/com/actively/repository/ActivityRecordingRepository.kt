@@ -10,6 +10,9 @@ import com.actively.recorder.RecorderState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 
+/**
+ * Repository which handles all data manipulations associated with activity recording.
+ */
 interface ActivityRecordingRepository {
 
     suspend fun getActivity(id: Activity.Id): Activity?

@@ -20,8 +20,17 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
+/**
+ * Usecase that handles activity recording. Recording starts once returned flow is consumed.
+ */
 interface RecordActivityUseCase {
 
+    /**
+     * Method that should start recording activity.
+     *
+     * @param start timestamp when the recording started.
+     * @return Flow with statistics updates.
+     */
     operator fun invoke(start: Instant): Flow<Activity.Stats>
 }
 

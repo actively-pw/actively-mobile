@@ -9,6 +9,12 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * Gets [RecordedActivityTime] for activity recorded at [start] timestamp relative to [now].
+ * E.g: Activity was recorded on 12.01.2023, 12:50 and *now* is 13.01.2023, 9:00. [RecordedActivityTime]
+ * will represent recorded time: Yesterday at 12:50.
+ * if *now* is 14.01.2023 or later, so two days after recording, then [RecordedActivityTime] will represent: 12.01.2023 at 12:50
+ */
 fun getActivityTimeString(start: Instant, now: Instant): RecordedActivityTime {
     val startDate = start.toLocalDateTime(TimeZone.currentSystemDefault())
     val today = now.toLocalDateTime(TimeZone.currentSystemDefault())

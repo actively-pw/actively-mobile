@@ -5,6 +5,9 @@ import androidx.paging.PagingState
 import com.actively.activity.RecordedActivity
 import com.actively.repository.RecordedActivitiesRepository
 
+/**
+ * Paging3 datasource that returns paged recorded activities.
+ */
 class PagedRecordedActivitiesDataSource(
     private val recordedActivitiesRepository: RecordedActivitiesRepository
 ) : PagingSource<Int, RecordedActivity>() {

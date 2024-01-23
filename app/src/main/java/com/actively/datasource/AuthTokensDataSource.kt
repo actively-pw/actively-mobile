@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+/**
+ * Datasource for auth related calls to backend.
+ */
 interface AuthTokensDataSource {
 
     suspend fun getAccessToken(): String?

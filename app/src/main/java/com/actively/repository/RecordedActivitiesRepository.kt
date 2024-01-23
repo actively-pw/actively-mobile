@@ -18,6 +18,9 @@ data class RecordedActivitiesPage(
     val nextPage: Int?
 )
 
+/**
+ * Provides data manipulation methods to handle already recorder and processed activities.
+ */
 interface RecordedActivitiesRepository {
 
     suspend fun getActivitiesPage(pageNumber: Int, pageSize: Int): RecordedActivitiesPage

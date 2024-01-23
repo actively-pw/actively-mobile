@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.Intent
 import com.actively.recorder.RecordActivityService
 
+/**
+ * Usecase to pause activity recording. Sends Intent to [RecordActivityService].
+ */
 interface PauseRecordingUseCase {
 
     operator fun invoke()

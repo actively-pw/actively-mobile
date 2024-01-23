@@ -8,8 +8,17 @@ import com.actively.recorder.RecordActivityService
 import com.actively.repository.ActivityRecordingRepository
 import kotlinx.datetime.Instant
 
+/**
+ * Usecase that starts recording of activity. It sends Intent to [RecordActivityService].
+ */
 interface StartRecordingUseCase {
 
+    /**
+     * Launches activity recording.
+     *
+     * @param sport - discipline to record
+     * @param startedAt - timestamp of recording start
+     */
     suspend operator fun invoke(sport: Discipline, startedAt: Instant)
 }
 

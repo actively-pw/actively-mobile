@@ -3,6 +3,9 @@ package com.actively.statistics.usecase
 import com.actively.repository.StatisticsRepository
 import com.actively.statistics.StatPage
 
+/**
+ * Gets all summary statistics pages.
+ */
 interface GetStatisticsUseCase {
 
     suspend operator fun invoke(): Result<List<StatPage>>

@@ -10,6 +10,9 @@ import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
+/**
+ * Model that represents activity that is being recorder or cached in local database.
+ */
 data class Activity(
     val id: Id,
     val title: String?,
