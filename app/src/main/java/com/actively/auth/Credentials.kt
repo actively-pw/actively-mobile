@@ -1,5 +1,8 @@
 package com.actively.auth
 
+/**
+ * Holds credentials for login and register actions.
+ */
 sealed class Credentials {
     data class Login(val email: String, val password: String) : Credentials()
     data class Register(
