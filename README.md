@@ -11,7 +11,7 @@ User can select from multiple disciplines. There are also intuitive animated rec
 
 After activity was recorded then it has to be named and saved. Recorded activity can be discarded.
 
-<img src="https://github.com/actively-pw/actively-mobile/assets/59282537/5d16060a-d04f-4ace-9969-f73e7ce23143" alt="drawing" width="200"/>
+<img src="https://github.com/actively-pw/actively-mobile/assets/59282537/5d16060a-d04f-4ace-9969-f73e7ce23143" alt="drawing"/>
 
 
 #### Home screen
