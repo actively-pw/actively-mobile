@@ -5,9 +5,11 @@ Actively is a exercise tracking app that uses GPS to record route, location and 
 #### Recording screen
 User can select from multiple disciplines. There are also intuitive animated recording controls. Recording data is persisted at all times. Recording is also launched in foreground service, so the recording is running no matter what the user is doing on the phone. 
 ![Recording screen](https://github.com/actively-pw/actively-mobile/assets/59282537/9e1f398f-9a19-497a-aa15-90656fc91d80)
-![Recording demo](https://github.com/actively-pw/actively-mobile/assets/59282537/d99998fd-78aa-4fb5-8af5-819c13db69f3)
+![Recording demo](https://github.com/actively-pw/actively-mobile/assets/59282537/c5f39387-73e3-42dd-9be2-1faa28f9b40b)
+
 
 After activity was recorded then it has to be named and saved. Recorded activity can be discarded.
+<img src="https://github.com/actively-pw/actively-mobile/assets/59282537/a8b11800-eda4-499b-876c-3370252ffa37" alt="drawing" width="200"/>
 ![Recording finalising](https://github.com/actively-pw/actively-mobile/assets/59282537/a8b11800-eda4-499b-876c-3370252ffa37)
 
 #### Home screen
